@@ -12,7 +12,7 @@ namespace Core.Domain.Editing
         {
 
             // Sort clips: Openers first, then variety, closers last
-            var sortedClips = clips.OrderBy(c => c.IsOpener ? 0 : (c.IsCloser ? 2 : 1))
+            List<Clip.Clip> sortedClips = clips.OrderBy(c => c.IsOpener ? 0 : (c.IsCloser ? 2 : 1))
                                   .ThenBy(c => c.Game)
                                   .ThenBy(c => c.Map)
                                   .ThenBy(c => c.Gun)
@@ -24,13 +24,13 @@ namespace Core.Domain.Editing
             vegas.Project.Tracks.Add(audioTrack);
             vegas.UpdateUI(); // Ensure UI is updated before adding takes
 
-            foreach (var clip in sortedClips)
+            foreach (Clip.Clip clip in sortedClips)
             {
                 try
                 {
                     Logger.Log($"Processing clip: {clip.FilePath}");
 
-                    var media = vegas.Project.MediaPool.AddMedia(clip.FilePath);
+                    Media media = vegas.Project.MediaPool.AddMedia(clip.FilePath);
                     if (media == null)
                     {
                         Logger.LogError($"Media is null for clip: {clip.FilePath}");
@@ -39,7 +39,7 @@ namespace Core.Domain.Editing
 
                     Logger.Log($"Media loaded: {media.FilePath}, Length: {media.Length}, Streams: {media.Streams.Count}");
 
-                    var videoStream = media.GetVideoStreamByIndex(0);
+                    VideoStream videoStream = media.GetVideoStreamByIndex(0);
                     Logger.Log($"Video stream: {videoStream?.Parent.KeyString?? "None"}");
 
 
@@ -50,7 +50,7 @@ namespace Core.Domain.Editing
                     }
                     Logger.Log($"Video stream found for: {clip.FilePath}");
 
-                    var videoEvent = new VideoEvent(currentPos, media.Length);
+                    VideoEvent videoEvent = new VideoEvent(currentPos, media.Length);
                     try
                     {
 
@@ -73,12 +73,12 @@ namespace Core.Domain.Editing
                     }
 
                     // Add audio take if the media has audio
-                    var audioStream = media.Streams.OfType<AudioStream>().FirstOrDefault();
+                    AudioStream audioStream = media.Streams.OfType<AudioStream>().FirstOrDefault();
                     if (audioStream != null)
                     {
                         try
                         {
-                            var audioEvent = new AudioEvent(currentPos, media.Length);
+                            AudioEvent audioEvent = new AudioEvent(currentPos, media.Length);
                             audioTrack.Events.Add(audioEvent);
                             audioEvent.Takes.Add(new Take(audioStream));
                             vegas.UpdateUI();
@@ -102,16 +102,16 @@ namespace Core.Domain.Editing
                 }
             }
 
-            var songMedia = vegas.Project.MediaPool.AddMedia(songPath);
+            Media songMedia = vegas.Project.MediaPool.AddMedia(songPath);
             // Import song
             if (songMedia == null)
             {
                 throw new InvalidOperationException("Could not import song file.");
             }
-            var songTrack = new AudioTrack(vegas.Project, vegas.Project.Tracks.Count, "Song Track");
+            AudioTrack songTrack = new AudioTrack(vegas.Project, vegas.Project.Tracks.Count, "Song Track");
             vegas.Project.Tracks.Add(songTrack);
 
-            var songEvent = new AudioEvent(Timecode.FromSeconds(0), songMedia.Length);
+            AudioEvent songEvent = new AudioEvent(Timecode.FromSeconds(0), songMedia.Length);
             songTrack.Events.Add(songEvent);
 
             Take take = new Take(songMedia.GetAudioStreamByIndex(0));

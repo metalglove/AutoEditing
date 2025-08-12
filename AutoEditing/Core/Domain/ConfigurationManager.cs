@@ -32,9 +32,9 @@ namespace Core.Domain
                 string assemblyDirectory = Path.GetDirectoryName(assemblyLocation);
                 string configPath = Path.Combine(assemblyDirectory, ConfigFileName);
                 string localConfigPath = Path.Combine(assemblyDirectory, LocalConfigFileName);
-                
+
                 _config = new AppSettings();
-                
+
                 // Load base configuration
                 if (File.Exists(configPath))
                 {
@@ -47,7 +47,7 @@ namespace Core.Domain
                 {
                     string localContent = File.ReadAllText(localConfigPath);
                     AppSettings localConfig = JsonConvert.DeserializeObject<AppSettings>(localContent);
-                    
+
                     if (localConfig != null)
                     {
                         MergeConfigurations(_config, localConfig);
@@ -67,49 +67,70 @@ namespace Core.Domain
         /// </summary>
         private static void MergeConfigurations(AppSettings baseConfig, AppSettings localConfig)
         {
-            if (localConfig == null) return;
+            if (localConfig == null)
+            {
+                return;
+            }
 
             // Merge QuickTesting settings
             if (localConfig.QuickTesting != null)
             {
                 if (baseConfig.QuickTesting == null)
+                {
                     baseConfig.QuickTesting = new QuickTestingConfig();
+                }
 
                 if (!string.IsNullOrWhiteSpace(localConfig.QuickTesting.ClipsFolder))
+                {
                     baseConfig.QuickTesting.ClipsFolder = localConfig.QuickTesting.ClipsFolder;
-                
+                }
+
                 if (!string.IsNullOrWhiteSpace(localConfig.QuickTesting.SongPath))
+                {
                     baseConfig.QuickTesting.SongPath = localConfig.QuickTesting.SongPath;
-                
+                }
+
                 if (!string.IsNullOrWhiteSpace(localConfig.QuickTesting.OutputFolder))
+                {
                     baseConfig.QuickTesting.OutputFolder = localConfig.QuickTesting.OutputFolder;
+                }
             }
 
             // Merge Logging settings
             if (localConfig.Logging != null)
             {
                 if (baseConfig.Logging == null)
+                {
                     baseConfig.Logging = new LoggingConfig();
+                }
 
                 // Merge LogLevel
                 if (localConfig.Logging.LogLevel != null)
                 {
                     if (baseConfig.Logging.LogLevel == null)
+                    {
                         baseConfig.Logging.LogLevel = new LogLevelConfig();
+                    }
 
                     if (!string.IsNullOrWhiteSpace(localConfig.Logging.LogLevel.Default))
+                    {
                         baseConfig.Logging.LogLevel.Default = localConfig.Logging.LogLevel.Default;
+                    }
                 }
 
                 // Merge LogFile settings
                 if (localConfig.Logging.LogFile != null)
                 {
                     if (baseConfig.Logging.LogFile == null)
+                    {
                         baseConfig.Logging.LogFile = new LogFileConfig();
+                    }
 
                     if (!string.IsNullOrWhiteSpace(localConfig.Logging.LogFile.Path))
+                    {
                         baseConfig.Logging.LogFile.Path = localConfig.Logging.LogFile.Path;
-                    
+                    }
+
                     // For boolean values, always take the local value if the local config has this section
                     baseConfig.Logging.LogFile.Enabled = localConfig.Logging.LogFile.Enabled;
                 }
@@ -126,7 +147,7 @@ namespace Core.Domain
             {
                 return _config.Logging.LogFile.Path;
             }
-            
+
             // Default to Logs folder relative to the assembly location
             string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
             string assemblyDirectory = Path.GetDirectoryName(assemblyLocation);
@@ -178,9 +199,12 @@ namespace Core.Domain
         /// </summary>
         public static Dictionary<string, string> GetAllConfigurationValues()
         {
-            var result = new Dictionary<string, string>();
-            
-            if (_config == null) return result;
+            Dictionary<string, string> result = new Dictionary<string, string>();
+
+            if (_config == null)
+            {
+                return result;
+            }
 
             // Manually flatten the configuration for debugging
             if (_config.Logging?.LogFile != null)
@@ -192,7 +216,9 @@ namespace Core.Domain
             if (_config.Logging != null)
             {
                 if (_config.Logging.LogLevel != null)
+                {
                     result["Logging:LogLevel:Default"] = _config.Logging.LogLevel.Default ?? "";
+                }
             }
 
             if (_config.QuickTesting != null)

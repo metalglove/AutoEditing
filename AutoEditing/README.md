@@ -76,7 +76,7 @@ PlayerName - Warzone - Verdansk - HDR - Longshot - 015.mp4
 
 ## Installation
 
-1. **Prerequisites**: 
+1. **Prerequisites**:
    - VEGAS Pro 20.0 or later
    - .NET Framework 4.8
    - Visual Studio 2019/2022 (for development)
@@ -161,6 +161,48 @@ The new Domain-Driven Design structure provides:
 
 ### Debug Mode
 Enable debug output by checking the log window. All errors and processing steps are logged for troubleshooting.
+
+## Development Setup
+
+### Prerequisites
+- **VEGAS Pro 20.0+** installed
+- **Visual Studio Code** (recommended IDE)
+- **.NET Framework 4.8** or higher
+
+### Required VS Code Extensions
+When you open this project in VS Code, you'll be prompted to install the recommended extensions. Please install:
+
+- **EditorConfig for VS Code** (`editorconfig.editorconfig`) - **REQUIRED** for code style enforcement
+- **C#** (`ms-dotnettools.csharp`) - **REQUIRED** for C# language support
+- **C# Dev Kit** (`ms-dotnettools.csdevkit`) - **RECOMMENDED** for enhanced C# development features
+
+To install the recommended extensions:
+1. Open the project in VS Code
+2. When prompted, click "Install" on the extension recommendations notification
+3. Or manually install via Command Palette: `Ctrl+Shift+P` → "Extensions: Show Recommended Extensions"
+
+### Code Style Rules
+This project enforces strict code styling rules via EditorConfig:
+- **No `var` keyword usage** - explicit types are required
+- Consistent indentation and formatting
+- C# naming conventions enforcement
+
+The EditorConfig extension will show real-time style violations and provide automatic fixes.
+
+### Building the Project
+```bash
+# Build the Core project
+dotnet build Core/Core.csproj --configuration Debug
+
+# Or use the VS Code task
+Ctrl+Shift+P → "Tasks: Run Task" → "Build Core Project"
+```
+
+### Development Workflow
+1. Make your changes following the established code style
+2. Build the project to ensure no style violations
+3. Test with VEGAS Pro using the DLL copy task
+4. Submit pull requests with clean, styled code
 
 ## License
 

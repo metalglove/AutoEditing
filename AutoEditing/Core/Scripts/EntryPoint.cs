@@ -29,7 +29,7 @@ namespace Core.Scripts
         private void InitializeVegas(Vegas vegas)
         {
             _vegas = vegas;
-            
+
             // Ensure that the configuration is loaded.
             ConfigurationManager.ReloadConfiguration();
 
@@ -61,7 +61,7 @@ namespace Core.Scripts
 
         private void BuildClipsFolderSection()
         {
-            var clipsLabel = new Label
+            Label clipsLabel = new Label
             {
                 Text = "Clips Folder:",
                 Location = new Point(10, 10),
@@ -77,7 +77,7 @@ namespace Core.Scripts
             };
             _mainForm.Controls.Add(_clipsFolderBox);
 
-            var browseFolderButton = new Button
+            Button browseFolderButton = new Button
             {
                 Text = "Browse...",
                 Location = new Point(370, 35),
@@ -91,7 +91,7 @@ namespace Core.Scripts
 
         private void BuildSongPathSection()
         {
-            var songLabel = new Label
+            Label songLabel = new Label
             {
                 Text = "Song Path:",
                 Location = new Point(10, 70),
@@ -107,7 +107,7 @@ namespace Core.Scripts
             };
             _mainForm.Controls.Add(_songPathBox);
 
-            var browseSongButton = new Button
+            Button browseSongButton = new Button
             {
                 Text = "Browse...",
                 Location = new Point(370, 95),
@@ -132,7 +132,7 @@ namespace Core.Scripts
 
         private void BuildButtonsSection()
         {
-            var startButton = new Button
+            Button startButton = new Button
             {
                 Text = "Create Full Montage",
                 Location = new Point(10, 160),
@@ -141,7 +141,7 @@ namespace Core.Scripts
             };
             _mainForm.Controls.Add(startButton);
 
-            var quickButton = new Button
+            Button quickButton = new Button
             {
                 Text = "Quick Montage",
                 Location = new Point(170, 160),
@@ -150,7 +150,7 @@ namespace Core.Scripts
             };
             _mainForm.Controls.Add(quickButton);
 
-            var previewButton = new Button
+            Button previewButton = new Button
             {
                 Text = "Preview Clips",
                 Location = new Point(300, 160),
@@ -216,7 +216,7 @@ namespace Core.Scripts
 
         private void OnBrowseFolderClick(object sender, EventArgs e)
         {
-            using (var folderDialog = new FolderBrowserDialog())
+            using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
             {
                 if (folderDialog.ShowDialog() == DialogResult.OK)
                 {
@@ -227,7 +227,7 @@ namespace Core.Scripts
 
         private void OnBrowseSongClick(object sender, EventArgs e)
         {
-            using (var openDialog = new OpenFileDialog())
+            using (OpenFileDialog openDialog = new OpenFileDialog())
             {
                 openDialog.Filter = "Audio Files|*.mp3;*.wav;*.m4a;*.aac|All Files|*.*";
                 if (openDialog.ShowDialog() == DialogResult.OK)
@@ -256,7 +256,7 @@ namespace Core.Scripts
         {
             Logger.Log("Sniper Montage Automation Ready");
             Logger.Log("================================");
-            
+
             LogConfigurationDebugInfo();
         }
 
@@ -270,11 +270,11 @@ namespace Core.Scripts
             Logger.Log($"Song Path: {ConfigurationManager.GetQuickTestingSongPath()}");
             Logger.Log($"Output Folder: {ConfigurationManager.GetOutputFolder()}");
             Logger.Log($"Log File Path: {ConfigurationManager.GetLogFilePath()}");
-            
+
             // Show all configuration keys for debugging
-            var allConfig = ConfigurationManager.GetAllConfigurationValues();
+            System.Collections.Generic.Dictionary<string, string> allConfig = ConfigurationManager.GetAllConfigurationValues();
             Logger.Log($"Total config keys loaded: {allConfig.Count}");
-            foreach (var kvp in allConfig)
+            foreach (System.Collections.Generic.KeyValuePair<string, string> kvp in allConfig)
             {
                 Logger.Log($"  {kvp.Key} = {kvp.Value}");
             }
@@ -315,8 +315,8 @@ namespace Core.Scripts
                 Logger.Log("Inputs validated successfully.");
 
                 // Create montage using MontageOrchestrator
-                var orchestrator = new MontageOrchestrator();
-                
+                MontageOrchestrator orchestrator = new MontageOrchestrator();
+
                 if (quickMode)
                 {
                     orchestrator.CreateQuickMontage(vegas, clipsFolder, songPath, skipValidation);
@@ -347,17 +347,24 @@ namespace Core.Scripts
                     return;
                 }
 
-                var parser = new ClipParser();
-                var clips = parser.ParseAllClips(clipsFolder);
+                ClipParser parser = new ClipParser();
+                System.Collections.Generic.List<Clip> clips = parser.ParseAllClips(clipsFolder);
 
                 Logger.Log($"\r\nFound {clips.Count} clips:");
                 Logger.Log("========================");
 
-                foreach (var clip in clips)
+                foreach (Clip clip in clips)
                 {
                     string prefix = "";
-                    if (clip.IsOpener) prefix = "[OPENER] ";
-                    if (clip.IsCloser) prefix = "[CLOSER] ";
+                    if (clip.IsOpener)
+                    {
+                        prefix = "[OPENER] ";
+                    }
+
+                    if (clip.IsCloser)
+                    {
+                        prefix = "[CLOSER] ";
+                    }
 
                     Logger.Log($"{prefix}{clip.PlayerName} - {clip.Game} - {clip.Map} - {clip.Gun} - {clip.ClipType} #{clip.SequenceNumber}");
                 }

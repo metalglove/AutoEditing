@@ -9,8 +9,8 @@ namespace Core.Domain.Clip
     {
         public List<Clip> ParseAllClips(string folderPath)
         {
-            var clips = new List<Clip>();
-            foreach (var file in Directory.GetFiles(folderPath, "*.mp4"))
+            List<Clip> clips = new List<Clip>();
+            foreach (string file in Directory.GetFiles(folderPath, "*.mp4"))
             {
                 clips.Add(ParseClip(file));
             }
@@ -19,10 +19,10 @@ namespace Core.Domain.Clip
 
         public Clip ParseClip(string filePath)
         {
-            var fileName = Path.GetFileNameWithoutExtension(filePath);
-            var parts = fileName.Split('-').Select(p => p.Trim()).ToArray();
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
+            string[] parts = fileName.Split('-').Select(p => p.Trim()).ToArray();
 
-            var clip = new Clip { FilePath = filePath };
+            Clip clip = new Clip { FilePath = filePath };
 
             // Handle prefix
             if (parts[0].StartsWith("[OPENER]"))

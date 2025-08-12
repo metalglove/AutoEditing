@@ -28,14 +28,17 @@ namespace Core.Domain.Logging
         /// </summary>
         private static void Initialize()
         {
-            if (_isInitialized) return;
+            if (_isInitialized)
+            {
+                return;
+            }
 
             try
             {
                 if (ConfigurationManager.IsFileLoggingEnabled())
                 {
                     _logFilePath = ConfigurationManager.GetLogFilePath();
-                    
+
                     // Ensure the directory exists
                     string logDirectory = Path.GetDirectoryName(_logFilePath);
                     if (!string.IsNullOrEmpty(logDirectory) && !Directory.Exists(logDirectory))
@@ -69,7 +72,7 @@ namespace Core.Domain.Logging
         public static void Log(string message)
         {
             Initialize(); // Ensure logger is initialized
-            
+
             string logMsg = "[DEBUG] " + message;
             // Log to UI
             if (_logBox != null)
@@ -97,7 +100,7 @@ namespace Core.Domain.Logging
         public static void LogError(string message, Exception ex = null)
         {
             Initialize(); // Ensure logger is initialized
-            
+
             string errorMsg = ex != null ? $"{message}: {ex.Message}" : message;
             string logMsg = "[ERROR] " + errorMsg;
             // Log to UI

@@ -1,3 +1,22 @@
 {
-    "dotnet.preferCSharpExtension": true
+  "dotnet.preferCSharpExtension": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit"
+  },
+  "files.associations": {
+    "*.cs": "csharp"
+  },
+  "editorconfig.generateAuto": false,
+  "omnisharp.enableEditorConfigSupport": true,
+  "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
+  "csharp.semanticHighlighting.enabled": true,
+  "csharp.format.enable": true,
+  "csharp.inlayHints.enableInlayHintsForTypes": true,
+  "csharp.inlayHints.enableInlayHintsForParameters": true,
+  "editor.rulers": [
+    120
+  ],
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true
 }

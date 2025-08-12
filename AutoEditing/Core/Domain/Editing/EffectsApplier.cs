@@ -14,17 +14,17 @@ namespace Core.Domain.Editing
                 // TODO: Fix VelocityEnvelope API usage for VEGAS Pro
                 // The VelocityEnvelope property may require different access method
                 // This is a placeholder implementation for MVP
-                
+
                 Logger.Log($"Applying time remapping to clip with {kills.Count} kills");
-                
+
                 // Placeholder implementation - actual velocity envelope manipulation would go here
                 // Real implementation would:
                 // 1. Access the correct velocity envelope property/method
                 // 2. Clear existing points
                 // 3. Add keyframes for slow-motion effects around kill times
                 // 4. Apply speed ramping effects
-                
-                foreach (var kill in kills)
+
+                foreach (Timecode kill in kills)
                 {
                     if (kill >= ev.Start && kill <= ev.End)
                     {
@@ -45,11 +45,11 @@ namespace Core.Domain.Editing
                 // Apply camera shake effect (placeholder)
                 // In real implementation, this would add a shake effect plugin
                 // and keyframe the intensity parameter at the specified time
-                
+
                 // Example pseudocode:
                 // var shakeEffect = ev.Effects.FindByName("BCC Shake") ?? ev.Effects.AddEffect("BCC Shake");
                 // shakeEffect.Parameters["Intensity"].Keyframes.Add(atTime, intensity);
-                
+
                 Logger.Log($"Applied shake effect at {atTime} with intensity {intensity}");
             }
             catch (Exception ex)
@@ -64,10 +64,10 @@ namespace Core.Domain.Editing
             {
                 // Add text overlay for player name/clip info
                 // This would typically use a text media generator
-                
+
                 // Placeholder implementation
                 Logger.Log($"Added name tag: {text} to clip starting at {ev.Start}");
-                
+
                 // Real implementation would:
                 // 1. Get text media generator
                 // 2. Create text event on overlay track

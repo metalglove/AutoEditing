@@ -10,11 +10,17 @@ namespace Core.Domain.Clip
         {
             try
             {
-                var media = vegas.Project.MediaPool.AddMedia(clip.FilePath);
-                if (media == null) return false;
+                Media media = vegas.Project.MediaPool.AddMedia(clip.FilePath);
+                if (media == null)
+                {
+                    return false;
+                }
 
-                var videoStream = media.Streams.OfType<VideoStream>().FirstOrDefault();
-                if (videoStream == null || videoStream.FrameRate < 60) return false;
+                VideoStream videoStream = media.Streams.OfType<VideoStream>().FirstOrDefault();
+                if (videoStream == null || videoStream.FrameRate < 60)
+                {
+                    return false;
+                }
 
                 // Bitrate check (approximate; VEGAS API doesn't expose bitrate directly, so placeholder)
                 // For real impl, use FFProbe or external tool via Process.Start
@@ -33,14 +39,18 @@ namespace Core.Domain.Clip
         public string[] GetValidationErrors(Clip clip)
         {
             // Implement error collection
-            var errors = new System.Collections.Generic.List<string>();
-            
+            System.Collections.Generic.List<string> errors = new System.Collections.Generic.List<string>();
+
             if (string.IsNullOrEmpty(clip.FilePath))
+            {
                 errors.Add("File path is empty");
-            
+            }
+
             if (!System.IO.File.Exists(clip.FilePath))
+            {
                 errors.Add("File does not exist");
-            
+            }
+
             // Add more validation logic as needed
             return errors.ToArray();
         }

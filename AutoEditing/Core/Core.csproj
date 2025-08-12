@@ -12,6 +12,10 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <!-- Enable additional warnings and treat style violations as errors -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors>IDE0007;IDE0008</WarningsAsErrors>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -80,5 +84,15 @@
       <DependentUpon>appsettings.json</DependentUpon>
     </Content>
   </ItemGroup>
+
+  <!-- Pre-build validation target -->
+  <Target Name="ValidateCodeStyle" BeforeTargets="BeforeBuild;CoreCompile">
+    <Message Text="Running code style validation..." Importance="high" />
+    <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\\.vscode\\build-validate-style.ps1&quot; -ProjectDir &quot;$(MSBuildProjectDirectory)&quot;"
+          ContinueOnError="false"
+          StandardOutputImportance="high"
+          StandardErrorImportance="high" />
+  </Target>
+
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
