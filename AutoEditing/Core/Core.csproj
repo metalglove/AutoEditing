@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="ScriptPortal.Vegas">
       <HintPath>$(ProgramFiles)\VEGAS\VEGAS Pro 20.0\ScriptPortal.Vegas.dll</HintPath>
     </Reference>
@@ -58,10 +61,24 @@
     <Compile Include="Domain\Clip\ClipParser.cs" />
     <Compile Include="Domain\Clip\ClipValidator.cs" />
     <Compile Include="Domain\Clip\KillDetector.cs" />
+    <Compile Include="Domain\Logging\Logger.cs" />
+    <Compile Include="Domain\AppSettings.cs" />
+    <Compile Include="Domain\ConfigurationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scripts\EntryPoint.cs" />
-    <Compile Include="Scripts\Logger.cs" />
-    <Compile Include="TimelineManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="appsettings.local.json.example" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="appsettings.local.json" Condition="Exists('appsettings.local.json')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>appsettings.json</DependentUpon>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

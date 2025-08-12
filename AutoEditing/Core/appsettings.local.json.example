@@ -1,0 +1,16 @@
+{
+  "Logging": {
+    "LogFile": {
+      "Path": "C:\\Users\\[USERNAME]\\source\\repos\\AutoEditing\\AutoEditing\\Logs\\autoediting.log",
+      "Enabled": true
+    },
+    "LogLevel": {
+      "Default": "Debug"
+    }
+  },
+  "QuickTesting": {
+    "ClipsFolder": "C:\\Users\\[USERNAME]\\Downloads\\TestClips\\",
+    "SongPath": "C:\\Users\\[USERNAME]\\Downloads\\testsong.mp3",
+    "OutputFolder": "C:\\Users\\[USERNAME]\\Downloads\\Output\\"
+  }
+}

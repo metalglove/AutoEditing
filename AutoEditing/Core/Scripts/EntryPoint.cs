@@ -1,13 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Drawing;
-using ScriptPortal.Vegas;
-using Core.Domain.Editing;
+using System.Windows.Forms;
+using Core.Domain;
 using Core.Domain.Clip;
+using Core.Domain.Editing;
+using Core.Domain.Logging;
+using ScriptPortal.Vegas;
 
 namespace Core.Scripts
 {
@@ -36,7 +34,7 @@ namespace Core.Scripts
 
             TextBox clipsFolderBox = new TextBox
             {
-                Text = @"C:\Users\Phreak\Downloads\Minitage\Minitage\",
+                Text = ConfigurationManager.GetQuickTestingClipsFolder(),
                 Location = new Point(10, 35),
                 Width = 350
             };
@@ -71,7 +69,7 @@ namespace Core.Scripts
 
             TextBox songPathBox = new TextBox
             {
-                Text = @"C:\Users\Phreak\Downloads\song.mp3",
+                Text = ConfigurationManager.GetQuickTestingSongPath(),
                 Location = new Point(10, 95),
                 Width = 350
             };
@@ -142,7 +140,6 @@ namespace Core.Scripts
             form.Controls.Add(logBox);
 
             Logger.SetLogger(logBox);
-            Logger.SetLogFile(@"C:\Users\Phreak\Downloads\montage_log.txt");
 
             // Event Handlers
             startButton.Click += (sender, e) =>
@@ -168,6 +165,22 @@ namespace Core.Scripts
             {
                 Logger.Log("Sniper Montage Automation Ready");
                 Logger.Log("================================");
+                
+                // Debug configuration values
+                Logger.Log("=== Configuration Debug ===");
+                Logger.Log($"Clips Folder: {ConfigurationManager.GetQuickTestingClipsFolder()}");
+                Logger.Log($"Song Path: {ConfigurationManager.GetQuickTestingSongPath()}");
+                Logger.Log($"Output Folder: {ConfigurationManager.GetOutputFolder()}");
+                Logger.Log($"Log File Path: {ConfigurationManager.GetLogFilePath()}");
+                
+                // Show all configuration keys for debugging
+                var allConfig = ConfigurationManager.GetAllConfigurationValues();
+                Logger.Log($"Total config keys loaded: {allConfig.Count}");
+                foreach (var kvp in allConfig)
+                {
+                    Logger.Log($"  {kvp.Key} = {kvp.Value}");
+                }
+                Logger.Log("=== End Configuration Debug ===");
             };
 
             form.ShowDialog();

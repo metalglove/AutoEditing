@@ -328,3 +328,6 @@ FodyWeavers.xsd
 # Custom: VEGAS Pro API documentation
 VEGASScriptAPI.html
 *.html
+
+*.md
+!README.md
