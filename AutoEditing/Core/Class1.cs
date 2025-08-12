@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using ScriptPortal.Vegas;
+
 namespace Core
 {
     public class Class1
