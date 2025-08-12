@@ -12,9 +12,50 @@ namespace Core.Domain.Clip
             List<Clip> clips = new List<Clip>();
             foreach (string file in Directory.GetFiles(folderPath, "*.mp4"))
             {
-                clips.Add(ParseClip(file));
+                if (IsValidFileName(file))
+                {
+                    clips.Add(ParseClip(file));
+                }
             }
             return clips;
+        }
+
+        private bool IsValidFileName(string filePath)
+        {
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
+            string[] parts = fileName.Split('-').Select(p => p.Trim()).ToArray();
+
+            // Remove prefix if present
+            if (parts.Length > 0 && (parts[0].StartsWith("[OPENER]") || parts[0].StartsWith("[CLOSER]")))
+            {
+                parts[0] = parts[0].Replace("[OPENER]", "").Replace("[CLOSER]", "").Trim();
+            }
+
+            // Must have at least 5 parts: PlayerName, Game, Map, Gun, ClipType
+            if (parts.Length < 5)
+            {
+                return false;
+            }
+
+            // Check that required parts are not empty
+            for (int i = 0; i < 5; i++)
+            {
+                if (string.IsNullOrWhiteSpace(parts[i]))
+                {
+                    return false;
+                }
+            }
+
+            // If there's a 6th part, it should be a valid sequence number
+            if (parts.Length > 5)
+            {
+                if (!int.TryParse(parts[5], out int sequenceNumber) || sequenceNumber < 1)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public Clip ParseClip(string filePath)
