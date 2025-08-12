@@ -1,0 +1,123 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build Core Project",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"Core/Core.csproj",
+				"--configuration",
+				"Debug"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"detail": "Build the Core project using dotnet CLI"
+		},
+		{
+			"label": "Build Core Release",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"Core/Core.csproj",
+				"--configuration",
+				"Release"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"detail": "Build the Core project in Release mode using dotnet CLI"
+		},
+		{
+			"label": "Clean Core Project",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"clean",
+				"Core/Core.csproj"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"detail": "Clean the Core project build artifacts using dotnet CLI"
+		},
+		{
+			"label": "Rebuild Core Project",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"Core/Core.csproj",
+				"--configuration",
+				"Debug",
+				"--no-incremental"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"detail": "Clean and rebuild the Core project using dotnet CLI"
+		},
+		{
+			"label": "Copy DLL to VEGAS Scripts",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-Command",
+				"Copy-Item 'Core\\bin\\Debug\\Core.dll' -Destination '$env:APPDATA\\VEGAS Pro\\Scripts\\' -Force; Write-Host 'DLL copied to VEGAS Pro Scripts folder'"
+			],
+			"group": "build",
+			"dependsOn": "Build Core Project",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"detail": "Copy built DLL to VEGAS Pro Scripts folder for testing"
+		}
+	]
+}

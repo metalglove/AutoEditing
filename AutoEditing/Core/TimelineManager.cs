@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ScriptPortal.Vegas;
+using Core.Domain.Clip;
 
 namespace Core
 {
@@ -21,7 +22,7 @@ namespace Core
 
         public void AddClip(string path)
         {
-            _clipList.Add(new Clip(path));
+            _clipList.Add(new Clip { FilePath = path });
         }
 
 
