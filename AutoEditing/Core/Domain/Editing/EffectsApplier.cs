@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ScriptPortal.Vegas;
+using Core.Scripts;
 
 namespace Core.Domain.Editing
 {
@@ -15,7 +16,7 @@ namespace Core.Domain.Editing
                 // The VelocityEnvelope property may require different access method
                 // This is a placeholder implementation for MVP
                 
-                System.Diagnostics.Debug.WriteLine($"Applying time remapping to clip with {kills.Count} kills");
+                Logger.Log($"Applying time remapping to clip with {kills.Count} kills");
                 
                 // Placeholder implementation - actual velocity envelope manipulation would go here
                 // Real implementation would:
@@ -28,13 +29,13 @@ namespace Core.Domain.Editing
                 {
                     if (kill >= ev.Start && kill <= ev.End)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Would apply time remap at {kill}");
+                        Logger.Log($"Would apply time remap at {kill}");
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error applying time remapping: {ex.Message}");
+                Logger.LogError("Error applying time remapping", ex);
             }
         }
 
@@ -50,11 +51,11 @@ namespace Core.Domain.Editing
                 // var shakeEffect = ev.Effects.FindByName("BCC Shake") ?? ev.Effects.AddEffect("BCC Shake");
                 // shakeEffect.Parameters["Intensity"].Keyframes.Add(atTime, intensity);
                 
-                System.Diagnostics.Debug.WriteLine($"Applied shake effect at {atTime} with intensity {intensity}");
+                Logger.Log($"Applied shake effect at {atTime} with intensity {intensity}");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error applying shake effect: {ex.Message}");
+                Logger.LogError("Error applying shake effect", ex);
             }
         }
 
@@ -66,7 +67,7 @@ namespace Core.Domain.Editing
                 // This would typically use a text media generator
                 
                 // Placeholder implementation
-                System.Diagnostics.Debug.WriteLine($"Added name tag: {text} to clip starting at {ev.Start}");
+                Logger.Log($"Added name tag: {text} to clip starting at {ev.Start}");
                 
                 // Real implementation would:
                 // 1. Get text media generator
@@ -76,7 +77,7 @@ namespace Core.Domain.Editing
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error adding name tag: {ex.Message}");
+                Logger.LogError("Error adding name tag", ex);
             }
         }
 
@@ -85,11 +86,11 @@ namespace Core.Domain.Editing
             try
             {
                 // Apply color grading for consistent look
-                System.Diagnostics.Debug.WriteLine($"Applied {preset} color correction to clip");
+                Logger.Log($"Applied {preset} color correction to clip");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error applying color correction: {ex.Message}");
+                Logger.LogError("Error applying color correction", ex);
             }
         }
 
@@ -98,11 +99,11 @@ namespace Core.Domain.Editing
             try
             {
                 // Apply transition between clips
-                System.Diagnostics.Debug.WriteLine($"Applied {transitionType} transition");
+                Logger.Log($"Applied {transitionType} transition");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error applying transition: {ex.Message}");
+                Logger.LogError("Error applying transition", ex);
             }
         }
     }

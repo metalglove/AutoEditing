@@ -416,3 +416,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+*.mp4
+*.sfk
+AutoEditing/.vscode/launch.json

@@ -37,16 +37,22 @@ namespace Core.Domain.Clip
             }
 
             // Assign metadata (assuming 6 parts after prefix handling)
-            if (parts.Length >= 6)
+            if (parts.Length >= 5)
             {
                 clip.PlayerName = parts[0];
                 clip.Game = parts[1];
                 clip.Map = parts[2];
                 clip.Gun = parts[3];
                 clip.ClipType = parts[4];
-                if (int.TryParse(parts[5], out int sequenceNumber))
+                clip.SequenceNumber = 1;
+
+                if (parts.Length > 5)
                 {
-                    clip.SequenceNumber = sequenceNumber;
+                    if (int.TryParse(parts[5], out int sequenceNumber))
+                    {
+                        clip.SequenceNumber = 1;
+                        clip.SequenceNumber = sequenceNumber;
+                    }
                 }
             }
 

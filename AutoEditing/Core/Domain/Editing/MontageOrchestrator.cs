@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ScriptPortal.Vegas;
+using Core.Scripts;
 
 namespace Core.Domain.Editing
 {
@@ -36,11 +37,15 @@ namespace Core.Domain.Editing
                     throw new InvalidOperationException("Could not import song file.");
                 }
 
+                var videoTrack = new VideoTrack(vegas.Project, vegas.Project.Tracks.Count,"Clips");
+                vegas.Project.Tracks.Add(videoTrack);
+                vegas.UpdateUI(); // Ensure UI is updated before adding takes
                 var audioTrack = new AudioTrack();
                 vegas.Project.Tracks.Add(audioTrack);
+                vegas.UpdateUI(); // Ensure UI is updated before adding takes
                 var songEvent = new AudioEvent(Timecode.FromSeconds(0), songMedia.Length);
-                songEvent.Takes.Add(new Take(songMedia.GetAudioStreamByIndex(0)));
-                audioTrack.Events.Add(songEvent);
+//                songEvent.Takes.Add(new Take(songMedia.GetAudioStreamByIndex(0)));
+//                audioTrack.Events.Add(songEvent);
 
                 // Detect beats in the song
                 var beatDetector = new BeatDetector();
@@ -56,7 +61,7 @@ namespace Core.Domain.Editing
 
                 // Build timeline
                 var builder = new TimelineBuilder();
-                builder.BuildTimeline(vegas, validClips, songEvent, beats);
+                builder.BuildTimeline(vegas, validClips, songPath, beats, videoTrack, audioTrack);
 
                 // Apply effects and time remapping
                 var applier = new EffectsApplier();
@@ -90,10 +95,11 @@ namespace Core.Domain.Editing
                 // Optional: Set up render queue
                 SetupRenderQueue(vegas);
 
-                System.Diagnostics.Debug.WriteLine($"Montage creation completed! Processed {validClips.Count} clips.");
+                Logger.Log($"Montage creation completed! Processed {validClips.Count} clips.");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error creating montage: {ex.Message}", ex);
                 throw new InvalidOperationException($"Error creating montage: {ex.Message}", ex);
             }
         }
@@ -110,11 +116,11 @@ namespace Core.Domain.Editing
                 // var renderQueue = vegas.Renderer;
                 // renderQueue.Add(...); // Add render job with appropriate settings
                 
-                System.Diagnostics.Debug.WriteLine("Render queue configured for high-quality output.");
+                Logger.Log("Render queue configured for high-quality output.");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error setting up render queue: {ex.Message}");
+                Logger.LogError("Error setting up render queue", ex);
             }
         }
 
@@ -132,21 +138,18 @@ namespace Core.Domain.Editing
                     clips = clips.Where(c => validator.Validate(c, vegas)).ToList();
                 }
 
-                var songMedia = vegas.Project.MediaPool.AddMedia(songPath);
+                var videoTrack = new VideoTrack(vegas.Project, vegas.Project.Tracks.Count,"Clips");
                 var audioTrack = new AudioTrack();
-                vegas.Project.Tracks.Add(audioTrack);
-                var songEvent = new AudioEvent(Timecode.FromSeconds(0), songMedia.Length);
-                songEvent.Takes.Add(new Take(songMedia.GetAudioStreamByIndex(0)));
-                audioTrack.Events.Add(songEvent);
 
                 var builder = new TimelineBuilder();
                 var beats = new List<Timecode>(); // Empty beats for quick mode
-                builder.BuildTimeline(vegas, clips, songEvent, beats);
+                builder.BuildTimeline(vegas, clips, songPath, beats, videoTrack, audioTrack);
 
-                System.Diagnostics.Debug.WriteLine($"Quick montage created with {clips.Count} clips.");
+                Logger.Log($"Quick montage created with {clips.Count} clips.");
             }
             catch (Exception ex)
             {
+                Logger.LogError($"Error creating quick montage: {ex.Message}", ex);
                 throw new InvalidOperationException($"Error creating quick montage: {ex.Message}", ex);
             }
         }

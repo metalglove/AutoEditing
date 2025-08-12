@@ -60,6 +60,7 @@
     <Compile Include="Domain\Clip\KillDetector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scripts\EntryPoint.cs" />
+    <Compile Include="Scripts\Logger.cs" />
     <Compile Include="TimelineManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

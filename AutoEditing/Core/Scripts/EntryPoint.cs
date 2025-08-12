@@ -15,6 +15,9 @@ namespace Core.Scripts
     {
         public void FromVegas(Vegas vegas)
         {
+            vegas.UnloadScriptDomainOnScriptExit = true;
+            vegas.Project.Tracks.Clear();
+            vegas.UpdateUI();
             Form form = new Form
             {
                 Text = "Sniper Montage Creator",
@@ -33,6 +36,7 @@ namespace Core.Scripts
 
             TextBox clipsFolderBox = new TextBox
             {
+                Text = @"C:\Users\Phreak\Downloads\Minitage\Minitage\",
                 Location = new Point(10, 35),
                 Width = 350
             };
@@ -67,6 +71,7 @@ namespace Core.Scripts
 
             TextBox songPathBox = new TextBox
             {
+                Text = @"C:\Users\Phreak\Downloads\song.mp3",
                 Location = new Point(10, 95),
                 Width = 350
             };
@@ -123,10 +128,10 @@ namespace Core.Scripts
             };
 
             // Log Section
-            TextBox logBox = new TextBox
+            RichTextBox logBox = new RichTextBox
             {
                 Multiline = true,
-                ScrollBars = ScrollBars.Vertical,
+                ScrollBars = RichTextBoxScrollBars.Vertical,
                 Location = new Point(10, 200),
                 Size = new Size(470, 150),
                 ReadOnly = true,
@@ -135,6 +140,9 @@ namespace Core.Scripts
                 Font = new Font("Consolas", 9)
             };
             form.Controls.Add(logBox);
+
+            Logger.SetLogger(logBox);
+            Logger.SetLogFile(@"C:\Users\Phreak\Downloads\montage_log.txt");
 
             // Event Handlers
             startButton.Click += (sender, e) =>
@@ -156,45 +164,47 @@ namespace Core.Scripts
             form.Controls.Add(quickButton);
             form.Controls.Add(previewButton);
 
-            // Initialize log
-            logBox.AppendText("Sniper Montage Automation Ready\r\n");
-            logBox.AppendText("================================\r\n");
+            form.Shown += (sender, e) =>
+            {
+                Logger.Log("Sniper Montage Automation Ready");
+                Logger.Log("================================");
+            };
 
             form.ShowDialog();
         }
 
-        private void CreateMontage(Vegas vegas, string clipsFolder, string songPath, TextBox logBox, bool quickMode, bool skipValidation)
+        private void CreateMontage(Vegas vegas, string clipsFolder, string songPath, RichTextBox logBox, bool quickMode, bool skipValidation)
         {
             try
             {
-                logBox.AppendText($"Starting {(quickMode ? "quick " : "")}montage creation...\r\n");
+                Logger.Log($"Starting {(quickMode ? "quick " : "")}montage creation...");
 
                 // Validate inputs
                 if (string.IsNullOrWhiteSpace(clipsFolder))
                 {
-                    logBox.AppendText("Error: Please select a clips folder.\r\n");
+                    Logger.LogError("Error: Please select a clips folder.");
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(songPath))
                 {
-                    logBox.AppendText("Error: Please select a song file.\r\n");
+                    Logger.LogError("Error: Please select a song file.");
                     return;
                 }
 
                 if (!System.IO.Directory.Exists(clipsFolder))
                 {
-                    logBox.AppendText("Error: Clips folder does not exist.\r\n");
+                    Logger.LogError("Error: Clips folder does not exist.");
                     return;
                 }
 
                 if (!System.IO.File.Exists(songPath))
                 {
-                    logBox.AppendText("Error: Song file does not exist.\r\n");
+                    Logger.LogError("Error: Song file does not exist.");
                     return;
                 }
 
-                logBox.AppendText("Inputs validated successfully.\r\n");
+                Logger.Log("Inputs validated successfully.");
 
                 // Create montage using MontageOrchestrator
                 var orchestrator = new MontageOrchestrator();
@@ -202,38 +212,38 @@ namespace Core.Scripts
                 if (quickMode)
                 {
                     orchestrator.CreateQuickMontage(vegas, clipsFolder, songPath, skipValidation);
-                    logBox.AppendText("Quick montage creation completed!\r\n");
+                    Logger.Log("Quick montage creation completed!");
                 }
                 else
                 {
                     orchestrator.CreateMontage(vegas, clipsFolder, songPath);
-                    logBox.AppendText("Full montage creation completed!\r\n");
+                    Logger.Log("Full montage creation completed!");
                 }
 
-                logBox.AppendText("Timeline built successfully. Check your VEGAS project.\r\n");
+                Logger.Log("Timeline built successfully. Check your VEGAS project.");
             }
             catch (Exception ex)
             {
-                logBox.AppendText($"Error: {ex.Message}\r\n");
+                Logger.LogError($"Error: {ex.Message}", ex);
                 System.Diagnostics.Debug.WriteLine($"Montage creation error: {ex}");
             }
         }
 
-        private void PreviewClips(string clipsFolder, TextBox logBox)
+        private void PreviewClips(string clipsFolder, RichTextBox logBox)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(clipsFolder) || !System.IO.Directory.Exists(clipsFolder))
                 {
-                    logBox.AppendText("Error: Please select a valid clips folder.\r\n");
+                    Logger.LogError("Error: Please select a valid clips folder.");
                     return;
                 }
 
                 var parser = new ClipParser();
                 var clips = parser.ParseAllClips(clipsFolder);
 
-                logBox.AppendText($"\r\nFound {clips.Count} clips:\r\n");
-                logBox.AppendText("========================\r\n");
+                Logger.Log($"\r\nFound {clips.Count} clips:");
+                Logger.Log("========================");
 
                 foreach (var clip in clips)
                 {
@@ -241,14 +251,14 @@ namespace Core.Scripts
                     if (clip.IsOpener) prefix = "[OPENER] ";
                     if (clip.IsCloser) prefix = "[CLOSER] ";
 
-                    logBox.AppendText($"{prefix}{clip.PlayerName} - {clip.Game} - {clip.Map} - {clip.Gun} - {clip.ClipType} #{clip.SequenceNumber}\r\n");
+                    Logger.Log($"{prefix}{clip.PlayerName} - {clip.Game} - {clip.Map} - {clip.Gun} - {clip.ClipType} #{clip.SequenceNumber}");
                 }
 
-                logBox.AppendText("========================\r\n");
+                Logger.Log("========================");
             }
             catch (Exception ex)
             {
-                logBox.AppendText($"Error previewing clips: {ex.Message}\r\n");
+                Logger.LogError($"Error previewing clips: {ex.Message}", ex);
             }
         }
     }
