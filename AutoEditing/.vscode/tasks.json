@@ -104,8 +104,10 @@
 			"type": "shell",
 			"command": "powershell",
 			"args": [
-				"-Command",
-				"Copy-Item 'Core\\bin\\Debug\\Core.dll' -Destination '$env:APPDATA\\VEGAS Pro\\Scripts\\' -Force; Write-Host 'DLL copied to VEGAS Pro Scripts folder'"
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				".vscode/copy-dll.ps1"
 			],
 			"group": "build",
 			"dependsOn": "Build Core Project",
