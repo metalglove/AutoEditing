@@ -12,7 +12,12 @@ namespace Core.Domain
     public class LoggingConfig
     {
         public LogFileConfig LogFile { get; set; }
-        public string LogLevel { get; set; }
+        public LogLevelConfig LogLevel { get; set; }
+    }
+
+    public class LogLevelConfig
+    {
+        public string Default { get; set; }
     }
 
     public class LogFileConfig

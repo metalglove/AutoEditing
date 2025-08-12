@@ -21,14 +21,17 @@ namespace Core.Domain
 
         /// <summary>
         /// Loads the configuration from appsettings.json file and optionally merges with appsettings.local.json.
+        /// Looks for config files in the same directory as the executing assembly.
         /// </summary>
         private static void LoadConfiguration()
         {
             try
             {
-                string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                string configPath = Path.Combine(baseDirectory, ConfigFileName);
-                string localConfigPath = Path.Combine(baseDirectory, LocalConfigFileName);
+                // Get the directory where the current assembly (Core.dll) is located
+                string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                string assemblyDirectory = Path.GetDirectoryName(assemblyLocation);
+                string configPath = Path.Combine(assemblyDirectory, ConfigFileName);
+                string localConfigPath = Path.Combine(assemblyDirectory, LocalConfigFileName);
                 
                 _config = new AppSettings();
                 
@@ -60,6 +63,7 @@ namespace Core.Domain
 
         /// <summary>
         /// Merges local configuration into base configuration.
+        /// Local values will override base values when they are not null or empty.
         /// </summary>
         private static void MergeConfigurations(AppSettings baseConfig, AppSettings localConfig)
         {
@@ -71,13 +75,13 @@ namespace Core.Domain
                 if (baseConfig.QuickTesting == null)
                     baseConfig.QuickTesting = new QuickTestingConfig();
 
-                if (!string.IsNullOrEmpty(localConfig.QuickTesting.ClipsFolder))
+                if (!string.IsNullOrWhiteSpace(localConfig.QuickTesting.ClipsFolder))
                     baseConfig.QuickTesting.ClipsFolder = localConfig.QuickTesting.ClipsFolder;
                 
-                if (!string.IsNullOrEmpty(localConfig.QuickTesting.SongPath))
+                if (!string.IsNullOrWhiteSpace(localConfig.QuickTesting.SongPath))
                     baseConfig.QuickTesting.SongPath = localConfig.QuickTesting.SongPath;
                 
-                if (!string.IsNullOrEmpty(localConfig.QuickTesting.OutputFolder))
+                if (!string.IsNullOrWhiteSpace(localConfig.QuickTesting.OutputFolder))
                     baseConfig.QuickTesting.OutputFolder = localConfig.QuickTesting.OutputFolder;
             }
 
@@ -87,27 +91,46 @@ namespace Core.Domain
                 if (baseConfig.Logging == null)
                     baseConfig.Logging = new LoggingConfig();
 
-                if (!string.IsNullOrEmpty(localConfig.Logging.LogLevel))
-                    baseConfig.Logging.LogLevel = localConfig.Logging.LogLevel;
+                // Merge LogLevel
+                if (localConfig.Logging.LogLevel != null)
+                {
+                    if (baseConfig.Logging.LogLevel == null)
+                        baseConfig.Logging.LogLevel = new LogLevelConfig();
 
+                    if (!string.IsNullOrWhiteSpace(localConfig.Logging.LogLevel.Default))
+                        baseConfig.Logging.LogLevel.Default = localConfig.Logging.LogLevel.Default;
+                }
+
+                // Merge LogFile settings
                 if (localConfig.Logging.LogFile != null)
                 {
                     if (baseConfig.Logging.LogFile == null)
                         baseConfig.Logging.LogFile = new LogFileConfig();
 
-                    if (!string.IsNullOrEmpty(localConfig.Logging.LogFile.Path))
+                    if (!string.IsNullOrWhiteSpace(localConfig.Logging.LogFile.Path))
                         baseConfig.Logging.LogFile.Path = localConfig.Logging.LogFile.Path;
+                    
+                    // For boolean values, always take the local value if the local config has this section
+                    baseConfig.Logging.LogFile.Enabled = localConfig.Logging.LogFile.Enabled;
                 }
             }
         }
 
         /// <summary>
         /// Gets the log file path from configuration.
+        /// If not configured, defaults to a Logs folder relative to the assembly location.
         /// </summary>
         public static string GetLogFilePath()
         {
-            return _config?.Logging?.LogFile?.Path ?? 
-                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "autoediting.log");
+            if (!string.IsNullOrWhiteSpace(_config?.Logging?.LogFile?.Path))
+            {
+                return _config.Logging.LogFile.Path;
+            }
+            
+            // Default to Logs folder relative to the assembly location
+            string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            string assemblyDirectory = Path.GetDirectoryName(assemblyLocation);
+            return Path.Combine(assemblyDirectory, "Logs", "autoediting.log");
         }
 
         /// <summary>
@@ -168,7 +191,8 @@ namespace Core.Domain
 
             if (_config.Logging != null)
             {
-                result["Logging:LogLevel"] = _config.Logging.LogLevel ?? "";
+                if (_config.Logging.LogLevel != null)
+                    result["Logging:LogLevel:Default"] = _config.Logging.LogLevel.Default ?? "";
             }
 
             if (_config.QuickTesting != null)
