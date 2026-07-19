@@ -78,6 +78,8 @@
     <Compile Include="Domain\ConfigurationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scripts\EntryPoint.cs" />
+    <Compile Include="Scripts\Ui\MontageDockView.cs" />
+    <Compile Include="Scripts\Ui\VegasTheme.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="appsettings.json">
