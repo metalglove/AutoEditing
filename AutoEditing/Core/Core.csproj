@@ -38,6 +38,12 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NAudio.Core">
+      <HintPath>..\packages\NAudio.Core.2.2.1\lib\netstandard2.0\NAudio.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio.Wasapi">
+      <HintPath>..\packages\NAudio.Wasapi.2.2.1\lib\netstandard2.0\NAudio.Wasapi.dll</HintPath>
+    </Reference>
     <Reference Include="ScriptPortal.Vegas">
       <HintPath>$(ProgramFiles)\VEGAS\VEGAS Pro 20.0\ScriptPortal.Vegas.dll</HintPath>
     </Reference>
@@ -57,14 +63,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Domain\Editing\BeatDetector.cs" />
+    <Compile Include="Domain\Audio\AudioLoader.cs" />
+    <Compile Include="Domain\Audio\BeatDetector.cs" />
+    <Compile Include="Domain\Audio\ShotDetector.cs" />
     <Compile Include="Domain\Editing\EffectsApplier.cs" />
     <Compile Include="Domain\Editing\MontageOrchestrator.cs" />
+    <Compile Include="Domain\Editing\MontagePlanner.cs" />
     <Compile Include="Domain\Editing\TimelineBuilder.cs" />
     <Compile Include="Domain\Clip\Clip.cs" />
     <Compile Include="Domain\Clip\ClipParser.cs" />
     <Compile Include="Domain\Clip\ClipValidator.cs" />
-    <Compile Include="Domain\Clip\KillDetector.cs" />
     <Compile Include="Domain\Logging\Logger.cs" />
     <Compile Include="Domain\AppSettings.cs" />
     <Compile Include="Domain\ConfigurationManager.cs" />

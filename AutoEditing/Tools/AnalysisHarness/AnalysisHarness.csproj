@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>AnalysisHarness</RootNamespace>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <!-- Compiles the VEGAS-free domain sources directly so the analysis pipeline
+       (parsing, beat detection, shot detection, planning) can be exercised
+       without VEGAS Pro installed. -->
+  <ItemGroup>
+    <Compile Include="..\..\Core\Domain\Clip\Clip.cs" Link="Domain\Clip\Clip.cs" />
+    <Compile Include="..\..\Core\Domain\Clip\ClipParser.cs" Link="Domain\Clip\ClipParser.cs" />
+    <Compile Include="..\..\Core\Domain\Audio\AudioLoader.cs" Link="Domain\Audio\AudioLoader.cs" />
+    <Compile Include="..\..\Core\Domain\Audio\BeatDetector.cs" Link="Domain\Audio\BeatDetector.cs" />
+    <Compile Include="..\..\Core\Domain\Audio\ShotDetector.cs" Link="Domain\Audio\ShotDetector.cs" />
+    <Compile Include="..\..\Core\Domain\Editing\MontagePlanner.cs" Link="Domain\Editing\MontagePlanner.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio.Core" Version="2.2.1" />
+    <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
+  </ItemGroup>
+
+</Project>

@@ -6,138 +6,108 @@ using ScriptPortal.Vegas;
 
 namespace Core.Domain.Editing
 {
+    /// <summary>
+    /// Executes a montage plan on the VEGAS timeline: creates the tracks, places
+    /// each clip's planned slice at its planned position, and lays the song
+    /// underneath. All placement decisions are made by <see cref="MontagePlanner"/>;
+    /// this class only talks to the VEGAS API.
+    /// </summary>
     public class TimelineBuilder
     {
-        public void BuildTimeline(Vegas vegas, List<Core.Domain.Clip.Clip> clips, string songPath, List<Timecode> beats, VideoTrack videoTrack, AudioTrack audioTrack)
+        /// <summary>
+        /// Builds the timeline and returns the created video event for each
+        /// placement so effects can be applied afterwards.
+        /// </summary>
+        public Dictionary<ClipPlacement, VideoEvent> BuildTimeline(Vegas vegas, List<ClipPlacement> placements, string songPath)
         {
-
-            // Sort clips: Openers first, then variety, closers last
-            List<Clip.Clip> sortedClips = clips.OrderBy(c => c.IsOpener ? 0 : (c.IsCloser ? 2 : 1))
-                                  .ThenBy(c => c.Game)
-                                  .ThenBy(c => c.Map)
-                                  .ThenBy(c => c.Gun)
-                                  .ToList();
-
-            Timecode currentPos = Timecode.FromSeconds(0);
+            VideoTrack videoTrack = new VideoTrack(vegas.Project, vegas.Project.Tracks.Count, "Clips");
             vegas.Project.Tracks.Add(videoTrack);
-            vegas.UpdateUI(); // Ensure UI is updated before adding takes
-            vegas.Project.Tracks.Add(audioTrack);
-            vegas.UpdateUI(); // Ensure UI is updated before adding takes
+            AudioTrack clipAudioTrack = new AudioTrack(vegas.Project, vegas.Project.Tracks.Count, "Clip Audio");
+            vegas.Project.Tracks.Add(clipAudioTrack);
+            vegas.UpdateUI(); // Ensure UI is updated before adding events
 
-            foreach (Clip.Clip clip in sortedClips)
+            Dictionary<ClipPlacement, VideoEvent> videoEvents = new Dictionary<ClipPlacement, VideoEvent>();
+
+            foreach (ClipPlacement placement in placements)
             {
                 try
                 {
-                    Logger.Log($"Processing clip: {clip.FilePath}");
-
-                    Media media = vegas.Project.MediaPool.AddMedia(clip.FilePath);
-                    if (media == null)
+                    VideoEvent videoEvent = PlaceClip(vegas, videoTrack, clipAudioTrack, placement);
+                    if (videoEvent != null)
                     {
-                        Logger.LogError($"Media is null for clip: {clip.FilePath}");
-                        continue;
+                        videoEvents[placement] = videoEvent;
                     }
-
-                    Logger.Log($"Media loaded: {media.FilePath}, Length: {media.Length}, Streams: {media.Streams.Count}");
-
-                    VideoStream videoStream = media.GetVideoStreamByIndex(0);
-                    Logger.Log($"Video stream: {videoStream?.Parent.KeyString?? "None"}");
-
-
-                    if (videoStream == null)
-                    {
-                        Logger.LogError($"No video stream found for: {clip.FilePath}");
-                        continue;
-                    }
-                    Logger.Log($"Video stream found for: {clip.FilePath}");
-
-                    VideoEvent videoEvent = new VideoEvent(currentPos, media.Length);
-                    try
-                    {
-
-                        videoTrack.Events.Add(videoEvent);
-                        Logger.Log($"VideoEvent created for: {clip.FilePath} at {currentPos} with length {media.Length}");
-                        vegas.UpdateUI();
-
-                        Logger.Log($"Adding video take for: {clip.FilePath}");
-                        videoEvent.Takes.Add(new Take(videoStream));
-                        Logger.Log($"Take added for: {clip.FilePath}");
-                        vegas.UpdateUI();
-
-                        Logger.Log($"VideoEvent added for: {clip.FilePath} at {currentPos} with length {media.Length}");
-                        clip.VideoEvent = videoEvent;
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError($"Failed to add VideoEvent for: {clip.FilePath}", ex);
-                        continue;
-                    }
-
-                    // Add audio take if the media has audio
-                    AudioStream audioStream = media.Streams.OfType<AudioStream>().FirstOrDefault();
-                    if (audioStream != null)
-                    {
-                        try
-                        {
-                            AudioEvent audioEvent = new AudioEvent(currentPos, media.Length);
-                            audioTrack.Events.Add(audioEvent);
-                            audioEvent.Takes.Add(new Take(audioStream));
-                            vegas.UpdateUI();
-                            Logger.Log($"AudioEvent added for: {clip.FilePath}");
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.LogError($"Failed to add AudioEvent for: {clip.FilePath}", ex);
-                        }
-                        currentPos += media.Length;
-                    }
-                    else
-                    {
-                        Logger.Log($"No audio stream found for: {clip.FilePath}");
-                    }
-
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error processing clip {clip.FilePath}", ex);
+                    Logger.LogError($"Error placing clip {placement.Clip.FilePath}", ex);
                 }
             }
 
+            AddSongTrack(vegas, songPath);
+            vegas.UpdateUI();
+            return videoEvents;
+        }
+
+        private static VideoEvent PlaceClip(Vegas vegas, VideoTrack videoTrack, AudioTrack clipAudioTrack, ClipPlacement placement)
+        {
+            Clip.Clip clip = placement.Clip;
+            Logger.Log($"Placing {clip.Gun} {clip.ClipType} at {placement.TimelineStartSeconds:F2}s " +
+                       $"(source {placement.SourceOffsetSeconds:F2}s, length {placement.LengthSeconds:F2}s)");
+
+            Media media = vegas.Project.MediaPool.AddMedia(clip.FilePath);
+            if (media == null)
+            {
+                Logger.LogError($"Media is null for clip: {clip.FilePath}");
+                return null;
+            }
+
+            VideoStream videoStream = media.GetVideoStreamByIndex(0);
+            if (videoStream == null)
+            {
+                Logger.LogError($"No video stream found for: {clip.FilePath}");
+                return null;
+            }
+
+            Timecode start = Timecode.FromSeconds(placement.TimelineStartSeconds);
+            Timecode length = Timecode.FromSeconds(placement.LengthSeconds);
+            Timecode sourceOffset = Timecode.FromSeconds(placement.SourceOffsetSeconds);
+
+            VideoEvent videoEvent = new VideoEvent(start, length);
+            videoTrack.Events.Add(videoEvent);
+            Take videoTake = new Take(videoStream);
+            videoEvent.Takes.Add(videoTake);
+            videoTake.Offset = sourceOffset;
+            vegas.UpdateUI();
+
+            AudioStream audioStream = media.Streams.OfType<AudioStream>().FirstOrDefault();
+            if (audioStream != null)
+            {
+                AudioEvent audioEvent = new AudioEvent(start, length);
+                clipAudioTrack.Events.Add(audioEvent);
+                Take audioTake = new Take(audioStream);
+                audioEvent.Takes.Add(audioTake);
+                audioTake.Offset = sourceOffset;
+                vegas.UpdateUI();
+            }
+
+            return videoEvent;
+        }
+
+        private static void AddSongTrack(Vegas vegas, string songPath)
+        {
             Media songMedia = vegas.Project.MediaPool.AddMedia(songPath);
-            // Import song
             if (songMedia == null)
             {
                 throw new InvalidOperationException("Could not import song file.");
             }
+
             AudioTrack songTrack = new AudioTrack(vegas.Project, vegas.Project.Tracks.Count, "Song Track");
             vegas.Project.Tracks.Add(songTrack);
 
             AudioEvent songEvent = new AudioEvent(Timecode.FromSeconds(0), songMedia.Length);
             songTrack.Events.Add(songEvent);
-
-            Take take = new Take(songMedia.GetAudioStreamByIndex(0));
-            songEvent.Takes.Add(take);
-            vegas.UpdateUI();
-        }
-
-        public void PlaceClip(Core.Domain.Clip.Clip clip, Timecode position)
-        {
-            // Implementation for individual placement
-            if (clip.VideoEvent != null)
-            {
-                clip.VideoEvent.Start = position;
-            }
-        }
-
-        public void SyncClipsToBeats(List<Core.Domain.Clip.Clip> clips, List<Timecode> beats)
-        {
-            // Sync clip transitions to beat timings for better flow
-            for (int i = 0; i < clips.Count && i < beats.Count; i++)
-            {
-                if (clips[i].VideoEvent != null && i > 0)
-                {
-                    clips[i].VideoEvent.Start = beats[i];
-                }
-            }
+            songEvent.Takes.Add(new Take(songMedia.GetAudioStreamByIndex(0)));
         }
     }
 }

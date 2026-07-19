@@ -366,7 +366,8 @@ namespace Core.Scripts
                         prefix = "[CLOSER] ";
                     }
 
-                    Logger.Log($"{prefix}{clip.PlayerName} - {clip.Game} - {clip.Map} - {clip.Gun} - {clip.ClipType} #{clip.SequenceNumber}");
+                    string notes = string.IsNullOrEmpty(clip.Notes) ? "" : $" ({clip.Notes})";
+                    Logger.Log($"{prefix}{clip.PlayerName} - {clip.Game} - {clip.Map} - {clip.Gun} - {clip.ClipType} #{clip.SequenceNumber}{notes}");
                 }
 
                 Logger.Log("========================");

@@ -7,23 +7,28 @@ An automated system for creating sniper montages from Call of Duty clips, with m
 ```
 Core/
 ├── Domain/                     # Domain-driven design structure
+│   ├── Audio/                 # VEGAS-free audio analysis (testable outside VEGAS)
+│   │   ├── AudioLoader.cs     # Decodes songs/clip audio to mono PCM via Media Foundation
+│   │   ├── BeatDetector.cs    # Real tempo + beat grid detection (onset autocorrelation)
+│   │   └── ShotDetector.cs    # Detects sniper shots as loud hard-attack transients
 │   ├── Editing/               # Video editing and effects components
-│   │   ├── BeatDetector.cs    # Detects beats in music (MVP implementation)
 │   │   ├── EffectsApplier.cs  # Applies effects like time remapping, shake, name tags
-│   │   ├── MontageOrchestrator.cs # Main orchestrator class (renamed from MontageCreator)
-│   │   └── TimelineBuilder.cs # Builds the VEGAS timeline from clips
+│   │   ├── MontageOrchestrator.cs # Runs the full pipeline
+│   │   ├── MontagePlanner.cs  # VEGAS-free planning: cuts on beats, kills on beats
+│   │   └── TimelineBuilder.cs # Executes the plan on the VEGAS timeline
 │   ├── Clip/                  # Clip processing and validation
 │   │   ├── Clip.cs           # Data model for video clips with metadata
 │   │   ├── ClipParser.cs     # Parses clip filenames to extract metadata
-│   │   ├── ClipValidator.cs  # Validates clip quality and format
-│   │   └── KillDetector.cs   # Detects kill moments in clips (MVP implementation)
-│   ├── Clip.cs               # Legacy clip model (maintained for compatibility)
-│   └── Resolution.cs         # Video resolution utilities
+│   │   └── ClipValidator.cs  # Validates clip quality and format
 ├── Scripts/
 │   └── EntryPoint.cs         # VEGAS Pro script entry point with UI
-├── Properties/
-│   └── AssemblyInfo.cs       # Assembly information
-└── TimelineManager.cs        # Legacy timeline utilities
+└── Properties/
+    └── AssemblyInfo.cs       # Assembly information
+
+Tools/
+└── AnalysisHarness/           # Console app: runs parse/beat/shot/plan against real
+                               # clips without VEGAS. Also has --debug-tempo and
+                               # --debug-shots commands for tuning the detectors.
 ```
 
 ## Architecture Overview
@@ -47,31 +52,52 @@ Handles all clip-related operations:
 ## Features
 
 ### Implemented Features
-- **Clip Parsing**: Automatically parses clip filenames to extract metadata (player, game, map, gun, type, sequence)
+- **Clip Parsing**: Automatically parses clip filenames to extract metadata (player, game, map, gun, type, sequence, notes)
 - **Clip Validation**: Validates video files for quality (FPS >= 60, format compatibility)
-- **Timeline Building**: Automatically arranges clips on VEGAS timeline with proper sorting
-- **Time Remapping**: Framework for velocity envelopes and slow-motion effects (MVP placeholder)
-- **Beat Detection**: Basic beat detection for music synchronization (MVP implementation)
-- **Kill Detection**: Placeholder kill detection in video clips (MVP implementation)
-- **Effects Application**: Shake effects, name tags, and color correction frameworks
+- **Beat Detection**: Real tempo and beat-grid detection from the song's audio (onset envelope + autocorrelation, octave-folded to a musical cutting tempo)
+- **Shot Detection**: Real sniper-shot detection from each clip's audio track (loud hard-attack transients over the clip's ambient loudness)
+- **Montage Planning**: Every cut lands on a beat, and each clip's first shot lands exactly on a beat a fixed lead-in after the cut
+- **Timeline Building**: Executes the plan on the VEGAS timeline with trimmed source windows (take offsets)
+- **Time Remapping / Effects**: Framework for velocity envelopes, name tags, color correction (still placeholder)
 - **User Interface**: Windows Forms UI with multiple creation modes
 
 ### Clip Naming Convention
-Clips should be named in the following format:
+Clips are named with dash-separated sections, with the gun/type details packed
+into the final section:
 ```
-[PREFIX]PlayerName - Game - Map - Gun - ClipType - SequenceNumber.mp4
+PlayerName - Game - Map - GUN [TYPE...] [SEQUENCE] [(notes)].mp4
 ```
 
-**Prefixes:**
-- `[OPENER]` - Clips that should appear at the beginning
-- `[CLOSER]` - Clips that should appear at the end
-- No prefix - Regular clips
+- **GUN**: first word of the details section (e.g. `MORS`, `XRK`, `KATT`, `Signal`)
+- **TYPE**: any words after the gun (e.g. `6ON`, `QUAD`, `5ON Triple`, `Airborne Triple`)
+- **SEQUENCE**: an optional zero-padded counter (`001`, `002`)
+- **(notes)**: optional free text in parentheses (e.g. `(7mult)`, `(same game)`)
+- Montage placement is marked only by the `[OPENER]`/`[CLOSER]` filename
+  prefixes (see the legacy convention below). Words in the details section
+  such as `Ender` (a game-ending kill) are just part of the clip type and do
+  not affect placement.
 
-**Example:**
+**Examples:**
 ```
-[OPENER]SniperPro - MW2 - Rust - Intervention - Quickscope - 001.mp4
-PlayerName - Warzone - Verdansk - HDR - Longshot - 015.mp4
-[CLOSER]EndGame - MW3 - Terminal - Barrett - Collateral - 999.mp4
+Glovali - MWIII - Dome - MORS 6ON 001.mp4
+Glovali - MWIII - Greece - XRK QUAD.mp4
+Glovali - MWIII - AFGHAN - MORS 5ON Triple Ender (7mult).mp4
+Glovali - MWIII - Rio - KATT 5ON X2 001 (Triple).mp4
+```
+
+The legacy convention (`[OPENER]Player - Game - Map - Gun - Type - 001.mp4`)
+is still supported.
+
+### Analysis Harness
+The VEGAS-free part of the pipeline (parsing, beat detection, shot detection,
+planning) can be run from the command line without VEGAS Pro:
+```bash
+dotnet build Tools/AnalysisHarness
+Tools/AnalysisHarness/bin/Debug/net48/AnalysisHarness.exe <clipsFolder> [songPath]
+
+# Detector tuning helpers:
+AnalysisHarness.exe --debug-tempo <songPath>   # ranked tempo candidates + grid fit
+AnalysisHarness.exe --debug-shots <clipPath>   # loudest envelope peaks with attack stats
 ```
 
 ## Installation
@@ -106,11 +132,14 @@ PlayerName - Warzone - Verdansk - HDR - Longshot - 015.mp4
 
 ## Development Notes
 
-### MVP Limitations
-- **Beat Detection**: Currently uses placeholder timing (120 BPM). Real implementation would use FFT analysis or external audio libraries like NAudio
-- **Kill Detection**: Uses placeholder kill timing. Real implementation would analyze audio waveforms for gunshot detection
+### Current Limitations
+- **Shot vs. kill**: the shot detector finds the player's loud shots/impacts; it
+  cannot distinguish a hit from a miss, so clips with lots of firing detect more
+  "shots" than actual kills. Alignment uses the first shot, which is usually right.
 - **Time Remapping**: Framework implemented but VelocityEnvelope API requires further VEGAS Pro API research
 - **Effect Plugins**: Some effects (shake, color correction) are placeholder implementations pending VEGAS API exploration
+- **Audio decoding** uses Windows Media Foundation via NAudio (NAudio.Core +
+  NAudio.Wasapi in the `packages` folder), so analysis is Windows-only.
 
 ### Future Enhancements
 - Advanced audio analysis for precise beat and kill detection
