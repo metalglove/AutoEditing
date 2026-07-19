@@ -98,6 +98,8 @@ Tools/AnalysisHarness/bin/Debug/net48/AnalysisHarness.exe <clipsFolder> [songPat
 # Detector tuning helpers:
 AnalysisHarness.exe --debug-tempo <songPath>   # ranked tempo candidates + grid fit
 AnalysisHarness.exe --debug-shots <clipPath>   # loudest envelope peaks with attack stats
+AnalysisHarness.exe --test-speed               # synthetic self-tests: velocity warp math,
+                                               # kill-on-beat solve (no media files needed)
 ```
 
 ## Installation

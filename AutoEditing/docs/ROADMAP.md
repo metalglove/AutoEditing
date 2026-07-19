@@ -19,7 +19,8 @@ Pipeline (working, verified via harness against real clips):
   `--debug-shots <clip>` tuning commands.
 - `TimelineBuilder`/`MontageOrchestrator` execute the plan in VEGAS
   (tracks, events, take offsets). Compiles; needs a first smoke run in VEGAS.
-- `EffectsApplier` is still all placeholders (log-only).
+- `EffectsApplier`: `ApplyVelocityEnvelope` is real (Phase 1, unverified in
+  VEGAS); nametags/color/transitions are still placeholders (log-only).
 - Naming: `Player - Game - Map - GUN TYPE [SEQ] [(notes)].mp4`. Placement is
   marked ONLY by `[OPENER]`/`[CLOSER]` filename prefixes. Type words like
   "Ender" (= game-ending kill, e.g. "nosc ender") are just clip type — do NOT
@@ -58,16 +59,35 @@ clip's **source window** matches the harness plan output (take offsets working).
 First place to look if source positions are wrong: `Take.Offset` semantics in
 `TimelineBuilder.PlaceClip`.
 
-## Phase 1 — Velocity time-remapping (quickscope feel) ← START HERE
+## Phase 1 — Velocity time-remapping (quickscope feel) ← IMPLEMENTED (needs VEGAS run)
 
-1. **Planner**: add a `SpeedProfile` (piecewise-linear velocity points in source
-   time) to each `ClipPlacement`. Default profile: ~1.2× lead-in, ramp to ~0.35×
-   just before the (first) kill, kill frame at the slow point ON the beat, snap
-   back to 1× on the next beat. Enders/multis: deeper dip or beat-long freeze
-   (y=0.0). Solve source-offset/consumption analytically; assert in harness that
-   kills land on beats after warping.
-2. **EffectsApplier**: real `ApplyVelocityEnvelope(videoEvent, profile)` writing
-   the envelope points with sensible `CurveType` (smooth into the dip, fast out).
+Status 2026-07-19: items 1 and 2 implemented; verify with
+`AnalysisHarness.exe --test-speed` (synthetic self-tests, no media needed) and
+then a VEGAS smoke run (which also covers Phase 0).
+
+1. **Planner** — DONE. `SpeedProfile` (`Core/Domain/Editing/SpeedProfile.cs`,
+   VEGAS-free) holds piecewise-linear velocity points in event-local timeline
+   time with trapezoid `SourceConsumedAt` and quadratic-solve
+   `EventTimeForSource` (inverse). `MontagePlanner` builds the default profile
+   (1.2× lead-in, smooth ramp over the last beat into a 0.35× dip, kill frame
+   at the dip ON the beat, back to 1× a beat later; enders/multis get a
+   beat-long y=0 freeze + half-beat recovery) and solves the source offset so
+   the kill's source frame is consumed exactly at the kill beat. Fallbacks:
+   solve a slower lead-in (floor 0.5×) when the kill is near the clip start;
+   shrink the slot whole beats when source runs out after the kill; flat
+   profile when neither works. `ClipPlacement.TimelineKillTimesSeconds` now
+   maps kills through the profile inverse. Harness plan output shows
+   `speed=warped(...)`/`speed=flat` per placement.
+2. **EffectsApplier** — DONE (code written, NOT yet run in VEGAS).
+   `ApplyVelocityEnvelope(videoEvent, profile)` writes the envelope via the
+   verified `new Envelope(EnvelopeType.Velocity)` pattern, adjusting the
+   default point at 0 instead of duplicating it. Curve choice: only
+   `Linear`/`Smooth` are used — VEGAS's Smooth is a symmetric ease-in/out, so
+   its per-segment integral equals the linear trapezoid and the planner's
+   source math stays exact at every point boundary; Fast/Slow are asymmetric
+   and would shift the kill frame off its source position, so they are
+   deliberately not used. Planner also keeps 0.1s of source in reserve per
+   warped event in case VEGAS's curve integrals differ marginally.
 3. **Frame-rate note**: 60fps source at 0.35× ≈ 21 unique fps — fine at 30fps
    render, visible at 60. Keep dips short (2–4 beats). Later option (free, no
    plugin): ffmpeg `minterpolate` pre-render for hero clips.

@@ -15,12 +15,18 @@ namespace AnalysisHarness
     ///
     ///   AnalysisHarness.exe [clipsFolder] [songPath]
     ///
-    /// Defaults to the test clips folder when no arguments are given.
+    /// Defaults to the test clips folder when no arguments are given. Also
+    /// supports --debug-tempo, --debug-shots and --test-speed (synthetic
+    /// self-tests for the velocity time-remapping math).
     /// </summary>
     internal static class Program
     {
         private static int Main(string[] args)
         {
+            if (args.Length == 1 && args[0] == "--test-speed")
+            {
+                return SpeedProfileTests.RunAll();
+            }
             if (args.Length == 2 && args[0] == "--debug-tempo")
             {
                 DebugCommands.DebugTempo(args[1]);
@@ -97,9 +103,12 @@ namespace AnalysisHarness
             Console.WriteLine($"Beat interval: {beats.BeatIntervalSeconds:F3}s");
             foreach (ClipPlacement placement in placements)
             {
+                string speedInfo = placement.Profile.IsFlat
+                    ? "speed=flat"
+                    : $"speed=warped({placement.Profile.Points.Count}pts, consumes {placement.SourceConsumedSeconds:F2}s src)";
                 Console.WriteLine($"  {placement.TimelineStartSeconds,7:F2}s - {placement.TimelineEndSeconds,7:F2}s  " +
                                   $"{placement.Clip.Gun} {placement.Clip.ClipType} #{placement.Clip.SequenceNumber} ({placement.Clip.Map})  " +
-                                  $"source@{placement.SourceOffsetSeconds:F2}s len={placement.LengthSeconds:F2}s  " +
+                                  $"source@{placement.SourceOffsetSeconds:F2}s len={placement.LengthSeconds:F2}s {speedInfo}  " +
                                   $"kills@[{string.Join(", ", placement.TimelineKillTimesSeconds.Select(k => k.ToString("F2")))}]");
             }
             Console.WriteLine($"Total montage length: {(placements.Count > 0 ? placements.Last().TimelineEndSeconds : 0.0):F1}s of {songAudio.DurationSeconds:F1}s song.");

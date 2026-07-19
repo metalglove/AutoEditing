@@ -69,6 +69,7 @@
     <Compile Include="Domain\Editing\EffectsApplier.cs" />
     <Compile Include="Domain\Editing\MontageOrchestrator.cs" />
     <Compile Include="Domain\Editing\MontagePlanner.cs" />
+    <Compile Include="Domain\Editing\SpeedProfile.cs" />
     <Compile Include="Domain\Editing\TimelineBuilder.cs" />
     <Compile Include="Domain\Clip\Clip.cs" />
     <Compile Include="Domain\Clip\ClipParser.cs" />

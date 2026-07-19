@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Core.Domain.Logging;
 using ScriptPortal.Vegas;
 
@@ -7,35 +6,68 @@ namespace Core.Domain.Editing
 {
     public class EffectsApplier
     {
-        public void ApplyTimeRemapping(VideoEvent ev, List<Timecode> kills, double slowFactor = 0.5, double speedFactor = 1.5)
+        /// <summary>
+        /// Writes the planned speed profile onto the event as a velocity
+        /// envelope. Envelope point positions are event-local, matching the
+        /// profile's event-local times. Velocity envelopes never change the
+        /// event's timeline length — the planner has already sized the source
+        /// window for the profile's source consumption, so this method only
+        /// transcribes points.
+        /// </summary>
+        public void ApplyVelocityEnvelope(VideoEvent videoEvent, SpeedProfile profile)
         {
+            if (videoEvent == null || profile == null || profile.IsFlat)
+            {
+                return;
+            }
+
             try
             {
-                // TODO: Fix VelocityEnvelope API usage for VEGAS Pro
-                // The VelocityEnvelope property may require different access method
-                // This is a placeholder implementation for MVP
+                Envelope velocityEnvelope = new Envelope(EnvelopeType.Velocity);
+                videoEvent.Envelopes.Add(velocityEnvelope);
 
-                Logger.Log($"Applying time remapping to clip with {kills.Count} kills");
-
-                // Placeholder implementation - actual velocity envelope manipulation would go here
-                // Real implementation would:
-                // 1. Access the correct velocity envelope property/method
-                // 2. Clear existing points
-                // 3. Add keyframes for slow-motion effects around kill times
-                // 4. Apply speed ramping effects
-
-                foreach (Timecode kill in kills)
+                foreach (SpeedPoint point in profile.Points)
                 {
-                    if (kill >= ev.Start && kill <= ev.End)
+                    Timecode position = Timecode.FromSeconds(point.EventTimeSeconds);
+                    CurveType curve = ToCurveType(point.CurveToNext);
+
+                    // A fresh envelope already carries a default point at the
+                    // event start; adjust it instead of stacking a duplicate.
+                    EnvelopePoint existing = FindPointAt(velocityEnvelope, position);
+                    if (existing != null)
                     {
-                        Logger.Log($"Would apply time remap at {kill}");
+                        existing.Y = point.Speed;
+                        existing.Curve = curve;
+                    }
+                    else
+                    {
+                        velocityEnvelope.Points.Add(new EnvelopePoint(position, point.Speed, curve));
                     }
                 }
+
+                Logger.Log($"Applied velocity envelope ({profile.Points.Count} points) to event at {videoEvent.Start}");
             }
             catch (Exception ex)
             {
-                Logger.LogError("Error applying time remapping", ex);
+                Logger.LogError("Error applying velocity envelope", ex);
             }
+        }
+
+        private static EnvelopePoint FindPointAt(Envelope envelope, Timecode position)
+        {
+            foreach (EnvelopePoint point in envelope.Points)
+            {
+                if (Math.Abs(point.X.ToMilliseconds() - position.ToMilliseconds()) < 0.5)
+                {
+                    return point;
+                }
+            }
+            return null;
+        }
+
+        private static CurveType ToCurveType(SpeedCurve curve)
+        {
+            return curve == SpeedCurve.Smooth ? CurveType.Smooth : CurveType.Linear;
         }
 
         public void ApplyShake(VideoEvent ev, Timecode atTime, double intensity)

@@ -111,11 +111,7 @@ namespace Core.Domain.Editing
                 ClipPlacement placement = pair.Key;
                 VideoEvent videoEvent = pair.Value;
 
-                List<Timecode> killTimecodes = placement.TimelineKillTimesSeconds
-                    .Select(Timecode.FromSeconds)
-                    .ToList();
-
-                applier.ApplyTimeRemapping(videoEvent, killTimecodes);
+                applier.ApplyVelocityEnvelope(videoEvent, placement.Profile);
                 applier.AddNameTag(videoEvent, $"{placement.Clip.PlayerName} - {placement.Clip.ClipType}");
                 applier.ApplyColorCorrection(videoEvent, "Cinematic");
             }

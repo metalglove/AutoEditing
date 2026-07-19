@@ -17,6 +17,7 @@
     <Compile Include="..\..\Core\Domain\Audio\BeatDetector.cs" Link="Domain\Audio\BeatDetector.cs" />
     <Compile Include="..\..\Core\Domain\Audio\ShotDetector.cs" Link="Domain\Audio\ShotDetector.cs" />
     <Compile Include="..\..\Core\Domain\Editing\MontagePlanner.cs" Link="Domain\Editing\MontagePlanner.cs" />
+    <Compile Include="..\..\Core\Domain\Editing\SpeedProfile.cs" Link="Domain\Editing\SpeedProfile.cs" />
   </ItemGroup>
 
   <ItemGroup>
