@@ -331,3 +331,4 @@ VEGASScriptAPI.html
 
 *.md
 !README.md
+!docs/*.md
