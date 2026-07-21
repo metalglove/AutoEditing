@@ -29,7 +29,9 @@ follow it in the same order described below.
    for new or changed media.
 4. **Review** — classify candidates as hit, headshot, or miss; adjust markers on
    the VEGAS timeline; add missed events; and mark completed clips ready.
-5. **Clip drawer** — select reusable ready clips and build a montage.
+5. **Clip drawer** — select reusable ready clips and build a montage. The
+   current drawer is list-based; the intended directory browser, thumbnail
+   cards, filters, and clip-detail inspector are documented separately.
 
 The implemented pipeline is approximately:
 
@@ -281,6 +283,8 @@ VEGAS timeline behavior.
   researched API behavior and explicitly unverified gaps.
 - [VEGAS interaction contract](docs/vegas-interaction-contract.md) — required
   command/query/event architecture and extension rules for agents and contributors.
+- [Review workspace UX](docs/review-workspace-ux.md) — region-first song-map,
+  visual clip-drawer, navigation, selection, and activity-log interaction model.
 
 When documents disagree, use the semantic-montage MVP documents for product
 scope and verify implementation claims against the current code.
