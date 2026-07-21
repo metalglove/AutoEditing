@@ -432,7 +432,8 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 			Clip clip = new Clip { Gun = entry.PrimaryGun, ShotEvents = entry.Events ?? new List<ShotEvent>() };
 			bool isReady = entry.State == ClipSyncState.Ready;
 			string leadTimes = isReady ? "Lead-ins: " + string.Join(", ", clip.LeadTimesSeconds.Select((double value) => value.ToString("0.0s", CultureInfo.InvariantCulture))) : "Needs review";
-			DrawerRows.Add(new ClipDrawerRow { FilePath = entry.LastKnownPath, FileExists = File.Exists(entry.LastKnownPath), Player = entry.PlayerName, Game = entry.Game, Map = entry.Map, Guns = string.Join(", ", clip.GunsUsed.Count == 0 ? new List<string> { entry.PrimaryGun } : clip.GunsUsed), IsSwap = clip.IsSwap, SyncPointCount = clip.ConfirmedKills.Count, LeadTimes = leadTimes, IsReady = isReady });
+			bool fileExists = File.Exists(entry.LastKnownPath);
+			DrawerRows.Add(new ClipDrawerRow { IsSelected = isReady && fileExists, FilePath = entry.LastKnownPath, FileExists = fileExists, Player = entry.PlayerName, Game = entry.Game, Map = entry.Map, Guns = string.Join(", ", clip.GunsUsed.Count == 0 ? new List<string> { entry.PrimaryGun } : clip.GunsUsed), IsSwap = clip.IsSwap, SyncPointCount = clip.ConfirmedKills.Count, LeadTimes = leadTimes, IsReady = isReady });
 			if (!string.IsNullOrWhiteSpace(entry.LastKnownPath)) seen.Add(Path.GetFullPath(entry.LastKnownPath));
 		}
 		foreach (string folder in folders.Where(Directory.Exists).Distinct(StringComparer.OrdinalIgnoreCase))
