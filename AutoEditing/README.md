@@ -267,6 +267,8 @@ VEGAS timeline behavior.
   sequence; some sections predate the semantic-montage documentation.
 - [VEGAS scripting and effects API notes](docs/vegas-scripting-effects-api.md) —
   researched API behavior and explicitly unverified gaps.
+- [VEGAS interaction contract](docs/vegas-interaction-contract.md) — required
+  command/query/event architecture and extension rules for agents and contributors.
 
 When documents disagree, use the semantic-montage MVP documents for product
 scope and verify implementation claims against the current code.
