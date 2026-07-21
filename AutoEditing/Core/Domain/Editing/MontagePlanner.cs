@@ -2,177 +2,250 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Domain.Audio;
+using Core.Domain.Clip;
 
-namespace Core.Domain.Editing
+namespace Core.Domain.Editing;
+
+public class MontagePlanner
 {
-    /// <summary>
-    /// Where a clip goes on the timeline: which slice of the source file plays,
-    /// starting at which timeline position.
-    /// </summary>
-    public class ClipPlacement
-    {
-        public Clip.Clip Clip { get; set; }
-        public double TimelineStartSeconds { get; set; }
-        public double SourceOffsetSeconds { get; set; }
-        public double LengthSeconds { get; set; }
+	private const double KillDipSpeed = 0.35;
 
-        public double TimelineEndSeconds
-        {
-            get { return TimelineStartSeconds + LengthSeconds; }
-        }
+	private const double RampSourceSeconds = 0.01;
 
-        /// <summary>
-        /// Kill times relative to the montage timeline (for effects such as
-        /// slow motion or shake at impact).
-        /// </summary>
-        public List<double> TimelineKillTimesSeconds
-        {
-            get
-            {
-                return Clip.KillTimesSeconds
-                    .Select(k => k - SourceOffsetSeconds + TimelineStartSeconds)
-                    .Where(k => k >= TimelineStartSeconds && k <= TimelineEndSeconds)
-                    .ToList();
-            }
-        }
-    }
+	private readonly double _preRoll;
 
-    /// <summary>
-    /// Plans the montage: orders clips, gives each one a slot that is a whole
-    /// number of beats long, and picks the source window so the first detected
-    /// kill lands exactly on a beat. All cuts fall on beats.
-    /// </summary>
-    public class MontagePlanner
-    {
-        /// <summary>Seconds of lead-in gameplay shown before a clip's first kill (rounded to whole beats).</summary>
-        private const double LeadInSeconds = 1.25;
+	private readonly double _postRoll;
 
-        /// <summary>Seconds of gameplay kept after the last kill before cutting (rounded up to whole beats).</summary>
-        private const double TailSeconds = 0.75;
+	private readonly double _minVelocity;
 
-        /// <summary>Slot length for clips where no kills were detected.</summary>
-        private const double DefaultSlotSeconds = 2.5;
+	private readonly double _maxVelocity;
 
-        private const double MinSlotSeconds = 1.2;
-        private const double MaxSlotSeconds = 10.0;
+	public MontagePlanner()
+		: this(1.25, 0.75, 0.35, 2.0)
+	{
+	}
 
-        public List<ClipPlacement> PlanMontage(List<Clip.Clip> clips, BeatGrid beats, double songDurationSeconds)
-        {
-            List<Clip.Clip> orderedClips = OrderClips(clips);
-            double beatInterval = beats.BeatIntervalSeconds;
-            double firstBeat = beats.FirstBeatOffsetSeconds;
-            int leadInBeats = Math.Max(1, (int)Math.Round(LeadInSeconds / beatInterval));
+	public MontagePlanner(double preRoll, double postRoll, double minVelocity, double maxVelocity)
+	{
+		if (preRoll < 0.0 || postRoll < 0.0 || minVelocity <= 0.0 || maxVelocity < minVelocity)
+		{
+			throw new ArgumentOutOfRangeException("Invalid montage timing or velocity bounds.");
+		}
+		_preRoll = preRoll;
+		_postRoll = postRoll;
+		_minVelocity = minVelocity;
+		_maxVelocity = maxVelocity;
+	}
 
-            List<ClipPlacement> placements = new List<ClipPlacement>();
-            int cursorBeat = 0;
+	public List<ClipPlacement> PlanMontage(List<Core.Domain.Clip.Clip> clips, BeatGrid beats, double songDurationSeconds)
+	{
+		if (beats == null || beats.BeatIntervalSeconds <= 0.0)
+		{
+			throw new ArgumentException("A valid beat grid is required.");
+		}
+		List<ClipPlacement> list = new List<ClipPlacement>();
+		double num = Math.Max(0.0, beats.FirstBeatOffsetSeconds);
+		foreach (Core.Domain.Clip.Clip item in OrderClips(clips))
+		{
+			List<ShotEvent> list2 = item.ConfirmedKills.OrderBy((ShotEvent e) => e.SourceConfirmationTimeSeconds).ToList();
+			if (list2.Count == 0)
+			{
+				throw new InvalidOperationException("Clip has no reviewed Hit/Headshot markers: " + item.FilePath);
+			}
+			double num2 = Math.Max(0.0, list2[0].SourceConfirmationTimeSeconds - _preRoll);
+			double num3 = Math.Min(item.DurationSeconds, list2[list2.Count - 1].SourceConfirmationTimeSeconds + _postRoll);
+			if (num3 <= num2)
+			{
+				throw new InvalidOperationException("Invalid marker/pre-roll/post-roll range: " + item.FilePath);
+			}
+			List<double> list3 = AssignBeats(list2, num2, num, beats, songDurationSeconds);
+			List<SpeedProfilePoint> points = new List<SpeedProfilePoint>();
+			AddSegment(points, num2, list2[0].SourceConfirmationTimeSeconds, list3[0] - num, dipAtStart: false, dipAtEnd: true);
+			for (int num4 = 1; num4 < list2.Count; num4++)
+			{
+				AddSegment(points, list2[num4 - 1].SourceConfirmationTimeSeconds, list2[num4].SourceConfirmationTimeSeconds, list3[num4] - list3[num4 - 1], dipAtStart: true, dipAtEnd: true);
+			}
+			double targetDuration = num3 - list2[list2.Count - 1].SourceConfirmationTimeSeconds;
+			AddSegment(points, list2[list2.Count - 1].SourceConfirmationTimeSeconds, num3, targetDuration, dipAtStart: true, dipAtEnd: false);
+			SpeedProfile speedProfile = new SpeedProfile(Coalesce(points));
+			double timelineDurationSeconds = speedProfile.TimelineDurationSeconds;
+			if (num + timelineDurationSeconds > songDurationSeconds + 0.002)
+			{
+				throw new InvalidOperationException("Complete reviewed kill sequence does not fit in the song: " + item.FilePath);
+			}
+			ClipPlacement clipPlacement = new ClipPlacement
+			{
+				Clip = item,
+				TimelineStartSeconds = num,
+				SourceOffsetSeconds = num2,
+				LengthSeconds = timelineDurationSeconds,
+				SpeedProfile = speedProfile,
+				AssignedBeatTimesSeconds = list3
+			};
+			Verify(clipPlacement, list2);
+			list.Add(clipPlacement);
+			num = clipPlacement.TimelineEndSeconds;
+		}
+		return list;
+	}
 
-            foreach (Clip.Clip clip in orderedClips)
-            {
-                double timelineStart = firstBeat + cursorBeat * beatInterval;
-                int slotBeats = ChooseSlotBeats(clip, beatInterval, leadInBeats);
-                double length = slotBeats * beatInterval;
+	private List<double> AssignBeats(List<ShotEvent> kills, double sourceStart, double timelineStart, BeatGrid beats, double songEnd)
+	{
+		List<double> list = new List<double>();
+		double num = timelineStart;
+		double num2 = sourceStart;
+		foreach (ShotEvent kill in kills)
+		{
+			double num3 = kill.SourceConfirmationTimeSeconds - num2;
+			int num4 = Math.Max(0, (int)Math.Ceiling((num - beats.FirstBeatOffsetSeconds + 1E-06) / beats.BeatIntervalSeconds));
+			double num5 = -1.0;
+			double num6 = double.MaxValue;
+			int num7 = num4;
+			while (true)
+			{
+				double num8 = beats.FirstBeatOffsetSeconds + (double)num7 * beats.BeatIntervalSeconds;
+				if (num8 > songEnd)
+				{
+					break;
+				}
+				double num9 = num8 - num;
+				if (!(num9 <= 0.0))
+				{
+					bool dipStart = list.Count > 0;
+					double ramp = Math.Min(0.01, num3 / 4.0);
+					double num10 = SegmentDuration(num3, ramp, dipStart, dipEnd: true, _minVelocity);
+					double num11 = SegmentDuration(num3, ramp, dipStart, dipEnd: true, _maxVelocity);
+					if (!(num9 > num10 + 0.002) && !(num9 < num11 - 0.002))
+					{
+						double num12 = num3 / num9;
+						double num13 = Math.Abs(Math.Log(num12));
+						if (num13 < num6)
+						{
+							num5 = num8;
+							num6 = num13;
+						}
+						if (num12 < 1.0 && num5 >= 0.0)
+						{
+							break;
+						}
+					}
+				}
+				num7++;
+			}
+			if (num5 < 0.0)
+			{
+				throw new InvalidOperationException("No bounded sequential beat assignment exists for a reviewed kill.");
+			}
+			list.Add(num5);
+			num = num5;
+			num2 = kill.SourceConfirmationTimeSeconds;
+		}
+		return list;
+	}
 
-                if (timelineStart + length > songDurationSeconds)
-                {
-                    break;
-                }
+	private void AddSegment(List<SpeedProfilePoint> points, double sourceA, double sourceB, double targetDuration, bool dipAtStart, bool dipAtEnd)
+	{
+		double num = sourceB - sourceA;
+		if (num < -1E-09 || targetDuration < -1E-09)
+		{
+			throw new InvalidOperationException("Markers are not chronological.");
+		}
+		if (!(num <= 1E-09))
+		{
+			double num2 = Math.Min(0.01, num / 4.0);
+			double num3 = SolveCruise(num, targetDuration, num2, dipAtStart, dipAtEnd);
+			AddPoint(points, sourceA, dipAtStart ? 0.35 : num3);
+			if (dipAtStart)
+			{
+				AddPoint(points, sourceA + num2, num3);
+			}
+			if (dipAtEnd)
+			{
+				AddPoint(points, sourceB - num2, num3);
+			}
+			AddPoint(points, sourceB, dipAtEnd ? 0.35 : num3);
+		}
+	}
 
-                double sourceOffset = ChooseSourceOffset(clip, beatInterval, length, leadInBeats);
-                length = Math.Min(length, clip.DurationSeconds - sourceOffset);
+	private static double SegmentDuration(double distance, double ramp, bool dipStart, bool dipEnd, double speed)
+	{
+		double num = 0.0;
+		double num2 = distance;
+		if (dipStart)
+		{
+			num += ramp / ((0.35 + speed) / 2.0);
+			num2 -= ramp;
+		}
+		if (dipEnd)
+		{
+			num += ramp / ((0.35 + speed) / 2.0);
+			num2 -= ramp;
+		}
+		return num + Math.Max(0.0, num2) / speed;
+	}
 
-                placements.Add(new ClipPlacement
-                {
-                    Clip = clip,
-                    TimelineStartSeconds = timelineStart,
-                    SourceOffsetSeconds = sourceOffset,
-                    LengthSeconds = length,
-                });
+	private double SolveCruise(double distance, double duration, double ramp, bool dipStart, bool dipEnd)
+	{
+		Func<double, double> func = (double speed) => SegmentDuration(distance, ramp, dipStart, dipEnd, speed);
+		double num = func(_minVelocity);
+		double num2 = func(_maxVelocity);
+		if (duration > num + 0.002 || duration < num2 - 0.002)
+		{
+			throw new InvalidOperationException("Marker spacing cannot be solved within configured velocity bounds.");
+		}
+		double num3 = _minVelocity;
+		double num4 = _maxVelocity;
+		for (int num5 = 0; num5 < 80; num5++)
+		{
+			double num6 = (num3 + num4) / 2.0;
+			if (func(num6) > duration)
+			{
+				num3 = num6;
+			}
+			else
+			{
+				num4 = num6;
+			}
+		}
+		return (num3 + num4) / 2.0;
+	}
 
-                cursorBeat += slotBeats;
-            }
+	private static void AddPoint(List<SpeedProfilePoint> points, double source, double speed)
+	{
+		if (points.Count > 0 && Math.Abs(points[points.Count - 1].SourceTimeSeconds - source) < 1E-08)
+		{
+			if (Math.Abs(points[points.Count - 1].Speed - speed) < 1E-08)
+			{
+				return;
+			}
+			points.RemoveAt(points.Count - 1);
+		}
+		points.Add(new SpeedProfilePoint(source, speed));
+	}
 
-            return placements;
-        }
+	private static IEnumerable<SpeedProfilePoint> Coalesce(List<SpeedProfilePoint> points)
+	{
+		return (from p in points
+			orderby p.SourceTimeSeconds
+			group p by Math.Round(p.SourceTimeSeconds, 8) into g
+			select g.Last()).ToList();
+	}
 
-        /// <summary>
-        /// Openers first, closers last. Regular clips are ordered for variety:
-        /// consecutive clips avoid repeating the same map or gun where possible.
-        /// </summary>
-        private static List<Clip.Clip> OrderClips(List<Clip.Clip> clips)
-        {
-            List<Clip.Clip> openers = clips.Where(c => c.IsOpener && !c.IsCloser).ToList();
-            List<Clip.Clip> closers = clips.Where(c => c.IsCloser).ToList();
-            List<Clip.Clip> middle = clips.Where(c => !c.IsOpener && !c.IsCloser).ToList();
+	private static void Verify(ClipPlacement placement, List<ShotEvent> kills)
+	{
+		for (int i = 0; i < kills.Count; i++)
+		{
+			if (!placement.SpeedProfile.TryGetTimelineTimeForSourceTime(kills[i].SourceConfirmationTimeSeconds, out var timelineTimeSeconds) || Math.Abs(placement.TimelineStartSeconds + timelineTimeSeconds - placement.AssignedBeatTimesSeconds[i]) > 0.002)
+			{
+				throw new InvalidOperationException("Velocity integration failed to preserve every reviewed kill within 2 ms: " + placement.Clip.FilePath);
+			}
+		}
+	}
 
-            List<Clip.Clip> orderedMiddle = new List<Clip.Clip>();
-            List<Clip.Clip> remaining = middle
-                .OrderBy(c => c.Map)
-                .ThenBy(c => c.SequenceNumber)
-                .ToList();
-
-            Clip.Clip previous = openers.LastOrDefault();
-            while (remaining.Count > 0)
-            {
-                Clip.Clip pick = remaining.FirstOrDefault(c => previous == null || (c.Map != previous.Map && c.Gun != previous.Gun))
-                    ?? remaining.FirstOrDefault(c => previous == null || c.Map != previous.Map)
-                    ?? remaining[0];
-                remaining.Remove(pick);
-                orderedMiddle.Add(pick);
-                previous = pick;
-            }
-
-            return openers.Concat(orderedMiddle).Concat(closers).ToList();
-        }
-
-        /// <summary>
-        /// Slot length in beats: lead-in plus the span from first to last kill
-        /// plus a short tail, clamped to sensible bounds and to what the source
-        /// clip can actually fill.
-        /// </summary>
-        private static int ChooseSlotBeats(Clip.Clip clip, double beatInterval, int leadInBeats)
-        {
-            int tailBeats = Math.Max(1, (int)Math.Ceiling(TailSeconds / beatInterval));
-
-            int slotBeats;
-            if (clip.KillTimesSeconds.Count == 0)
-            {
-                slotBeats = Math.Max(1, (int)Math.Round(DefaultSlotSeconds / beatInterval));
-            }
-            else
-            {
-                double killSpan = clip.KillTimesSeconds.Max() - clip.KillTimesSeconds.Min();
-                int killSpanBeats = (int)Math.Ceiling(killSpan / beatInterval);
-                slotBeats = leadInBeats + killSpanBeats + tailBeats;
-            }
-
-            int maxBeatsFromClip = (int)Math.Floor(clip.DurationSeconds / beatInterval);
-            int minBeats = Math.Max(1, (int)Math.Ceiling(MinSlotSeconds / beatInterval));
-            int maxBeats = Math.Max(minBeats, (int)Math.Floor(MaxSlotSeconds / beatInterval));
-
-            slotBeats = Math.Min(slotBeats, maxBeatsFromClip);
-            return Math.Max(minBeats, Math.Min(maxBeats, slotBeats));
-        }
-
-        /// <summary>
-        /// Picks which part of the source clip plays: the first kill is placed
-        /// exactly a whole number of beats after the cut, so every first shot
-        /// lands on a beat. Clips without kills play from a point that centres
-        /// the slot.
-        /// </summary>
-        private static double ChooseSourceOffset(Clip.Clip clip, double beatInterval, double slotLength, int leadInBeats)
-        {
-            double offset;
-            if (clip.KillTimesSeconds.Count == 0)
-            {
-                offset = (clip.DurationSeconds - slotLength) / 2.0;
-            }
-            else
-            {
-                offset = clip.KillTimesSeconds.Min() - leadInBeats * beatInterval;
-            }
-
-            offset = Math.Min(offset, clip.DurationSeconds - slotLength);
-            return Math.Max(0.0, offset);
-        }
-    }
+	private static List<Core.Domain.Clip.Clip> OrderClips(List<Core.Domain.Clip.Clip> clips)
+	{
+		return (from c in clips
+			orderby c.IsOpener descending, c.IsCloser, c.Map, c.SequenceNumber
+			select c).ToList();
+	}
 }

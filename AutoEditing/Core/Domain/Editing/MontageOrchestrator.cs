@@ -1,124 +1,113 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Core.Domain.Audio;
+using Core.Domain.Clip;
 using Core.Domain.Logging;
 using ScriptPortal.Vegas;
 
-namespace Core.Domain.Editing
+namespace Core.Domain.Editing;
+
+public class MontageOrchestrator
 {
-    /// <summary>
-    /// Runs the full montage pipeline: parse clips, analyse audio (beats and
-    /// shots), plan the timeline, build it in VEGAS, and apply effects.
-    /// </summary>
-    public class MontageOrchestrator
-    {
-        public void CreateMontage(Vegas vegas, string clipsFolder, string songPath)
-        {
-            try
-            {
-                List<Clip.Clip> clips = ParseAndValidateClips(vegas, clipsFolder, validate: true);
-                List<ClipPlacement> placements = AnalyseAndPlan(clips, songPath);
-                TimelineBuilder builder = new TimelineBuilder();
-                Dictionary<ClipPlacement, VideoEvent> videoEvents = builder.BuildTimeline(vegas, placements, songPath);
+	public sealed class PreparedMontage
+	{
+		public List<ClipPlacement> Placements { get; set; }
 
-                ApplyEffects(videoEvents);
+		public BeatGrid Beats { get; set; }
+	}
 
-                Logger.Log($"Montage creation completed! Placed {placements.Count} of {clips.Count} clips.");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Error creating montage: {ex.Message}", ex);
-                throw new InvalidOperationException($"Error creating montage: {ex.Message}", ex);
-            }
-        }
+	public void CreateMontage(Vegas vegas, string clipsFolder, string songPath)
+	{
+		List<Core.Domain.Clip.Clip> reviewedClips = LoadReviewedClips(clipsFolder);
+		CreateMontage(vegas, reviewedClips, songPath, applyEffects: true);
+	}
 
-        public void CreateQuickMontage(Vegas vegas, string clipsFolder, string songPath, bool skipValidation = false)
-        {
-            try
-            {
-                List<Clip.Clip> clips = ParseAndValidateClips(vegas, clipsFolder, validate: !skipValidation);
-                List<ClipPlacement> placements = AnalyseAndPlan(clips, songPath);
-                TimelineBuilder builder = new TimelineBuilder();
-                builder.BuildTimeline(vegas, placements, songPath);
+	public void CreateMontage(Vegas vegas, List<Core.Domain.Clip.Clip> reviewedClips, string songPath, bool applyEffects)
+	{
+		PreparedMontage prepared = PrepareMontage(reviewedClips, songPath);
+		BuildPreparedMontage(vegas, prepared, songPath, applyEffects);
+	}
 
-                Logger.Log($"Quick montage created with {placements.Count} clips.");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Error creating quick montage: {ex.Message}", ex);
-                throw new InvalidOperationException($"Error creating quick montage: {ex.Message}", ex);
-            }
-        }
+	public PreparedMontage PrepareMontage(List<Core.Domain.Clip.Clip> reviewedClips, string songPath)
+	{
+		MonoAudio monoAudio = AudioLoader.LoadMono(songPath);
+		BeatGrid beats = new BeatDetector().DetectBeats(monoAudio);
+		ShotDetectionConfig shotDetection = ConfigurationManager.GetShotDetection();
+		MontagePlanner montagePlanner = new MontagePlanner(shotDetection.PreRollSeconds, shotDetection.PostRollSeconds, shotDetection.MinVelocity, shotDetection.MaxVelocity);
+		List<ClipPlacement> placements = montagePlanner.PlanMontage(reviewedClips, beats, monoAudio.DurationSeconds);
+		return new PreparedMontage
+		{
+			Placements = placements,
+			Beats = beats
+		};
+	}
 
-        private static List<Clip.Clip> ParseAndValidateClips(Vegas vegas, string clipsFolder, bool validate)
-        {
-            Clip.ClipParser parser = new Clip.ClipParser();
-            List<Clip.Clip> clips = parser.ParseAllClips(clipsFolder);
+	public void BuildPreparedMontage(Vegas vegas, PreparedMontage prepared, string songPath, bool applyEffects)
+	{
+		TimelineBuilder timelineBuilder = new TimelineBuilder();
+		Dictionary<ClipPlacement, VideoEvent> videoEvents = timelineBuilder.BuildTimeline(vegas, prepared.Placements, songPath);
+		if (applyEffects)
+		{
+			ApplyEffects(videoEvents);
+		}
+		timelineBuilder.AddMontageMarkers(vegas, prepared.Placements, prepared.Beats);
+		Logger.Log("Montage created from reviewed markers; placed " + prepared.Placements.Count + " clips.");
+	}
 
-            if (clips.Count == 0)
-            {
-                throw new InvalidOperationException("No clips found in the specified folder.");
-            }
+	public void CreateQuickMontage(Vegas vegas, string clipsFolder, string songPath, bool skipValidation = false)
+	{
+		CreateMontage(vegas, clipsFolder, songPath);
+	}
 
-            if (validate)
-            {
-                Clip.ClipValidator validator = new Clip.ClipValidator();
-                clips = clips.Where(c => validator.Validate(c, vegas)).ToList();
-                if (clips.Count == 0)
-                {
-                    throw new InvalidOperationException("No valid clips found. Check file formats and quality.");
-                }
-            }
+	private static List<Core.Domain.Clip.Clip> LoadReviewedClips(string clipsFolder)
+	{
+		ShotDetectionConfig shotDetection = ConfigurationManager.GetShotDetection();
+		SfxTemplateCatalog sfxTemplateCatalog = SfxTemplateCatalog.Load(shotDetection.SfxRoot);
+		ShotAnalysisSidecar shotAnalysisSidecar = ShotAnalysisSidecar.Load(clipsFolder);
+		List<Core.Domain.Clip.Clip> list = new ClipParser().ParseAllClips(clipsFolder);
+		List<Core.Domain.Clip.Clip> list2 = new List<Core.Domain.Clip.Clip>();
+		foreach (Core.Domain.Clip.Clip item in list)
+		{
+			if (sfxTemplateCatalog.ForGun(item.Gun).Count == 0)
+			{
+				Logger.Log("Excluded unsupported gun: " + item.Gun + " (" + Path.GetFileName(item.FilePath) + ")");
+				continue;
+			}
+			sfxTemplateCatalog.ValidateForGun(shotDetection.SfxRoot, item.Gun);
+			ClipShotAnalysis clipShotAnalysis = shotAnalysisSidecar.FindValid(item.FilePath, sfxTemplateCatalog.RelevantFingerprint(item.Gun));
+			if (clipShotAnalysis == null)
+			{
+				throw new InvalidOperationException("Missing or stale reviewed analysis: " + item.FilePath);
+			}
+			if (clipShotAnalysis.Events.Any((ShotEvent e) => e.ReviewState != ShotReviewState.Reviewed))
+			{
+				throw new InvalidOperationException("Unreviewed Candidate markers remain: " + item.FilePath);
+			}
+			item.ShotEvents = clipShotAnalysis.Events;
+			item.DurationSeconds = AudioLoader.GetDurationSeconds(item.FilePath);
+			if (item.ConfirmedKills.Count == 0)
+			{
+				throw new InvalidOperationException("No reviewed Hit/Headshot marker: " + item.FilePath);
+			}
+			list2.Add(item);
+		}
+		if (list2.Count == 0)
+		{
+			throw new InvalidOperationException("No supported, reviewed clips are available.");
+		}
+		return list2;
+	}
 
-            return clips;
-        }
-
-        /// <summary>
-        /// Audio analysis and planning. Everything here is VEGAS-free and can be
-        /// exercised outside the editor by the analysis harness.
-        /// </summary>
-        private static List<ClipPlacement> AnalyseAndPlan(List<Clip.Clip> clips, string songPath)
-        {
-            Logger.Log("Analysing song for beats...");
-            MonoAudio songAudio = AudioLoader.LoadMono(songPath);
-            BeatDetector beatDetector = new BeatDetector();
-            BeatGrid beats = beatDetector.DetectBeats(songAudio);
-            Logger.Log($"Detected {beats.Bpm:F1} BPM, {beats.BeatTimesSeconds.Count} beats, first beat at {beats.FirstBeatOffsetSeconds:F2}s.");
-
-            ShotDetector shotDetector = new ShotDetector();
-            foreach (Clip.Clip clip in clips)
-            {
-                MonoAudio clipAudio = AudioLoader.LoadMono(clip.FilePath);
-                clip.DurationSeconds = clipAudio.DurationSeconds;
-                clip.KillTimesSeconds = shotDetector.DetectShots(clipAudio);
-                Logger.Log($"{clip.Gun} {clip.ClipType} #{clip.SequenceNumber}: {clip.KillTimesSeconds.Count} shots detected " +
-                           $"({string.Join(", ", clip.KillTimesSeconds.Select(k => k.ToString("F2")))})");
-            }
-
-            MontagePlanner planner = new MontagePlanner();
-            List<ClipPlacement> placements = planner.PlanMontage(clips, beats, songAudio.DurationSeconds);
-            Logger.Log($"Planned {placements.Count} clip placements covering " +
-                       $"{(placements.Count > 0 ? placements.Last().TimelineEndSeconds : 0.0):F1}s of the song.");
-            return placements;
-        }
-
-        private static void ApplyEffects(Dictionary<ClipPlacement, VideoEvent> videoEvents)
-        {
-            EffectsApplier applier = new EffectsApplier();
-            foreach (KeyValuePair<ClipPlacement, VideoEvent> pair in videoEvents)
-            {
-                ClipPlacement placement = pair.Key;
-                VideoEvent videoEvent = pair.Value;
-
-                List<Timecode> killTimecodes = placement.TimelineKillTimesSeconds
-                    .Select(Timecode.FromSeconds)
-                    .ToList();
-
-                applier.ApplyTimeRemapping(videoEvent, killTimecodes);
-                applier.AddNameTag(videoEvent, $"{placement.Clip.PlayerName} - {placement.Clip.ClipType}");
-                applier.ApplyColorCorrection(videoEvent, "Cinematic");
-            }
-        }
-    }
+	private static void ApplyEffects(Dictionary<ClipPlacement, VideoEvent> videoEvents)
+	{
+		EffectsApplier effectsApplier = new EffectsApplier();
+		foreach (KeyValuePair<ClipPlacement, VideoEvent> videoEvent in videoEvents)
+		{
+			effectsApplier.ApplyVelocityEnvelope(videoEvent.Value, videoEvent.Key.SpeedProfile);
+			effectsApplier.AddNameTag(videoEvent.Value, videoEvent.Key.Clip.PlayerName + " - " + videoEvent.Key.Clip.ClipType);
+			effectsApplier.ApplyColorCorrection(videoEvent.Value);
+		}
+	}
 }

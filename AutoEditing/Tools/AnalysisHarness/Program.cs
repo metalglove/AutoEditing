@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Core.Domain;
 using Core.Domain.Audio;
 using Core.Domain.Clip;
 using Core.Domain.Editing;
@@ -32,10 +33,11 @@ namespace AnalysisHarness
                 return 0;
             }
 
-            string clipsFolder = args.Length > 0 ? args[0] : @"C:\Users\mario\Videos\edit";
+            string clipsFolder = args.Length > 0 ? args[0] : @"C:\VEGAS\edit";
             string songPath = args.Length > 1
                 ? args[1]
                 : Directory.GetFiles(clipsFolder, "*.mp3").FirstOrDefault();
+            string sfxRoot = args.Length > 2 ? args[2] : ConfigurationManager.GetShotDetection().SfxRoot;
 
             if (!Directory.Exists(clipsFolder))
             {
@@ -80,20 +82,65 @@ namespace AnalysisHarness
 
             Console.WriteLine();
             Console.WriteLine("=== 3. Shot detection ===");
+            Console.WriteLine($"SFX root: {sfxRoot}");
+            SfxTemplateCatalog catalog = null;
+            try
+            {
+                catalog = SfxTemplateCatalog.Load(sfxRoot);
+                Console.WriteLine($"Loaded {catalog.Templates.Count} calibrated SFX templates.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Shot detection skipped (no usable catalog): {ex.Message}");
+            }
             ShotDetector shotDetector = new ShotDetector();
             foreach (Clip clip in clips)
             {
                 MonoAudio clipAudio = AudioLoader.LoadMono(clip.FilePath);
                 clip.DurationSeconds = clipAudio.DurationSeconds;
-                clip.KillTimesSeconds = shotDetector.DetectShots(clipAudio);
                 Console.WriteLine($"  {Path.GetFileName(clip.FilePath)}");
-                Console.WriteLine($"    duration={clip.DurationSeconds:F1}s shots={clip.KillTimesSeconds.Count} at [{string.Join(", ", clip.KillTimesSeconds.Select(k => k.ToString("F2")))}]");
+                if (catalog == null)
+                {
+                    Console.WriteLine($"    duration={clip.DurationSeconds:F1}s  (no catalog)");
+                    continue;
+                }
+                if (catalog.ForGun(clip.Gun).Count == 0)
+                {
+                    Console.WriteLine($"    duration={clip.DurationSeconds:F1}s  no SFX templates for gun '{clip.Gun}'");
+                    continue;
+                }
+                try
+                {
+                    clip.ShotEvents = shotDetector.DetectShots(clipAudio, clip.Gun, catalog, sfxRoot);
+                    string shots = string.Join(", ", clip.ShotEvents.Select(e => $"{e.SourceMuzzleTimeSeconds:F2}({e.Outcome})"));
+                    Console.WriteLine($"    duration={clip.DurationSeconds:F1}s shots={clip.ShotEvents.Count} at [{shots}]");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"    duration={clip.DurationSeconds:F1}s  detection failed: {ex.Message}");
+                }
             }
 
             Console.WriteLine();
             Console.WriteLine("=== 4. Montage plan ===");
+            // The planner only uses reviewed Hit/Headshot markers. VEGAS does that
+            // review interactively; here we auto-accept the detected kills so the
+            // VEGAS-free harness can still exercise planning.
+            Console.WriteLine("(auto-accepting detected Hit/Headshot markers as reviewed)");
+            foreach (Clip clip in clips)
+            {
+                foreach (ShotEvent shot in clip.ShotEvents.Where(e => e.IsConfirmedKill))
+                {
+                    shot.ReviewState = ShotReviewState.Reviewed;
+                }
+            }
+            foreach (Clip clip in clips.Where(c => c.ConfirmedKills.Count == 0))
+            {
+                Console.WriteLine($"  (excluded, no confirmed kills: {Path.GetFileName(clip.FilePath)})");
+            }
+            List<Clip> planClips = clips.Where(c => c.ConfirmedKills.Count > 0).ToList();
             MontagePlanner planner = new MontagePlanner();
-            List<ClipPlacement> placements = planner.PlanMontage(clips, beats, songAudio.DurationSeconds);
+            List<ClipPlacement> placements = planner.PlanMontage(planClips, beats, songAudio.DurationSeconds);
             Console.WriteLine($"Beat interval: {beats.BeatIntervalSeconds:F3}s");
             foreach (ClipPlacement placement in placements)
             {
