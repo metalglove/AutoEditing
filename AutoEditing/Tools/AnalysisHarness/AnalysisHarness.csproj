@@ -4,24 +4,26 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net48</TargetFramework>
     <RootNamespace>AnalysisHarness</RootNamespace>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <!-- Compiles the VEGAS-free domain sources directly so the analysis pipeline
-       (parsing, beat detection, shot detection, planning) can be exercised
-       without VEGAS Pro installed. -->
+       (parsing, beat/shot detection, SFX templates, planning) can be exercised
+       without VEGAS Pro installed. Everything under Core\Domain is included
+       except the files that depend on ScriptPortal.Vegas. -->
   <ItemGroup>
-    <Compile Include="..\..\Core\Domain\Clip\Clip.cs" Link="Domain\Clip\Clip.cs" />
-    <Compile Include="..\..\Core\Domain\Clip\ClipParser.cs" Link="Domain\Clip\ClipParser.cs" />
-    <Compile Include="..\..\Core\Domain\Audio\AudioLoader.cs" Link="Domain\Audio\AudioLoader.cs" />
-    <Compile Include="..\..\Core\Domain\Audio\BeatDetector.cs" Link="Domain\Audio\BeatDetector.cs" />
-    <Compile Include="..\..\Core\Domain\Audio\ShotDetector.cs" Link="Domain\Audio\ShotDetector.cs" />
-    <Compile Include="..\..\Core\Domain\Editing\MontagePlanner.cs" Link="Domain\Editing\MontagePlanner.cs" />
+    <Compile Include="..\..\Core\Domain\**\*.cs" Link="Domain\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Remove="..\..\Core\Domain\Audio\ShotReviewWorkflow.cs" />
+    <Compile Remove="..\..\Core\Domain\Clip\ClipValidator.cs" />
+    <Compile Remove="..\..\Core\Domain\Editing\EffectsApplier.cs" />
+    <Compile Remove="..\..\Core\Domain\Editing\MontageOrchestrator.cs" />
+    <Compile Remove="..\..\Core\Domain\Editing\TimelineBuilder.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="NAudio.Core" Version="2.2.1" />
     <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
 </Project>
