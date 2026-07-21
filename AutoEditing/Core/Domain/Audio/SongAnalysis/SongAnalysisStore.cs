@@ -82,6 +82,9 @@ public sealed class SongAnalysisStore
 		HashSet<string> ids = new HashSet<string>(StringComparer.Ordinal);
 		foreach (MusicEvent musicEvent in analysis.Events)
 		{
+			musicEvent.Editorial = musicEvent.Editorial ?? new EditorialMetadata();
+			musicEvent.Editorial.AllowedUses = musicEvent.Editorial.AllowedUses ?? new List<EditorialUse>();
+			musicEvent.Editorial.Assignments = musicEvent.Editorial.Assignments ?? new List<EditorialAssignment>();
 			if (string.IsNullOrWhiteSpace(musicEvent.Id) || !ids.Add(musicEvent.Id))
 			{
 				throw new InvalidDataException("Music event IDs must be present and unique.");
@@ -90,6 +93,8 @@ public sealed class SongAnalysisStore
 			{
 				throw new InvalidDataException("Music event lies outside the song: " + musicEvent.Id);
 			}
+			IReadOnlyList<string> editorialErrors = EditorialMetadataValidator.Validate(musicEvent);
+			if (editorialErrors.Count > 0) throw new InvalidDataException("Editorial assignment for event at " + musicEvent.TimeSeconds.ToString("0.000") + "s is invalid: " + string.Join(" ", editorialErrors));
 		}
 		foreach (MusicRegion region in analysis.Regions)
 		{

@@ -23,6 +23,9 @@ namespace AnalysisHarness
 				TestStructuredRhythmAnalysis();
 				TestReviewedIdWinsReanalysisCollision();
 				TestMatchedIdCannotCollideWithNewProposal();
+				TestEditorialAssignmentsRoundTripAndValidate(directory);
+				TestEditorialValidationBoundaries();
+				TestLockedEditorialDecisionSurvivesReanalysis();
 				Console.WriteLine("Song-analysis self-tests passed.");
 			}
 			finally
@@ -237,6 +240,105 @@ namespace AnalysisHarness
 			SongAnalysis reconciled = new SongAnalysisReconciler().Reconcile(existing, detected);
 			Assert(reconciled.Events.Count == 2, "A legitimate proposal was discarded while repairing an inherited ID collision.");
 			Assert(reconciled.Events.Select((MusicEvent item) => item.Id).Distinct(StringComparer.Ordinal).Count() == 2, "Matching produced duplicate event IDs.");
+		}
+
+		private static void TestEditorialAssignmentsRoundTripAndValidate(string directory)
+		{
+			SongIdentity identity = CreateIdentity(directory);
+			MusicEvent musicEvent = DetectedEvent("editorial-event", 12.0);
+			musicEvent.Editorial = new EditorialMetadata
+			{
+				Priority = 7,
+				IsLocked = true,
+				TimingOffsetSeconds = -0.04,
+				Intensity = 0.8,
+				Notes = "Kill plus flash",
+				AllowedUses = new List<EditorialUse> { EditorialUse.GameplayAnchor, EditorialUse.Flash },
+				Assignments = new List<EditorialAssignment>
+				{
+					new EditorialAssignment { Use = EditorialUse.GameplayAnchor, Origin = EditorialAssignmentOrigin.UserChosen },
+					new EditorialAssignment { Use = EditorialUse.Flash, Origin = EditorialAssignmentOrigin.UserChosen }
+				}
+			};
+			SongAnalysis analysis = new SongAnalysis { Song = identity, Events = new List<MusicEvent> { musicEvent } };
+			string path = Path.Combine(directory, "editorial.json");
+			SongAnalysisStore store = new SongAnalysisStore();
+			store.Save(path, analysis);
+			MusicEvent loaded = store.Load(path).Events.Single();
+			Assert(loaded.Editorial.Assignments.Count == 2, "Editorial assignments did not round-trip.");
+			Assert(loaded.Editorial.Assignments.All((EditorialAssignment item) => item.Origin == EditorialAssignmentOrigin.UserChosen), "Editorial assignment provenance did not round-trip.");
+			Assert(loaded.Editorial.IsLocked && Math.Abs(loaded.Editorial.TimingOffsetSeconds.Value + 0.04) < 0.0001, "Editorial lock or offset did not round-trip.");
+
+			loaded.Editorial.Assignments.Add(new EditorialAssignment { Use = EditorialUse.ScreenPump });
+			IReadOnlyList<string> errors = EditorialMetadataValidator.Validate(loaded);
+			Assert(errors.Any((string item) => item.Contains("visual accent")), "Conflicting editorial assignments were not explained in plain language.");
+		}
+
+		private static void TestEditorialValidationBoundaries()
+		{
+			MusicEvent musicEvent = DetectedEvent("validation-boundaries", 8.0);
+			musicEvent.Editorial = new EditorialMetadata
+			{
+				Intensity = 0.0,
+				TimingOffsetSeconds = -2.0,
+				Assignments = new List<EditorialAssignment>
+				{
+					new EditorialAssignment { Use = EditorialUse.GameplayAnchor },
+					new EditorialAssignment { Use = EditorialUse.Flash },
+					new EditorialAssignment { Use = EditorialUse.SpeedChange }
+				}
+			};
+			Assert(EditorialMetadataValidator.Validate(musicEvent).Count == 0, "Independent anchor, visual, and timing assignments were rejected.");
+
+			musicEvent.Editorial.Intensity = 1.0;
+			musicEvent.Editorial.TimingOffsetSeconds = 2.0;
+			Assert(EditorialMetadataValidator.Validate(musicEvent).Count == 0, "Valid inclusive editorial limits were rejected.");
+
+			musicEvent.Editorial.Intensity = 1.01;
+			musicEvent.Editorial.TimingOffsetSeconds = -2.01;
+			IReadOnlyList<string> rangeErrors = EditorialMetadataValidator.Validate(musicEvent);
+			Assert(rangeErrors.Any((string item) => item.Contains("Intensity")), "Out-of-range intensity was accepted.");
+			Assert(rangeErrors.Any((string item) => item.Contains("Timing offset")), "Out-of-range timing offset was accepted.");
+
+			musicEvent.Editorial.Intensity = 0.5;
+			musicEvent.Editorial.TimingOffsetSeconds = 0.0;
+			musicEvent.Editorial.Assignments = new List<EditorialAssignment>
+			{
+				new EditorialAssignment { Use = EditorialUse.IntentionallyUnused },
+				new EditorialAssignment { Use = EditorialUse.Flash }
+			};
+			Assert(EditorialMetadataValidator.Validate(musicEvent).Any((string item) => item.Contains("cannot be combined")), "Intentionally-unused events accepted an effect assignment.");
+
+			musicEvent.Editorial.Assignments = new List<EditorialAssignment> { new EditorialAssignment { Use = EditorialUse.ScreenPump } };
+			musicEvent.Editorial.AllowedUses = new List<EditorialUse> { EditorialUse.Flash };
+			Assert(EditorialMetadataValidator.Validate(musicEvent).Any((string item) => item.Contains("allowed uses")), "An assignment outside allowed uses was accepted.");
+		}
+
+		private static void TestLockedEditorialDecisionSurvivesReanalysis()
+		{
+			SongIdentity identity = SyntheticIdentity("locked-editorial", 30.0);
+			MusicEvent existingEvent = DetectedEvent("locked-event", 4.0);
+			existingEvent.Editorial = new EditorialMetadata
+			{
+				IsLocked = true,
+				Priority = 9,
+				Notes = "Keep this treatment",
+				Assignments = new List<EditorialAssignment>
+				{
+					new EditorialAssignment { Use = EditorialUse.GameplayAnchor, Origin = EditorialAssignmentOrigin.UserChosen },
+					new EditorialAssignment { Use = EditorialUse.ScreenPump, Origin = EditorialAssignmentOrigin.UserChosen }
+				}
+			};
+			SongAnalysis existing = new SongAnalysis { Song = identity, Events = new List<MusicEvent> { existingEvent } };
+			MusicEvent proposal = DetectedEvent("new-detector-id", 4.03);
+			proposal.Strength = 0.9;
+			SongAnalysis detected = new SongAnalysis { Song = identity, Events = new List<MusicEvent> { proposal } };
+
+			MusicEvent reconciled = new SongAnalysisReconciler().Reconcile(existing, detected).Events.Single();
+			Assert(reconciled.Id == "locked-event", "A locked event lost its stable identity during re-analysis.");
+			Assert(reconciled.Editorial.IsLocked && reconciled.Editorial.Priority == 9, "Locked editorial settings were overwritten during re-analysis.");
+			Assert(reconciled.Editorial.Assignments.Select((EditorialAssignment item) => item.Use).SequenceEqual(new[] { EditorialUse.GameplayAnchor, EditorialUse.ScreenPump }), "Locked editorial assignments were overwritten during re-analysis.");
+			Assert(Math.Abs(reconciled.Strength.Value - 0.9) < 0.0001, "Fresh detector evidence was not retained for a locked event.");
 		}
 
 		private static MusicEvent DetectedEvent(string id, double time)

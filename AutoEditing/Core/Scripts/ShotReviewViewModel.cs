@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Data;
 using System.Windows.Threading;
 using Core.Domain;
 using Core.Domain.Audio;
@@ -53,21 +54,26 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 	private readonly HashSet<string> _projectedSongEventIds = new HashSet<string>(StringComparer.Ordinal);
 	private SongEventRow _selectedSongEvent;
 	private SongRegionRow _selectedSongRegion;
-	private SongEventViewMode _songEventViewMode = SongEventViewMode.MeaningfulSyncPoints;
+	private SongEventViewMode _songEventViewMode = SongEventViewMode.SelectedRegion;
 	private bool _syncingSongTimeline;
 	private bool _songProjectionPending;
 	private bool _rebuildingSongRows;
+	private bool _isLogExpanded;
+	private string _drawerFilter = string.Empty;
 
 	public ObservableCollection<WizardStepDefinition> Steps { get; } = new ObservableCollection<WizardStepDefinition>();
 	public ObservableCollection<MarkerRow> Markers { get; } = new ObservableCollection<MarkerRow>();
 	public ObservableCollection<ClipDrawerRow> DrawerRows { get; } = new ObservableCollection<ClipDrawerRow>();
 	public ObservableCollection<SongEventRow> SongEvents { get; } = new ObservableCollection<SongEventRow>();
 	public ObservableCollection<SongRegionRow> SongRegions { get; } = new ObservableCollection<SongRegionRow>();
-	public SongEventRow SelectedSongEvent { get => _selectedSongEvent; set { if (Set(ref _selectedSongEvent, value)) RefreshCommands(); } }
-	public SongRegionRow SelectedSongRegion { get => _selectedSongRegion; set { if (Set(ref _selectedSongRegion, value) && !_rebuildingSongRows && SongEventViewMode == SongEventViewMode.SelectedRegion) { RefreshSongEventFilter(); RefreshSongProjection(); } } }
-	public SongEventViewMode SongEventViewMode { get => _songEventViewMode; set { if (Set(ref _songEventViewMode, value)) { RefreshSongEventFilter(); RefreshSongProjection(); } } }
-	public List<SongEventViewMode> SongEventViewModes { get; } = new List<SongEventViewMode> { SongEventViewMode.RegionsOnly, SongEventViewMode.MeaningfulSyncPoints, SongEventViewMode.SelectedRegion, SongEventViewMode.AllEvents };
+	public ICollectionView DrawerView { get; }
+	public SongEventRow SelectedSongEvent { get => _selectedSongEvent; set { if (Set(ref _selectedSongEvent, value)) { OnPropertyChanged("HasSelectedSongEvent"); RefreshCommands(); } } }
+	public bool HasSelectedSongEvent => SelectedSongEvent != null;
+	public SongRegionRow SelectedSongRegion { get => _selectedSongRegion; set { if (Set(ref _selectedSongRegion, value) && !_rebuildingSongRows) { if (value != null && SongEventViewMode != SongEventViewMode.SelectedRegion) { SongEventViewMode = SongEventViewMode.SelectedRegion; } else { RefreshSongEventFilter(); RefreshSongProjection(); } } } }
+	public SongEventViewMode SongEventViewMode { get => _songEventViewMode; set { if (Set(ref _songEventViewMode, value)) { OnPropertyChanged("SongEventScopeTitle"); RefreshSongEventFilter(); RefreshSongProjection(); } } }
+	public List<DisplayChoice<SongEventViewMode>> SongEventViewModes { get; } = new List<DisplayChoice<SongEventViewMode>> { new DisplayChoice<SongEventViewMode>(SongEventViewMode.RegionsOnly, "Regions only"), new DisplayChoice<SongEventViewMode>(SongEventViewMode.MeaningfulSyncPoints, "Meaningful sync points"), new DisplayChoice<SongEventViewMode>(SongEventViewMode.SelectedRegion, "Selected region"), new DisplayChoice<SongEventViewMode>(SongEventViewMode.AllEvents, "All detected events") };
 	public string SongAnalysisSummary => _songAnalysisDraft == null ? "Analyze the song to review its structure." : (_songAnalysisDraft.TempoBpm.HasValue ? _songAnalysisDraft.TempoBpm.Value.ToString("0.0 BPM") : "No reliable tempo") + " · " + _songAnalysisDraft.Events.Count + " events · " + _songAnalysisDraft.Regions.Count + " regions";
+	public string SongEventScopeTitle => SongEventViewMode == SongEventViewMode.SelectedRegion ? "SYNC POINTS IN SELECTED REGION" : SongEventViewMode == SongEventViewMode.MeaningfulSyncPoints ? "MEANINGFUL SYNC POINTS" : SongEventViewMode == SongEventViewMode.AllEvents ? "ALL DETECTED EVENTS" : "REGIONS ONLY";
 	public MarkerRow SelectedMarker { get => _selectedMarker; set { if (Set(ref _selectedMarker, value)) RefreshCommands(); } }
 
 	public string ClipsFolder { get => _clipsFolder; set { if (Set(ref _clipsFolder, value)) PathsChanged("ClipsFolderExists"); } }
@@ -75,6 +81,8 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 	public string SfxRoot { get => _sfxRoot; set { if (Set(ref _sfxRoot, value)) { _sfxValid = false; PathsChanged("SfxRootExists"); OnPropertyChanged("SfxValid"); } } }
 	public string Status { get => _status; private set => Set(ref _status, value); }
 	public string LogText { get => _logText; private set => Set(ref _logText, value); }
+	public bool IsLogExpanded { get => _isLogExpanded; set => Set(ref _isLogExpanded, value); }
+	public string DrawerFilter { get => _drawerFilter; set { if (Set(ref _drawerFilter, value)) DrawerView.Refresh(); } }
 	public bool IsBusy { get => _isBusy; private set { if (Set(ref _isBusy, value)) { OnPropertyChanged("IsIdle"); RefreshCommands(); } } }
 	public bool IsIdle => !IsBusy;
 	public bool ClipsFolderExists => Directory.Exists(ClipsFolder);
@@ -121,6 +129,10 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 	public ICommand AddKnownFolderCommand { get; }
 	public ICommand DismissOnboardingCommand { get; }
 	public ICommand ShowOnboardingCommand { get; }
+	public ICommand NavigateStepCommand { get; }
+	public ICommand ToggleLogCommand { get; }
+	public ICommand SelectAllReadyClipsCommand { get; }
+	public ICommand ClearClipSelectionCommand { get; }
 
 	public event PropertyChangedEventHandler PropertyChanged;
 
@@ -136,6 +148,8 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		_sfxRoot = ConfigurationManager.GetShotDetection().SfxRoot;
 		_preferences = ConfigurationManager.LoadUserPreferences();
 		_showOnboarding = !_preferences.HasSeenOnboarding;
+		DrawerView = CollectionViewSource.GetDefaultView(DrawerRows);
+		DrawerView.Filter = IsDrawerRowVisible;
 		InitializeSteps();
 		BrowseClipsCommand = Command(BrowseClips, () => IsIdle);
 		BrowseSongCommand = Command(BrowseSong, () => IsIdle);
@@ -164,6 +178,10 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		AddKnownFolderCommand = Command(AddKnownFolder, () => IsIdle);
 		DismissOnboardingCommand = Command(DismissOnboarding, () => true);
 		ShowOnboardingCommand = Command(() => ShowOnboarding = true, () => true);
+		NavigateStepCommand = new RelayCommand(NavigateToStep, CanNavigateToStep);
+		ToggleLogCommand = Command(() => IsLogExpanded = !IsLogExpanded, () => true);
+		SelectAllReadyClipsCommand = Command(() => SetVisibleClipSelection(true), () => IsIdle);
+		ClearClipSelectionCommand = Command(() => SetVisibleClipSelection(false), () => IsIdle);
 		Logger.SetSink(AppendLog);
 		RefreshDrawer();
 		Logger.Log("AE wizard ready. Existing non-AE timeline objects are preserved.");
@@ -178,6 +196,20 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		Steps.Add(new WizardStepDefinition { Step = WizardStep.Review, Number = "5", Title = "Review", Subtitle = "Confirm sync points" });
 		Steps.Add(new WizardStepDefinition { Step = WizardStep.Drawer, Number = "6", Title = "Clip drawer", Subtitle = "Build from ready clips" });
 		UpdateStepState();
+	}
+
+	private void NavigateToStep(object parameter)
+	{
+		if (parameter is WizardStep step) SetStep(step);
+	}
+
+	private bool CanNavigateToStep(object parameter)
+	{
+		if (IsBusy || !(parameter is WizardStep step)) return false;
+		if (step == WizardStep.Sources || step == WizardStep.Drawer) return true;
+		if (step == WizardStep.SongAnalysis) return ClipsFolderExists && SongExists && SfxRootExists;
+		if (step == WizardStep.SfxIndex || step == WizardStep.Analyze) return SfxRootExists;
+		return step != WizardStep.Review || _analysisBatch != null;
 	}
 
 	private RelayCommand AsyncCommand(string title, Func<CancellationToken, Task> action, Func<bool> canExecute)
@@ -440,7 +472,43 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		{
 			foreach (Clip clip in parser.ParseAllClips(folder)) if (seen.Add(Path.GetFullPath(clip.FilePath))) DrawerRows.Add(new ClipDrawerRow { FilePath = clip.FilePath, FileExists = true, Player = clip.PlayerName, Game = clip.Game, Map = clip.Map, Guns = clip.Gun, LeadTimes = "Not analyzed", IsReady = false });
 		}
+		DrawerView.Refresh();
+		_ = LoadDrawerThumbnailsAsync();
 		RefreshCommands();
+	}
+
+	private bool IsDrawerRowVisible(object item)
+	{
+		ClipDrawerRow row = item as ClipDrawerRow;
+		if (row == null || string.IsNullOrWhiteSpace(DrawerFilter)) return true;
+		string filter = DrawerFilter.Trim();
+		return Contains(row.FileName, filter) || Contains(row.Player, filter) || Contains(row.Game, filter) || Contains(row.Map, filter) || Contains(row.Guns, filter) || Contains(row.DirectoryName, filter);
+	}
+
+	private static bool Contains(string value, string filter)
+	{
+		return !string.IsNullOrWhiteSpace(value) && value.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+
+	private void SetVisibleClipSelection(bool selected)
+	{
+		foreach (ClipDrawerRow row in DrawerView.Cast<ClipDrawerRow>()) row.IsSelected = selected && row.IsReady && row.FileExists;
+	}
+
+	private async Task LoadDrawerThumbnailsAsync()
+	{
+		foreach (ClipDrawerRow row in DrawerRows.Where((ClipDrawerRow item) => item.FileExists && item.Thumbnail == null).ToList())
+		{
+			try
+			{
+				System.Windows.Media.ImageSource thumbnail = await Task.Run(() => VideoThumbnailProvider.Load(row.FilePath));
+				if (DrawerRows.Contains(row)) row.Thumbnail = thumbnail;
+			}
+			catch (Exception)
+			{
+				// Explorer does not provide thumbnails for every codec/container.
+			}
+		}
 	}
 
 	private async Task BuildFromLibraryAsync(CancellationToken token)
@@ -472,7 +540,7 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		}, token);
 		await _vegasCommands.ExecuteAsync(new LayoutSongAnalysisCommand { SongPath = SongPath, Analysis = analysis });
 		_songAnalysisDraft = analysis;
-		ResetProjectedSongEvents(analysis.Events.Where(SongReviewWorkflow.IsUsefulTimelineEvent).Select((MusicEvent item) => item.Id));
+		ResetProjectedSongEvents(Enumerable.Empty<string>());
 		PopulateSongAnalysisRows();
 		OnPropertyChanged("SongAnalysisSummary");
 		RefreshSongProjection();
@@ -496,7 +564,7 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		}, token);
 		_songAnalysisDraft = analysis;
 		await _vegasCommands.ExecuteAsync(new LayoutSongAnalysisCommand { SongPath = SongPath, Analysis = analysis });
-		ResetProjectedSongEvents(analysis.Events.Where(SongReviewWorkflow.IsUsefulTimelineEvent).Select((MusicEvent item) => item.Id));
+		ResetProjectedSongEvents(Enumerable.Empty<string>());
 		PopulateSongAnalysisRows();
 		RefreshSongProjection();
 		Logger.Log("Song review committed atomically: " + snapshot.Events.Count + " events and " + snapshot.Regions.Count + " regions.");
@@ -546,9 +614,10 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 				foreach (MusicRegion region in _songAnalysisDraft.Regions.OrderBy((MusicRegion item) => item.StartSeconds)) SongRegions.Add(new SongRegionRow(region));
 			}
 			_selectedSongEvent = _allSongEventRows.FirstOrDefault((SongEventRow row) => row.Model.Id == selectedEventId);
-			_selectedSongRegion = SongRegions.FirstOrDefault((SongRegionRow row) => row.Model.Id == selectedRegionId);
+			_selectedSongRegion = SongRegions.FirstOrDefault((SongRegionRow row) => row.Model.Id == selectedRegionId) ?? SongRegions.FirstOrDefault();
 			RefreshSongEventFilter();
 			OnPropertyChanged("SelectedSongEvent");
+			OnPropertyChanged("HasSelectedSongEvent");
 			OnPropertyChanged("SelectedSongRegion");
 			RefreshCommands();
 		}

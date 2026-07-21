@@ -98,19 +98,31 @@ Tools/AnalysisHarness/bin/Debug/net48/AnalysisHarness.exe `
 
 ## Dedicated song-map workspace
 
-The wizard's second step is a dedicated song-analysis workspace:
+The wizard's second step is a dedicated, region-first song-analysis workspace:
 
 1. Entering the step performs decoding and structure analysis away
    from the VEGAS host thread, reconciles an existing sidecar, then sends one
    layout command through the VEGAS CQRS boundary.
-2. Region and sync-point tables expose type, confidence, strength/energy,
-   origin, and inclusion without requiring dense marker-label editing.
-3. The event layer can show regions only, meaningful sync points, every event in
+2. A horizontal region navigator summarizes structure, time range, energy, and
+   inclusion before exposing individual sync points. Selecting a region focuses
+   the event inspector on every event inside that range.
+3. Region and sync-point tables expose type, confidence, strength/energy,
+   origin, inclusion, and independent editorial assignments without requiring
+   dense marker-label editing.
+4. The event layer can show regions only, meaningful sync points, every event in
    the selected region, or the complete detection grid. Changing this layer
-   updates the owned VEGAS event markers as well as the inspector rows.
-4. **Jump to selected** moves the VEGAS cursor without adding another marker.
-5. **Commit song map** queries one immutable timeline snapshot and atomically
+   updates the owned VEGAS event markers as well as the inspector rows. The
+   selected-region layer is the normal detailed-review path for songs with
+   hundreds of candidates.
+5. **Jump to selected** moves the VEGAS cursor without adding another marker.
+6. **Commit song map** queries one immutable timeline snapshot and atomically
    persists the reviewed times, classifications, and deletions.
+
+The current implementation still uses dense tables for detailed editing. The
+next UX pass should move secondary properties (priority, offset, intensity,
+notes, and assignment controls) into a selected-item inspector and reserve the
+table for scan-friendly fields. See [review-workspace-ux.md](review-workspace-ux.md)
+for the intended interaction model and its implementation-status boundaries.
 
 The layout owns only one track named `AE|Song Analysis Audio`, markers prefixed
 with `AE|MUSIC|`, and regions prefixed with `AE|MUSIC_REGION|`. Re-analysis

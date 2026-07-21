@@ -35,10 +35,6 @@ internal sealed class SongReviewWorkflow
 		((BaseList<TrackEvent>)(object)((Track)track).Events).Add((TrackEvent)(object)audioEvent);
 		((BaseList<Take>)(object)((TrackEvent)audioEvent).Takes).Add(new Take((MediaStream)(object)stream));
 
-		foreach (MusicEvent musicEvent in analysis.Events.Where(IsUsefulTimelineEvent))
-		{
-			AddEventMarker(project, musicEvent);
-		}
 		foreach (MusicRegion region in analysis.Regions.Where((MusicRegion item) => item.ReviewState != MusicAnalysisReviewState.Rejected))
 		{
 			string label = RegionPrefix + region.Id + "|" + region.Type + "|" + Score(region.Energy) + "|" + Score(region.Confidence);
