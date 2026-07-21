@@ -22,6 +22,11 @@ namespace AnalysisHarness
     {
         private static int Main(string[] args)
         {
+			if (args.Length == 1 && args[0] == "--self-test-song-analysis")
+			{
+				SongAnalysisSelfTests.RunAll();
+				return 0;
+			}
             if (args.Length == 2 && args[0] == "--debug-tempo")
             {
                 DebugCommands.DebugTempo(args[1]);

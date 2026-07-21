@@ -62,6 +62,9 @@ present.
 
 - Windows Media Foundation/NAudio decoding to mono PCM.
 - Tempo and beat-grid detection using an onset envelope and autocorrelation.
+- A versioned, VEGAS-independent song-analysis model with stable music-event and
+  region identities, detector provenance, review state, reconciliation, and
+  project-adjacent persistence.
 - Per-gun SFX-template catalogs and calibration/indexing.
 - High-recall shot candidate detection followed by template matching.
 - Diagnostic commands for tempo and shot-detector tuning.
@@ -97,8 +100,9 @@ console harness.
   quantization, and undo behavior need more real VEGAS Pro 20 testing.
 - Shot detection can still produce false positives and depends on good per-gun
   SFX templates plus human review.
-- Beat detection produces a beat grid, not yet a complete musical model of
-  downbeats, phrases, sections, or energy.
+- The reviewed song-analysis foundation exists, but richer detection and its
+  VEGAS marker/region review workflow are not yet implemented; current montage
+  generation still consumes the legacy uniform beat grid.
 - Shake, name tags, color correction, and transitions remain logging/placeholding
   methods; they do not yet create the advertised visual treatments.
 - Persisted reviewed shot events are more specialized than the planned general
@@ -125,6 +129,7 @@ Tools/
   AnalysisHarness/  VEGAS-free console runner and detector diagnostics
 docs/
   ROADMAP.md
+  song-analysis-model.md
   vegas-scripting-effects-api.md
   semantic-montage/ current product, MVP, domain, research, and feasibility docs
 ```
