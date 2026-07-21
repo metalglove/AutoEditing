@@ -329,6 +329,3 @@ FodyWeavers.xsd
 VEGASScriptAPI.html
 *.html
 
-*.md
-!README.md
-!docs/*.md

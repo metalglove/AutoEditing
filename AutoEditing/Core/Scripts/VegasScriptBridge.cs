@@ -21,6 +21,12 @@ internal static class VegasScriptBridge
 
 		public string SongPath { get; set; }
 
+		public string ClipsFolder { get; set; }
+
+		public string SfxRoot { get; set; }
+
+		public int ClipIndex { get; set; }
+
 		public string Status { get; set; }
 
 		public string Error { get; set; }
@@ -29,6 +35,12 @@ internal static class VegasScriptBridge
 	private const string AnalysisAction = "LayoutAnalysis";
 
 	private const string MontageAction = "BuildMontage";
+
+	private const string LayoutSingleAction = "LayoutSingleClip";
+
+	private const string RemoveClipAction = "RemoveClipFromTimeline";
+
+	private const string MarkReadyAction = "MarkClipReady";
 
 	public static void LayoutAnalysis(Vegas vegas, ShotReviewWorkflow.AnalysisBatch batch)
 	{
@@ -47,6 +59,21 @@ internal static class VegasScriptBridge
 			Montage = montage,
 			SongPath = songPath
 		});
+	}
+
+	public static void LayoutSingleClip(Vegas vegas, ShotReviewWorkflow.AnalysisItem item)
+	{
+		Run(vegas, new Request { Action = LayoutSingleAction, Analysis = new ShotReviewWorkflow.AnalysisBatch { Items = new System.Collections.Generic.List<ShotReviewWorkflow.AnalysisItem> { item } } });
+	}
+
+	public static void RemoveClipFromTimeline(Vegas vegas, int clipIndex)
+	{
+		Run(vegas, new Request { Action = RemoveClipAction, ClipIndex = clipIndex });
+	}
+
+	public static void MarkClipReady(Vegas vegas, string clipsFolder, string sfxRoot, int clipIndex)
+	{
+		Run(vegas, new Request { Action = MarkReadyAction, ClipsFolder = clipsFolder, SfxRoot = sfxRoot, ClipIndex = clipIndex });
 	}
 
 	public static bool TryExecutePending(Vegas vegas)
@@ -68,6 +95,19 @@ internal static class VegasScriptBridge
 					throw new InvalidOperationException("Analysis layout request is empty.");
 				}
 				new ShotReviewWorkflow().LayOutAnalysis(vegas, request.Analysis, null, CancellationToken.None);
+			}
+			else if (request.Action == LayoutSingleAction)
+			{
+				if (request.Analysis == null || request.Analysis.Items.Count != 1) throw new InvalidOperationException("Single clip layout request is empty.");
+				new ShotReviewWorkflow().LayOutSingleClip(vegas, request.Analysis.Items[0]);
+			}
+			else if (request.Action == RemoveClipAction)
+			{
+				new ShotReviewWorkflow().RemoveClipFromTimeline(vegas, request.ClipIndex);
+			}
+			else if (request.Action == MarkReadyAction)
+			{
+				new ShotReviewWorkflow().MarkClipReady(vegas, request.ClipsFolder, request.SfxRoot, request.ClipIndex);
 			}
 			else
 			{

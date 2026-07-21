@@ -1,251 +1,277 @@
-# Sniper Montage Automation for VEGAS Pro
+# AutoEditing
 
-An automated system for creating sniper montages from Call of Duty clips, with music synchronization and advanced time remapping using VEGAS Pro's scripting API.
+AutoEditing is a work-in-progress VEGAS Pro 20 extension for building Call of
+Duty sniper montages from reviewed gameplay sync points.
 
-## Project Structure
+The project currently combines local audio analysis, a docked shot-review
+workflow, reusable clip metadata, beat-aware montage planning, and native VEGAS
+timeline generation. Its longer-term direction is a guided semantic montage
+assistant: the editor verifies meaningful gameplay events, aligns them with
+music events, and lets the tool perform the repetitive timeline and retiming
+work.
 
+> Status: active prototype. The analysis and planning layers can be exercised
+> outside VEGAS. Timeline and velocity behavior still require continued smoke
+> testing in VEGAS Pro 20 before the extension should be considered production
+> ready.
+
+## Current workflow
+
+The docked **AutoEditing Shot Review** extension presents a five-step wizard:
+
+1. **Choose sources** — select a clips folder, song, and weapon SFX-template
+   folder.
+2. **SFX index** — index or validate the per-gun reference sounds used by shot
+   detection.
+3. **Analyze clips** — reuse already reviewed clips and detect candidate events
+   for new or changed media.
+4. **Review** — classify candidates as hit, headshot, or miss; adjust markers on
+   the VEGAS timeline; add missed events; and mark completed clips ready.
+5. **Clip drawer** — select reusable ready clips and build a montage.
+
+The implemented pipeline is approximately:
+
+```text
+parse filenames
+→ load or detect shot candidates
+→ review and persist sync points
+→ detect the song beat grid
+→ assign reviewed kills to sequential beats
+→ solve bounded speed profiles
+→ create VEGAS tracks, events, take offsets, markers, and velocity envelopes
 ```
+
+Detected candidates are suggestions. A clip cannot become ready until every
+candidate is classified or removed and at least one reviewed hit or headshot is
+present.
+
+## What is implemented
+
+### Clip ingestion and persistence
+
+- Filename parsing for player, game, map, gun, play type, sequence, and notes.
+- `[OPENER]` and `[CLOSER]` placement prefixes.
+- A reusable clip sync library keyed by a lightweight content signature, with a
+  fast path using file path, size, and last-write time.
+- Template fingerprints that invalidate stale analysis after relevant SFX
+  references change.
+- Stored review state and reviewed hit, headshot, and miss events.
+- User preferences for onboarding and known clip directories.
+
+### Audio analysis
+
+- Windows Media Foundation/NAudio decoding to mono PCM.
+- Tempo and beat-grid detection using an onset envelope and autocorrelation.
+- Per-gun SFX-template catalogs and calibration/indexing.
+- High-recall shot candidate detection followed by template matching.
+- Diagnostic commands for tempo and shot-detector tuning.
+
+### Review UI
+
+- A WPF wizard hosted inside a VEGAS `DockableControl`.
+- Temporary `AE|` tracks, regions, and markers for clip review.
+- Candidate reclassification, gun correction, deletion, cursor-based manual
+  markers, marker refresh after timeline adjustment, and jump-to-marker actions.
+- Immediate persistence of reviewed choices.
+- Reuse of ready clips without laying every source clip out again.
+- Progress, cancellation, logging, and onboarding UI.
+
+### Planning and timeline generation
+
+- Sequential beat assignment for all reviewed kills in a selected clip.
+- Configurable pre-roll, post-roll, and velocity bounds.
+- Piecewise-linear source/time mapping with bounded speed solving.
+- Mathematical verification that planned reviewed kills land within 2 ms of
+  their assigned beats before VEGAS generation.
+- VEGAS video/audio track creation, media import, event placement, take offsets,
+  song placement, and montage markers.
+- Native velocity-envelope generation from the solved speed profile.
+
+The planner and mapping mathematics are VEGAS-free so they can be tested in the
+console harness.
+
+## Not complete or not yet fully verified
+
+- End-to-end timeline construction, take-offset behavior, velocity-envelope
+  quantization, and undo behavior need more real VEGAS Pro 20 testing.
+- Shot detection can still produce false positives and depends on good per-gun
+  SFX templates plus human review.
+- Beat detection produces a beat grid, not yet a complete musical model of
+  downbeats, phrases, sections, or energy.
+- Shake, name tags, color correction, and transitions remain logging/placeholding
+  methods; they do not yet create the advertised visual treatments.
+- Persisted reviewed shot events are more specialized than the planned general
+  `GameplayEvent`/`MusicEvent` semantic model.
+- Regenerating and removing an individual provenance-owned treatment is part of
+  the planned MVP, not the current implementation.
+- Optical flow, automatic narrative construction, learned clip ranking, sound
+  enhancement, advanced transitions, grading, and render automation are
+  deferred.
+
+## Repository layout
+
+```text
+AutoEditing.sln
 Core/
-├── Domain/                     # Domain-driven design structure
-│   ├── Audio/                 # VEGAS-free audio analysis (testable outside VEGAS)
-│   │   ├── AudioLoader.cs     # Decodes songs/clip audio to mono PCM via Media Foundation
-│   │   ├── BeatDetector.cs    # Real tempo + beat grid detection (onset autocorrelation)
-│   │   └── ShotDetector.cs    # Detects sniper shots as loud hard-attack transients
-│   ├── Editing/               # Video editing and effects components
-│   │   ├── EffectsApplier.cs  # Applies effects like time remapping, shake, name tags
-│   │   ├── MontageOrchestrator.cs # Runs the full pipeline
-│   │   ├── MontagePlanner.cs  # VEGAS-free planning: cuts on beats, kills on beats
-│   │   └── TimelineBuilder.cs # Executes the plan on the VEGAS timeline
-│   ├── Clip/                  # Clip processing and validation
-│   │   ├── Clip.cs           # Data model for video clips with metadata
-│   │   ├── ClipParser.cs     # Parses clip filenames to extract metadata
-│   │   └── ClipValidator.cs  # Validates clip quality and format
-├── Scripts/
-│   ├── EntryPoint.cs         # VEGAS Pro script entry point (loads the dock view)
-│   └── Ui/
-│       ├── MontageDockView.cs # Docked window UI (DockableControl)
-│       └── VegasTheme.cs      # VEGAS Pro 20 dark theme palette and control styling
-└── Properties/
-    └── AssemblyInfo.cs       # Assembly information
-
+  Domain/
+    Audio/       audio loading, beat detection, SFX templates, shot review
+    Clip/        parsing, validation, reusable sync library
+    Editing/     planning, speed mapping, timeline generation, effects adapter
+    Logging/     application logging
+  Scripts/       VEGAS extension entry point, dock host, WPF view and view model
+  appsettings.json
 Tools/
-└── AnalysisHarness/           # Console app: runs parse/beat/shot/plan against real
-                               # clips without VEGAS. Also has --debug-tempo and
-                               # --debug-shots commands for tuning the detectors.
+  AnalysisHarness/  VEGAS-free console runner and detector diagnostics
+docs/
+  ROADMAP.md
+  vegas-scripting-effects-api.md
+  semantic-montage/ current product, MVP, domain, research, and feasibility docs
 ```
 
-## Architecture Overview
+## Prerequisites
 
-The project follows a **Domain-Driven Design (DDD)** approach with clear separation of concerns:
+- Windows
+- VEGAS Pro 20 installed at the standard location
+- .NET Framework 4.8 developer tooling
+- Visual Studio 2019/2022, or the .NET/MSBuild tooling needed to build `net48`
 
-### Domain.Editing
-Contains all video editing and timeline manipulation logic:
-- **MontageOrchestrator**: Main workflow orchestration
-- **TimelineBuilder**: VEGAS timeline construction and clip arrangement
-- **EffectsApplier**: Visual effects, time remapping, and post-processing
-- **BeatDetector**: Music analysis and beat synchronization
+`Core.csproj` references:
 
-### Domain.Clip
-Handles all clip-related operations:
-- **Clip**: Core data model with metadata and properties
-- **ClipParser**: Intelligent filename parsing with convention support
-- **ClipValidator**: Quality assurance and format validation
-- **KillDetector**: Content analysis for highlight detection
+- `ScriptPortal.Vegas.dll` from the VEGAS Pro 20 installation;
+- NAudio Core and Wasapi 2.2.1;
+- Newtonsoft.Json 13.0.3.
 
-## Features
+Audio analysis is Windows-only because it uses Windows Media Foundation through
+NAudio.
 
-### Implemented Features
-- **Clip Parsing**: Automatically parses clip filenames to extract metadata (player, game, map, gun, type, sequence, notes)
-- **Clip Validation**: Validates video files for quality (FPS >= 60, format compatibility)
-- **Beat Detection**: Real tempo and beat-grid detection from the song's audio (onset envelope + autocorrelation, octave-folded to a musical cutting tempo)
-- **Shot Detection**: Real sniper-shot detection from each clip's audio track (loud hard-attack transients over the clip's ambient loudness)
-- **Montage Planning**: Every cut lands on a beat, and each clip's first shot lands exactly on a beat a fixed lead-in after the cut
-- **Timeline Building**: Executes the plan on the VEGAS timeline with trimmed source windows (take offsets)
-- **Time Remapping / Effects**: Framework for velocity envelopes, name tags, color correction (still placeholder)
-- **User Interface**: Docked VEGAS window (DockableControl) styled to match the VEGAS Pro 20 dark theme, with multiple creation modes
+## Build and deploy
 
-### Clip Naming Convention
-Clips are named with dash-separated sections, with the gun/type details packed
-into the final section:
-```
-PlayerName - Game - Map - GUN [TYPE...] [SEQUENCE] [(notes)].mp4
+Run commands from this directory (`AutoEditing/`):
+
+```powershell
+dotnet build Core/Core.csproj --configuration Debug
+dotnet build Tools/AnalysisHarness/AnalysisHarness.csproj --configuration Debug
 ```
 
-- **GUN**: first word of the details section (e.g. `MORS`, `XRK`, `KATT`, `Signal`)
-- **TYPE**: any words after the gun (e.g. `6ON`, `QUAD`, `5ON Triple`, `Airborne Triple`)
-- **SEQUENCE**: an optional zero-padded counter (`001`, `002`)
-- **(notes)**: optional free text in parentheses (e.g. `(7mult)`, `(same game)`)
-- Montage placement is marked only by the `[OPENER]`/`[CLOSER]` filename
-  prefixes (see the legacy convention below). Words in the details section
-  such as `Ender` (a game-ending kill) are just part of the clip type and do
-  not affect placement.
+Building `Core` invokes `.vscode/deploy-extension.ps1`, which copies the extension
+and runtime dependencies to:
 
-**Examples:**
-```
-Glovali - MWIII - Dome - MORS 6ON 001.mp4
-Glovali - MWIII - Greece - XRK QUAD.mp4
-Glovali - MWIII - AFGHAN - MORS 5ON Triple Ender (7mult).mp4
-Glovali - MWIII - Rio - KATT 5ON X2 001 (Triple).mp4
+```text
+Documents\Vegas Application Extensions
 ```
 
-The legacy convention (`[OPENER]Player - Game - Map - Gun - Type - 001.mp4`)
-is still supported.
+Close VEGAS before building so its loaded assemblies do not block deployment.
+Restart VEGAS after deployment, then open:
 
-### Analysis Harness
-The VEGAS-free part of the pipeline (parsing, beat detection, shot detection,
-planning) can be run from the command line without VEGAS Pro:
-```bash
-dotnet build Tools/AnalysisHarness
-Tools/AnalysisHarness/bin/Debug/net48/AnalysisHarness.exe <clipsFolder> [songPath]
-
-# Detector tuning helpers:
-AnalysisHarness.exe --debug-tempo <songPath>   # ranked tempo candidates + grid fit
-AnalysisHarness.exe --debug-shots <clipPath>   # loudest envelope peaks with attack stats
+```text
+View → Extensions → AutoEditing Shot Review
 ```
 
-## Installation
-
-1. **Prerequisites**:
-   - VEGAS Pro 20.0 or later
-   - .NET Framework 4.8
-   - Visual Studio 2019/2022 (for development)
-
-2. **Build the Project**:
-   ```bash
-   MSBuild Core\Core.csproj
-   ```
-
-3. **Deploy to VEGAS Pro**:
-   - Copy `Core.dll` to your VEGAS Pro script folder:
-     - `%PROGRAMDATA%\VEGAS Pro\Scripts\` (for all users)
-     - `%APPDATA%\VEGAS Pro\Scripts\` (for current user)
-   - Or use Application Extensions folder for auto-loading
-
-## Usage
-
-1. **Launch VEGAS Pro** and create a new project
-2. **Run the script** from Tools → Scripting → Run Script — the *Sniper Montage Creator* opens as a docked window (re-running the script re-activates the existing pane; it can be floated or re-docked like any other VEGAS window)
-3. **Select your clips folder** containing properly named MP4 files
-4. **Select your background music** (MP3, WAV, M4A, AAC supported)
-5. **Choose creation mode**:
-   - **Full Montage**: Complete processing with validation and effects
-   - **Quick Montage**: Fast processing for quick previews
-6. **Monitor progress** in the log window
-7. **Review the generated timeline** in VEGAS Pro
-
-## Development Notes
-
-### Current Limitations
-- **Shot vs. kill**: the shot detector finds the player's loud shots/impacts; it
-  cannot distinguish a hit from a miss, so clips with lots of firing detect more
-  "shots" than actual kills. Alignment uses the first shot, which is usually right.
-- **Time Remapping**: Framework implemented but VelocityEnvelope API requires further VEGAS Pro API research
-- **Effect Plugins**: Some effects (shake, color correction) are placeholder implementations pending VEGAS API exploration
-- **Audio decoding** uses Windows Media Foundation via NAudio (NAudio.Core +
-  NAudio.Wasapi in the `packages` folder), so analysis is Windows-only.
-
-### Future Enhancements
-- Advanced audio analysis for precise beat and kill detection
-- Complete VelocityEnvelope implementation for time remapping effects
-- Machine learning for automatic highlight detection
-- Integration with external video analysis tools
-- Support for more video formats and codecs
-- Advanced color grading and cinematic effects
-- Automatic thumbnail generation
-- Export presets and render queue automation
-
-### API Usage
-This project uses the VEGAS Pro Scripting API (`ScriptPortal.Vegas`). Key classes used:
-- `Vegas` - Main application object
-- `Project` - Current project
-- `VideoTrack`, `AudioTrack` - Timeline tracks
-- `VideoEvent`, `AudioEvent` - Timeline events
-- `Media`, `MediaPool` - Media management
-- `Take` - Media takes for events
-- `Timecode` - Time representation
-
-### Architecture Benefits
-The new Domain-Driven Design structure provides:
-- **Separation of Concerns**: Clear boundaries between editing and clip operations
-- **Maintainability**: Organized code structure for easier development
-- **Extensibility**: Easy to add new features within appropriate domains
-- **Testability**: Isolated components for unit testing
-- **SOLID Principles**: Following object-oriented design principles
+The post-build deployment uses `ContinueOnError`, so a successful compilation
+does not necessarily mean deployment succeeded. Read the build output for the
+deployment result.
 
 ## Configuration
 
-### Supported File Formats
-- **Video**: MP4 (H.264/H.265), AVI, MOV
-- **Audio**: MP3, WAV, M4A, AAC
+Defaults live in `Core/appsettings.json`. Create
+`Core/appsettings.local.json` from `Core/appsettings.local.json.example` for
+machine-specific overrides; the local file is intentionally ignored by Git.
 
-### Quality Requirements
-- **Minimum FPS**: 60 (configurable in ClipValidator)
-- **Recommended Resolution**: 1080p or higher
-- **Bitrate**: Automatic validation (placeholder)
+Relevant settings include:
 
-## Troubleshooting
-
-### Common Issues
-1. **"No clips found"**: Check clip naming convention and file extensions
-2. **"Could not import song"**: Verify audio file format and codec
-3. **"Validation failed"**: Check video quality, FPS, and file integrity
-4. **API errors**: Ensure VEGAS Pro version compatibility (20.0+)
-
-### Debug Mode
-Enable debug output by checking the log window. All errors and processing steps are logged for troubleshooting.
-
-## Development Setup
-
-### Prerequisites
-- **VEGAS Pro 20.0+** installed
-- **Visual Studio Code** (recommended IDE)
-- **.NET Framework 4.8** or higher
-
-### Required VS Code Extensions
-When you open this project in VS Code, you'll be prompted to install the recommended extensions. Please install:
-
-- **EditorConfig for VS Code** (`editorconfig.editorconfig`) - **REQUIRED** for code style enforcement
-- **C#** (`ms-dotnettools.csharp`) - **REQUIRED** for C# language support
-- **C# Dev Kit** (`ms-dotnettools.csdevkit`) - **RECOMMENDED** for enhanced C# development features
-
-To install the recommended extensions:
-1. Open the project in VS Code
-2. When prompted, click "Install" on the extension recommendations notification
-3. Or manually install via Command Palette: `Ctrl+Shift+P` → "Extensions: Show Recommended Extensions"
-
-### Code Style Rules
-This project enforces strict code styling rules via EditorConfig:
-- **No `var` keyword usage** - explicit types are required
-- Consistent indentation and formatting
-- C# naming conventions enforcement
-
-The EditorConfig extension will show real-time style violations and provide automatic fixes.
-
-### Building the Project
-```bash
-# Build the Core project
-dotnet build Core/Core.csproj --configuration Debug
-
-# Or use the VS Code task
-Ctrl+Shift+P → "Tasks: Run Task" → "Build Core Project"
+```json
+{
+  "QuickTesting": {
+    "ClipsFolder": "C:/VEGAS/edit",
+    "SongPath": "",
+    "OutputFolder": "C:/VEGAS/edit/Output"
+  },
+  "ShotDetection": {
+    "SfxRoot": "C:/VEGAS/sounds/MWIII Snipers SFX",
+    "PreRollSeconds": 1.25,
+    "PostRollSeconds": 0.75,
+    "MinVelocity": 0.35,
+    "MaxVelocity": 2.0
+  }
+}
 ```
 
-### Development Workflow
-1. Make your changes following the established code style
-2. Build the project to ensure no style violations
-3. Test with VEGAS Pro using the DLL copy task
-4. Submit pull requests with clean, styled code
+The UI can override source paths for the active workflow.
+
+## Clip naming convention
+
+The current parser accepts:
+
+```text
+PlayerName - Game - Map - GUN [TYPE...] [SEQUENCE] [(notes)].mp4
+```
+
+Examples:
+
+```text
+Glovali - MWIII - Dome - MORS 6ON 001.mp4
+Glovali - MWIII - Greece - XRK QUAD.mp4
+[OPENER]Glovali - MWIII - Rio - KATT 5ON X2 001 (Triple).mp4
+```
+
+- `GUN` is the first word in the final details section.
+- `TYPE` is the remaining play description.
+- `SEQUENCE` is an optional zero-padded counter.
+- Parenthesized text is stored as notes.
+- Only `[OPENER]` and `[CLOSER]` control special placement. A word such as
+  `Ender` inside the play type does not imply montage placement.
+
+The older dash-separated gun/type convention remains supported by the parser.
+
+## Analysis harness
+
+The harness runs parsing, beat detection, shot detection, and planning without
+launching VEGAS:
+
+```powershell
+dotnet build Tools/AnalysisHarness/AnalysisHarness.csproj
+Tools/AnalysisHarness/bin/Debug/net48/AnalysisHarness.exe <clips-folder> <song-path> <sfx-root>
+```
+
+Arguments after the clips folder are optional when suitable configuration or an
+MP3 in the clips folder supplies the missing value.
+
+Diagnostics:
+
+```powershell
+Tools/AnalysisHarness/bin/Debug/net48/AnalysisHarness.exe --debug-tempo <song-path>
+Tools/AnalysisHarness/bin/Debug/net48/AnalysisHarness.exe --debug-shots <clip-path>
+```
+
+Use the harness for detector tuning and planner verification. It cannot validate
+VEGAS timeline behavior.
+
+## Development rules
+
+- The main project targets `net48` and uses file-scoped namespaces where the
+  configured compiler supports them.
+- The repository style gate disallows the `var` keyword; use explicit types.
+- Keep analysis and planning logic independent of `ScriptPortal.Vegas` whenever
+  possible so it remains harness-testable.
+- Treat existing uncommitted changes as user work and avoid unrelated rewrites.
+- Do not describe VEGAS-host behavior as verified until it has been observed in
+  an actual VEGAS run.
+
+## Documentation
+
+- [Semantic montage documentation](docs/semantic-montage/README.md) — current
+  product direction, evidence policy, MVP requirements, retiming model, and
+  feasibility gates.
+- [Development roadmap](docs/ROADMAP.md) — historical/current implementation
+  sequence; some sections predate the semantic-montage documentation.
+- [VEGAS scripting and effects API notes](docs/vegas-scripting-effects-api.md) —
+  researched API behavior and explicitly unverified gaps.
+
+When documents disagree, use the semantic-montage MVP documents for product
+scope and verify implementation claims against the current code.
 
 ## License
 
-This project is for educational and personal use. VEGAS Pro and its scripting API are trademarks of VEGAS Creative Software.
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Implement your changes
-4. Test with VEGAS Pro
-5. Submit a pull request
-
-For questions or support, please create an issue in the repository.
+This repository is currently described as educational and personal-use work; no
+standalone license file is present. VEGAS Pro and its scripting API are products
+and trademarks of their respective owner.
