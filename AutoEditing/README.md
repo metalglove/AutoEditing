@@ -72,7 +72,8 @@ present.
 - Temporary `AE|` tracks, regions, and markers for clip review.
 - Candidate reclassification, gun correction, deletion, cursor-based manual
   markers, marker refresh after timeline adjustment, and jump-to-marker actions.
-- Immediate persistence of reviewed choices.
+- In-memory review drafts for outcome, gun, manual additions, and deletions,
+  committed together when a clip is marked ready.
 - Reuse of ready clips without laying every source clip out again.
 - Progress, cancellation, logging, and onboarding UI.
 

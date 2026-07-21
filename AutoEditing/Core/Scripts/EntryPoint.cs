@@ -10,7 +10,7 @@ public class EntryPoint
 	public void FromVegas(Vegas vegas)
 	{
 		ConfigurationManager.ReloadConfiguration();
-		if (VegasScriptBridge.TryExecutePending(vegas))
+		if (VegasScriptCommandExecutor.TryExecutePending(vegas))
 		{
 			return;
 		}

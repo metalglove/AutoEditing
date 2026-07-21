@@ -5,13 +5,15 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Core.Domain;
+using Core.Domain.Audio;
 using Core.Domain.Clip;
 using Core.Domain.Logging;
 using ScriptPortal.Vegas;
 
-namespace Core.Domain.Audio;
+namespace Core.Scripts;
 
-public sealed class ShotReviewWorkflow
+internal sealed class ShotReviewWorkflow
 {
 	public sealed class AnalysisItem
 	{
@@ -29,7 +31,7 @@ public sealed class ShotReviewWorkflow
 
 	private const string Prefix = "AE|";
 
-	public void CalibrateSfx(Vegas vegas, string sfxRoot)
+	public void CalibrateSfx(string sfxRoot)
 	{
 		SfxTemplateCatalog sfxTemplateCatalog = SfxTemplateCatalog.Discover(sfxRoot);
 		foreach (SfxTemplate template in sfxTemplateCatalog.Templates)
@@ -44,7 +46,7 @@ public sealed class ShotReviewWorkflow
 		Logger.Log("Indexed " + sfxTemplateCatalog.Templates.Count + " clean templates. Muzzle and sync anchors use the same first audible onset.");
 	}
 
-	public void SaveCalibration(Vegas vegas, string sfxRoot)
+	public void SaveCalibration(string sfxRoot)
 	{
 		SfxTemplateCatalog sfxTemplateCatalog = SfxTemplateCatalog.Load(sfxRoot);
 		sfxTemplateCatalog.Validate(sfxRoot);
@@ -313,21 +315,27 @@ public sealed class ShotReviewWorkflow
 		return clip;
 	}
 
-	public void MarkClipReady(Vegas vegas, string clipsFolder, string sfxRoot, int clipIndex)
+	public void MarkClipReady(Vegas vegas, string clipsFolder, string sfxRoot, int clipIndex, IReadOnlyList<ReviewMarkerSubmission> reviewedMarkers)
 	{
-		Region region = FindClipRegion(vegas.Project, clipIndex);
+		Region region = RunVegasStage("find review region", () => FindClipRegion(vegas.Project, clipIndex));
 		if (region == null)
 		{
 			throw new InvalidOperationException("The clip is not present on the AE review timeline.");
 		}
 		double start = Seconds(((Marker)region).Position);
 		double end = start + Seconds(region.Length);
-		bool candidates = ((IEnumerable<Marker>)vegas.Project.Markers).Any((Marker marker) => Seconds(marker.Position) >= start && Seconds(marker.Position) <= end && IsCandidateLabel(marker.Label, clipIndex));
-		if (candidates)
+		if (reviewedMarkers == null)
 		{
-			throw new InvalidOperationException("Classify or delete every candidate marker before marking this clip ready.");
+			throw new InvalidOperationException("Reviewed marker submission is missing.");
 		}
-		Core.Domain.Clip.Clip clip = CaptureReviewedMarkersForClip(vegas, clipsFolder, clipIndex);
+		List<Core.Domain.Clip.Clip> clips = new ClipParser().ParseAllClips(clipsFolder);
+		if (clipIndex < 0 || clipIndex >= clips.Count)
+		{
+			throw new ArgumentOutOfRangeException("clipIndex");
+		}
+		Core.Domain.Clip.Clip clip = clips[clipIndex];
+		clip.DurationSeconds = Seconds(region.Length);
+		clip.ShotEvents = reviewedMarkers.Select((ReviewMarkerSubmission marker) => CreateReviewedEvent(marker, start, end, clip.Gun)).OrderBy((ShotEvent shot) => shot.SourceConfirmationTimeSeconds).ToList();
 		if (clip.ConfirmedKills.Count == 0)
 		{
 			throw new InvalidOperationException("A ready clip requires at least one reviewed Hit or Headshot marker.");
@@ -336,7 +344,37 @@ public sealed class ShotReviewWorkflow
 		ClipSyncLibrary library = ClipSyncLibrary.Load();
 		library.Put(clip, catalog.RelevantFingerprint(clip.Gun), clip.ShotEvents, ClipSyncState.Ready);
 		library.Save();
-		RemoveClipFromTimeline(vegas, clipIndex);
+		RunVegasStage("remove ready clip from review timeline", () => RemoveClipFromTimeline(vegas, clipIndex));
+	}
+
+	private static T RunVegasStage<T>(string stage, Func<T> action)
+	{
+		try
+		{
+			return action();
+		}
+		catch (Exception innerException)
+		{
+			throw new InvalidOperationException("VEGAS operation failed during: " + stage + ".", innerException);
+		}
+	}
+
+	private static ShotEvent CreateReviewedEvent(ReviewMarkerSubmission marker, double regionStart, double regionEnd, string primaryGun)
+	{
+		if (marker == null)
+		{
+			throw new InvalidOperationException("Reviewed marker submission contains an empty entry.");
+		}
+		if (marker.Outcome != ShotOutcome.Hit && marker.Outcome != ShotOutcome.Headshot && marker.Outcome != ShotOutcome.Miss)
+		{
+			throw new InvalidOperationException("Every submitted marker must be classified as Hit, Headshot, or Miss.");
+		}
+		if (marker.TimelineSeconds < regionStart - 0.001 || marker.TimelineSeconds > regionEnd + 0.001)
+		{
+			throw new InvalidOperationException("A submitted marker is outside the current clip region.");
+		}
+		string gun = string.IsNullOrWhiteSpace(marker.Gun) ? primaryGun : marker.Gun;
+		return ShotEvent.Reviewed(Math.Max(0.0, marker.TimelineSeconds - regionStart), marker.Outcome, gun);
 	}
 
 	public void RemoveClipFromTimeline(Vegas vegas, int clipIndex)

@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using Core.Domain.Logging;
+using Core.Domain.Editing;
 using ScriptPortal.Vegas;
 
-namespace Core.Domain.Editing;
+namespace Core.Scripts;
 
-public class EffectsApplier
+internal sealed class EffectsApplier
 {
 	public void ApplyVelocityEnvelope(VideoEvent ev, SpeedProfile profile)
 	{

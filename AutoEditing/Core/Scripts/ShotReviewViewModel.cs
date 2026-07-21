@@ -18,16 +18,18 @@ using Core.Domain.Clip;
 using Core.Domain.Editing;
 using Core.Domain.Logging;
 using Microsoft.Win32;
-using ScriptPortal.Vegas;
 
 namespace Core.Scripts;
 
 public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 {
-	private readonly Vegas _vegas;
 	private readonly Dispatcher _dispatcher;
-	private readonly Action<Action> _queueVegasAction;
+	private readonly IVegasCommandClient _vegasCommands;
+	private readonly IVegasQueryClient _vegasQueries;
+	private readonly IVegasHostEventSource _vegasEvents;
 	private readonly List<RelayCommand> _commands = new List<RelayCommand>();
+	private readonly Dictionary<int, List<MarkerRow>> _reviewDrafts = new Dictionary<int, List<MarkerRow>>();
+	private readonly HashSet<int> _completedReviewIndices = new HashSet<int>();
 	private readonly UserPreferences _preferences;
 	private CancellationTokenSource _operationCancellation;
 	private ShotReviewWorkflow.AnalysisBatch _analysisBatch;
@@ -100,10 +102,12 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 
 	public event PropertyChangedEventHandler PropertyChanged;
 
-	public ShotReviewViewModel(Vegas vegas, Action<Action> queueVegasAction)
+	internal ShotReviewViewModel(IVegasCommandClient vegasCommands, IVegasQueryClient vegasQueries, IVegasHostEventSource vegasEvents)
 	{
-		_vegas = vegas;
-		_queueVegasAction = queueVegasAction ?? throw new ArgumentNullException("queueVegasAction");
+		_vegasCommands = vegasCommands ?? throw new ArgumentNullException("vegasCommands");
+		_vegasQueries = vegasQueries ?? throw new ArgumentNullException("vegasQueries");
+		_vegasEvents = vegasEvents ?? throw new ArgumentNullException("vegasEvents");
+		_vegasEvents.Changed += HandleVegasHostChanged;
 		_dispatcher = Dispatcher.CurrentDispatcher;
 		_clipsFolder = ConfigurationManager.GetQuickTestingClipsFolder();
 		_songPath = ConfigurationManager.GetQuickTestingSongPath();
@@ -192,42 +196,65 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 	{
 		ShotReviewWorkflow workflow = new ShotReviewWorkflow();
 		_analysisBatch = await Task.Run(() => workflow.AnalyzeClipAudio(ClipsFolder, SfxRoot, ReportProgress, token), token);
-		await InvokeVegasAsync(() => VegasScriptBridge.LayoutAnalysis(_vegas, _analysisBatch));
+		await _vegasCommands.ExecuteAsync(new LayoutAnalysisCommand { Analysis = _analysisBatch });
+		_reviewDrafts.Clear();
+		_completedReviewIndices.Clear();
 		_reviewPosition = 0;
 		SetStep(_analysisBatch.Items.Count == 0 ? WizardStep.Drawer : WizardStep.Review);
 	}
 
 	private async Task IndexSfxAsync(CancellationToken token)
 	{
-		await Task.Run(() => { token.ThrowIfCancellationRequested(); new ShotReviewWorkflow().CalibrateSfx(_vegas, SfxRoot); }, token);
+		await Task.Run(() => { token.ThrowIfCancellationRequested(); new ShotReviewWorkflow().CalibrateSfx(SfxRoot); }, token);
 		_sfxValid = true; OnPropertyChanged("SfxValid"); RefreshCommands();
 	}
 
 	private async Task ValidateSfxAsync(CancellationToken token)
 	{
-		await Task.Run(() => { token.ThrowIfCancellationRequested(); new ShotReviewWorkflow().SaveCalibration(_vegas, SfxRoot); }, token);
+		await Task.Run(() => { token.ThrowIfCancellationRequested(); new ShotReviewWorkflow().SaveCalibration(SfxRoot); }, token);
 		_sfxValid = true; OnPropertyChanged("SfxValid"); RefreshCommands();
 	}
 
-	private void RefreshMarkers()
+	private async void RefreshMarkers()
 	{
 		Markers.Clear();
 		if (_analysisBatch == null || _analysisBatch.Items.Count == 0) return;
 		ShotReviewWorkflow.AnalysisItem item = _analysisBatch.Items[_reviewPosition];
-		RunVegas("RefreshMarkers", delegate
+		try
 		{
-			Region region = FindRegion(item.Index);
-			if (region == null) return;
-			double start = Seconds(((Marker)region).Position);
-			_vegas.Transport.CursorPosition = ((Marker)region).Position;
-			foreach (Marker marker in ((IEnumerable<Marker>)_vegas.Project.Markers).Where((Marker value) => MarkerIndex(value.Label) == item.Index).OrderBy((Marker value) => Seconds(value.Position)))
+			ReviewClipSnapshot snapshot = await _vegasQueries.QueryAsync(new GetReviewClipSnapshotQuery { ClipIndex = item.Index });
+			if (snapshot == null || !snapshot.Exists) return;
+			await _vegasCommands.ExecuteAsync(new SetCursorCommand { TimelineSeconds = snapshot.RegionStartSeconds });
+			double start = snapshot.RegionStartSeconds;
+			List<MarkerRow> draft;
+			if (_reviewDrafts.TryGetValue(item.Index, out draft))
+			{
+				List<ReviewMarkerSnapshot> timelineMarkers = new List<ReviewMarkerSnapshot>(snapshot.Markers);
+				foreach (MarkerRow existingRow in draft)
+				{
+					ReviewMarkerSnapshot timelineMarker = timelineMarkers
+						.Where((ReviewMarkerSnapshot marker) => marker.Label == existingRow.OriginalLabel)
+						.OrderBy((ReviewMarkerSnapshot marker) => Math.Abs(marker.TimelineSeconds - existingRow.TimelineSeconds))
+						.FirstOrDefault();
+					if (timelineMarker != null)
+					{
+						existingRow.TimelineSeconds = timelineMarker.TimelineSeconds;
+						existingRow.Time = (existingRow.TimelineSeconds - start).ToString("0.000s", CultureInfo.InvariantCulture);
+						timelineMarkers.Remove(timelineMarker);
+					}
+					Markers.Add(existingRow);
+				}
+				return;
+			}
+			draft = new List<MarkerRow>();
+			foreach (ReviewMarkerSnapshot marker in snapshot.Markers)
 			{
 				string[] parts = marker.Label.Split('|');
 				string outcomeText = parts[1].Replace("HighConfidence-", string.Empty).Replace("Candidate-", string.Empty);
 				ShotOutcome outcome;
 				if (!Enum.TryParse(outcomeText, true, out outcome) || (outcome != ShotOutcome.Hit && outcome != ShotOutcome.Headshot && outcome != ShotOutcome.Miss)) outcome = ShotOutcome.Miss;
 				string[] source = parts.Length > 3 ? parts[3].Split(new char[] { ';' }, 2) : new string[0];
-				MarkerRow row = new MarkerRow { TimelineSeconds = Seconds(marker.Position), Time = (Seconds(marker.Position) - start).ToString("0.000s", CultureInfo.InvariantCulture), Outcome = outcome, Gun = parts.Length > 4 && !string.IsNullOrWhiteSpace(parts[4]) ? parts[4] : item.Clip.Gun, Confidence = source.Length > 0 ? source[0] : string.Empty, TemplateId = source.Length > 1 ? source[1] : string.Empty, OriginalLabel = marker.Label };
+				MarkerRow row = new MarkerRow { TimelineSeconds = marker.TimelineSeconds, Time = (marker.TimelineSeconds - start).ToString("0.000s", CultureInfo.InvariantCulture), Outcome = outcome, Gun = parts.Length > 4 && !string.IsNullOrWhiteSpace(parts[4]) ? parts[4] : item.Clip.Gun, Confidence = source.Length > 0 ? source[0] : string.Empty, TemplateId = source.Length > 1 ? source[1] : string.Empty, OriginalLabel = marker.Label };
 				row.GunOptions = KnownGuns(item.Clip.Gun, row.Gun);
 				try
 				{
@@ -239,53 +266,44 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 				catch (Exception)
 				{
 				}
-				row.Changed = PersistMarkerRowChange;
+				draft.Add(row);
 				Markers.Add(row);
 			}
-		});
+			_reviewDrafts[item.Index] = draft;
+		}
+		catch (Exception exception) { Logger.LogError("[RefreshMarkers] " + exception.Message, exception); Status = "Failed: " + exception.Message; }
 		OnPropertyChanged("ReviewHeader"); RefreshCommands();
-	}
-
-	private void PersistMarkerRowChange(MarkerRow row) { PersistMarkerLabel(row); }
-
-	// Rewrites a row's marker label from its current Outcome/Gun, stripping any
-	// "Candidate-"/"HighConfidence-" prefix, regardless of whether the value actually
-	// changed. Used both for live edits and to confirm rows the reviewer left untouched
-	// because the detected outcome was already correct.
-	// IMarkerCOM.SetLabel throws E_UNEXPECTED in this VEGAS build (confirmed via stack
-	// trace) - mutating an existing marker's Label is not reliable, so instead remove
-	// the old marker and add a replacement at the same position, mirroring the only
-	// marker operations already proven to work elsewhere (Add/Remove).
-	private void PersistMarkerLabel(MarkerRow row)
-	{
-		string oldLabel = row.OriginalLabel;
-		double timelineSeconds = row.TimelineSeconds;
-		string newLabel = ShotReviewWorkflow.BuildMarkerLabel(row.Outcome.ToString(), CurrentClipIndex(), row.Confidence + ";" + row.TemplateId, row.Gun);
-		if (newLabel == oldLabel) return;
-		RunVegas("PersistMarkerLabel", delegate
-		{
-			Marker marker = ((IEnumerable<Marker>)_vegas.Project.Markers).FirstOrDefault((Marker m) => m.Label == oldLabel && Math.Abs(Seconds(m.Position) - timelineSeconds) < 0.001);
-			if (marker != null)
-			{
-				Timecode position = marker.Position;
-				((BaseList<Marker>)(object)_vegas.Project.Markers).Remove(marker);
-				((BaseList<Marker>)(object)_vegas.Project.Markers).Add(new Marker(position, newLabel));
-			}
-		});
-		row.OriginalLabel = newLabel;
-	}
-
-	private void ConfirmAllMarkers()
-	{
-		foreach (MarkerRow row in Markers.ToList()) PersistMarkerLabel(row);
 	}
 
 	private async Task AddMarkerAtCursor(ShotOutcome outcome)
 	{
 		try
 		{
-			await InvokeVegasAsync(() => new ShotReviewWorkflow().MarkAtCursor(_vegas, outcome));
-			RefreshMarkers();
+			int index = CurrentClipIndex();
+			ReviewClipSnapshot snapshot = await _vegasQueries.QueryAsync(new GetReviewClipSnapshotQuery { ClipIndex = index });
+			if (snapshot == null || !snapshot.Exists) throw new InvalidOperationException("The current review clip is no longer on the timeline.");
+			if (snapshot.CursorSeconds < snapshot.RegionStartSeconds || snapshot.CursorSeconds > snapshot.RegionEndSeconds) throw new InvalidOperationException("Cursor is not inside the current review clip.");
+			double timelineSeconds = snapshot.CursorSeconds;
+			double regionStart = snapshot.RegionStartSeconds;
+			ShotReviewWorkflow.AnalysisItem item = _analysisBatch.Items[_reviewPosition];
+			MarkerRow row = new MarkerRow
+			{
+				TimelineSeconds = timelineSeconds,
+				Time = (timelineSeconds - regionStart).ToString("0.000s", CultureInfo.InvariantCulture),
+				Outcome = outcome,
+				Gun = item.Clip.Gun,
+				Confidence = "manual",
+				TemplateId = "manual"
+			};
+			row.GunOptions = KnownGuns(item.Clip.Gun, row.Gun);
+			List<MarkerRow> draft;
+			if (!_reviewDrafts.TryGetValue(index, out draft))
+			{
+				draft = new List<MarkerRow>();
+				_reviewDrafts[index] = draft;
+			}
+			draft.Add(row);
+			Markers.Add(row);
 		}
 		catch (Exception exception)
 		{
@@ -297,13 +315,15 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 	private void DeleteSelectedMarker()
 	{
 		MarkerRow row = SelectedMarker; if (row == null) return;
-		RunVegas("DeleteSelectedMarker", () => { Marker marker = FindMarker(row); if (marker != null) ((BaseList<Marker>)(object)_vegas.Project.Markers).Remove(marker); });
-		RefreshMarkers();
+		List<MarkerRow> draft;
+		if (_reviewDrafts.TryGetValue(CurrentClipIndex(), out draft)) draft.Remove(row);
+		Markers.Remove(row);
+		SelectedMarker = null;
 	}
 
 	private void JumpToSelectedMarker()
 	{
-		MarkerRow row = SelectedMarker; if (row != null) RunVegas("JumpToSelectedMarker", () => _vegas.Transport.CursorPosition = Timecode.FromSeconds(row.TimelineSeconds));
+		MarkerRow row = SelectedMarker; if (row != null) _ = _vegasCommands.ExecuteAsync(new SetCursorCommand { TimelineSeconds = row.TimelineSeconds });
 	}
 
 	private async void MarkCurrentClipReady()
@@ -311,8 +331,22 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		try
 		{
 			int index = CurrentClipIndex();
-			ConfirmAllMarkers();
-			await InvokeVegasAsync(() => VegasScriptBridge.MarkClipReady(_vegas, ClipsFolder, SfxRoot, index));
+			List<ReviewMarkerSubmission> reviewedMarkers = Markers.Select((MarkerRow row) => new ReviewMarkerSubmission
+			{
+				TimelineSeconds = row.TimelineSeconds,
+				Outcome = row.Outcome,
+				Gun = row.Gun
+			}).ToList();
+			CommitClipReviewCommand command = new CommitClipReviewCommand
+			{
+				ClipsFolder = ClipsFolder,
+				SfxRoot = SfxRoot,
+				ClipIndex = index,
+				ReviewedMarkers = reviewedMarkers
+			};
+			await _vegasCommands.ExecuteAsync(command);
+			_reviewDrafts.Remove(index);
+			_completedReviewIndices.Add(index);
 			int next = FindNextLiveClip(_reviewPosition + 1);
 			if (next < 0) { SetStep(WizardStep.Drawer); } else { _reviewPosition = next; RefreshMarkers(); }
 		}
@@ -325,7 +359,7 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		for (int offset = 0; offset < _analysisBatch.Items.Count; offset++)
 		{
 			int position = (start + offset) % _analysisBatch.Items.Count;
-			if (FindRegion(_analysisBatch.Items[position].Index) != null) return position;
+			if (!_completedReviewIndices.Contains(_analysisBatch.Items[position].Index)) return position;
 		}
 		return -1;
 	}
@@ -366,18 +400,14 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		List<string> paths = DrawerRows.Where((ClipDrawerRow row) => row.IsSelected && row.IsReady).Select((ClipDrawerRow row) => row.FilePath).ToList();
 		List<Clip> clips = new ShotReviewWorkflow().HydrateFromLibrary(paths);
 		if (clips.Count == 0) throw new InvalidOperationException("Select at least one available ready clip.");
-		MontageOrchestrator.PreparedMontage prepared = await Task.Run(() => new MontageOrchestrator().PrepareMontage(clips, SongPath), token);
-		await InvokeVegasAsync(() => VegasScriptBridge.BuildMontage(_vegas, prepared, SongPath));
+		PreparedMontage prepared = await Task.Run(() => new MontagePreparationService().Prepare(clips, SongPath), token);
+		await _vegasCommands.ExecuteAsync(new BuildMontageCommand { Montage = prepared, SongPath = SongPath });
 	}
 
 	private void AddKnownFolder() { string folder = SelectFolder(ClipsFolder); if (folder != null && !_preferences.KnownClipDirectories.Contains(folder, StringComparer.OrdinalIgnoreCase)) { _preferences.KnownClipDirectories.Add(folder); ConfigurationManager.SaveUserPreferences(_preferences); RefreshDrawer(); } }
 	private void DismissOnboarding() { ShowOnboarding = false; _preferences.HasSeenOnboarding = true; ConfigurationManager.SaveUserPreferences(_preferences); }
 	private void ChangeClip(int delta) { int value = _reviewPosition + delta; if (_analysisBatch != null && value >= 0 && value < _analysisBatch.Items.Count) { _reviewPosition = value; RefreshMarkers(); } }
 	private int CurrentClipIndex() { return _analysisBatch.Items[_reviewPosition].Index; }
-	private Region FindRegion(int index) { string prefix = "AE|CLIP|" + index + "|"; return ((IEnumerable<Region>)_vegas.Project.Regions).FirstOrDefault((Region region) => ((Marker)region).Label != null && ((Marker)region).Label.StartsWith(prefix, StringComparison.Ordinal)); }
-	private Marker FindMarker(MarkerRow row) { return ((IEnumerable<Marker>)_vegas.Project.Markers).FirstOrDefault((Marker marker) => marker.Label == row.OriginalLabel && Math.Abs(Seconds(marker.Position) - row.TimelineSeconds) < 0.001); }
-	private static int MarkerIndex(string label) { string[] parts = (label ?? string.Empty).Split('|'); int index; return parts.Length >= 3 && parts[0] == "AE" && int.TryParse(parts[2], out index) ? index : -1; }
-	private static double Seconds(Timecode value) { return value.ToMilliseconds() / 1000.0; }
 	private static List<string> KnownGuns(string primary, string current) { HashSet<string> guns = new HashSet<string>(StringComparer.OrdinalIgnoreCase); if (!string.IsNullOrWhiteSpace(primary)) guns.Add(primary); if (!string.IsNullOrWhiteSpace(current)) guns.Add(current); return guns.OrderBy((string gun) => gun).ToList(); }
 
 	private void BrowseClips() { string path = SelectFolder(ClipsFolder); if (path != null) ClipsFolder = path; }
@@ -386,15 +416,23 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 	private static string SelectFolder(string current) { using FolderBrowserDialog dialog = new FolderBrowserDialog(); if (Directory.Exists(current)) dialog.SelectedPath = current; return dialog.ShowDialog() == DialogResult.OK ? dialog.SelectedPath : null; }
 
 	public void Cancel() { if (_operationCancellation != null) { Status = "Cancelling..."; _operationCancellation.Cancel(); } }
-	public void Dispose() { _operationCancellation?.Cancel(); Logger.SetSink(null); }
+	public void Dispose() { _operationCancellation?.Cancel(); _vegasEvents.Changed -= HandleVegasHostChanged; _vegasEvents.Dispose(); Logger.SetSink(null); }
+	private void HandleVegasHostChanged(object sender, VegasHostEventArgs args)
+	{
+		if (args.Kind == VegasHostEventKind.ProjectClosed)
+		{
+			Dispatch(() => { _reviewDrafts.Clear(); _completedReviewIndices.Clear(); Markers.Clear(); Status = "VEGAS project closed"; });
+		}
+		else if (args.Kind == VegasHostEventKind.MarkersChanged && IsReviewStep && !IsBusy)
+		{
+			Dispatch(() => Status = "Timeline markers changed; use Refresh after nudge to update the review draft.");
+		}
+	}
 	private RelayCommand Command(Action execute, Func<bool> canExecute) { RelayCommand command = new RelayCommand(execute, canExecute); _commands.Add(command); return command; }
 	private async Task RunBusyAsync(string operation, Func<CancellationToken, Task> action) { if (_operationCancellation != null) return; _operationCancellation = new CancellationTokenSource(); IsBusy = true; IsIndeterminate = true; Status = operation; try { await action(_operationCancellation.Token); ReportProgress(1, 1, operation + " complete"); } catch (OperationCanceledException) { Status = "Cancelled"; } catch (Exception exception) { Logger.LogError(exception.Message, exception); Status = "Failed: " + exception.Message; } finally { _operationCancellation.Dispose(); _operationCancellation = null; IsIndeterminate = false; IsBusy = false; } }
 	private void ReportProgress(int completed, int total, string message) { Dispatch(() => { ProgressMaximum = Math.Max(1, total); ProgressValue = Math.Max(0, Math.Min(ProgressMaximum, completed)); IsIndeterminate = false; Status = message ?? string.Empty; }); }
 	private void AppendLog(string message, bool isError) { Dispatch(() => { LogText += message + Environment.NewLine; ((RelayCommand)ClearLogCommand).RaiseCanExecuteChanged(); }); }
 	private void ClearLog() { LogText = string.Empty; ((RelayCommand)ClearLogCommand).RaiseCanExecuteChanged(); }
-	private async void RunVegas(string context, Action action) { try { await InvokeVegasAsync(action); } catch (Exception exception) { Logger.LogError("[" + context + "] " + exception.Message, exception); } }
-	private Task InvokeVegasAsync(Action action) { return InvokeVegasAsync(() => { action(); return (object)null; }); }
-	private Task<T> InvokeVegasAsync<T>(Func<T> action) { TaskCompletionSource<T> completion = new TaskCompletionSource<T>(); _queueVegasAction(() => { try { completion.SetResult(action()); } catch (Exception exception) { completion.SetException(exception); } }); return completion.Task; }
 	private void Dispatch(Action action) { if (_dispatcher.CheckAccess()) action(); else _dispatcher.BeginInvoke(action); }
 	private void RefreshCommands() { foreach (RelayCommand command in _commands) command.RaiseCanExecuteChanged(); }
 	private void PathsChanged(string property) { OnPropertyChanged(property); RefreshCommands(); }

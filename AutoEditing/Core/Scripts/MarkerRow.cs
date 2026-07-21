@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Core.Domain.Audio;
 
@@ -15,23 +14,13 @@ public sealed class MarkerRow
 	public ShotOutcome Outcome
 	{
 		get { return _outcome; }
-		set
-		{
-			if (_outcome == value) return;
-			_outcome = value;
-			Changed?.Invoke(this);
-		}
+		set { _outcome = value; }
 	}
 
 	public string Gun
 	{
 		get { return _gun; }
-		set
-		{
-			if (_gun == value) return;
-			_gun = value;
-			Changed?.Invoke(this);
-		}
+		set { _gun = value; }
 	}
 
 	public string Confidence { get; set; }
@@ -39,8 +28,4 @@ public sealed class MarkerRow
 	public string OriginalLabel { get; set; }
 	public List<ShotOutcome> OutcomeOptions { get; set; } = new List<ShotOutcome> { ShotOutcome.Hit, ShotOutcome.Headshot, ShotOutcome.Miss };
 	public List<string> GunOptions { get; set; } = new List<string>();
-
-	// Invoked whenever Outcome or Gun changes so edits commit to VEGAS immediately;
-	// otherwise a later "refresh after nudge" would silently discard unsaved edits.
-	public Action<MarkerRow> Changed { get; set; }
 }
