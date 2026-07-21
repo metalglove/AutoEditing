@@ -374,7 +374,11 @@ internal sealed class ShotReviewWorkflow
 			throw new InvalidOperationException("A submitted marker is outside the current clip region.");
 		}
 		string gun = string.IsNullOrWhiteSpace(marker.Gun) ? primaryGun : marker.Gun;
-		return ShotEvent.Reviewed(Math.Max(0.0, marker.TimelineSeconds - regionStart), marker.Outcome, gun);
+		ShotEvent reviewed = ShotEvent.Reviewed(Math.Max(0.0, marker.TimelineSeconds - regionStart), marker.Outcome, gun);
+		reviewed.Confidence = Math.Max(0.0, Math.Min(1.0, marker.DetectionConfidence));
+		reviewed.TemplateId = string.IsNullOrWhiteSpace(marker.TemplateId) ? (marker.Origin == ShotEventOrigin.UserMarked ? "manual" : null) : marker.TemplateId;
+		reviewed.Origin = marker.Origin;
+		return reviewed;
 	}
 
 	public void RemoveClipFromTimeline(Vegas vegas, int clipIndex)

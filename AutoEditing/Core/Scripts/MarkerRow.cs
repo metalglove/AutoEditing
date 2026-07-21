@@ -24,7 +24,9 @@ public sealed class MarkerRow
 	}
 
 	public string Confidence { get; set; }
+	public double DetectionConfidence { get; set; }
 	public string TemplateId { get; set; }
+	public ShotEventOrigin Origin { get; set; }
 	public string OriginalLabel { get; set; }
 	public List<ShotOutcome> OutcomeOptions { get; set; } = new List<ShotOutcome> { ShotOutcome.Hit, ShotOutcome.Headshot, ShotOutcome.Miss };
 	public List<string> GunOptions { get; set; } = new List<string>();

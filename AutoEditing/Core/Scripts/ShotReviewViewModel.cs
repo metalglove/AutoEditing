@@ -226,6 +226,15 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 			if (snapshot == null || !snapshot.Exists) return;
 			await _vegasCommands.ExecuteAsync(new SetCursorCommand { TimelineSeconds = snapshot.RegionStartSeconds });
 			double start = snapshot.RegionStartSeconds;
+			List<string> templateGuns = new List<string>();
+			try
+			{
+				templateGuns = SfxTemplateCatalog.Load(SfxRoot).Templates
+					.Select((SfxTemplate template) => template.Gun)
+					.Where((string gun) => !string.IsNullOrWhiteSpace(gun))
+					.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+			}
+			catch (Exception) { }
 			List<MarkerRow> draft;
 			if (_reviewDrafts.TryGetValue(item.Index, out draft))
 			{
@@ -254,17 +263,17 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 				ShotOutcome outcome;
 				if (!Enum.TryParse(outcomeText, true, out outcome) || (outcome != ShotOutcome.Hit && outcome != ShotOutcome.Headshot && outcome != ShotOutcome.Miss)) outcome = ShotOutcome.Miss;
 				string[] source = parts.Length > 3 ? parts[3].Split(new char[] { ';' }, 2) : new string[0];
-				MarkerRow row = new MarkerRow { TimelineSeconds = marker.TimelineSeconds, Time = (marker.TimelineSeconds - start).ToString("0.000s", CultureInfo.InvariantCulture), Outcome = outcome, Gun = parts.Length > 4 && !string.IsNullOrWhiteSpace(parts[4]) ? parts[4] : item.Clip.Gun, Confidence = source.Length > 0 ? source[0] : string.Empty, TemplateId = source.Length > 1 ? source[1] : string.Empty, OriginalLabel = marker.Label };
+				string confidenceText = source.Length > 0 ? source[0] : string.Empty;
+				string templateId = source.Length > 1 ? source[1] : string.Empty;
+				double detectionConfidence;
+				string confidenceNumber = confidenceText.EndsWith("%", StringComparison.Ordinal) ? confidenceText.Substring(0, confidenceText.Length - 1) : confidenceText;
+				if (double.TryParse(confidenceNumber, NumberStyles.Float, CultureInfo.InvariantCulture, out detectionConfidence) && confidenceText.EndsWith("%", StringComparison.Ordinal)) detectionConfidence /= 100.0;
+				else if (string.IsNullOrWhiteSpace(confidenceNumber)) detectionConfidence = templateId == "manual" ? 1.0 : 0.0;
+				MarkerRow row = new MarkerRow { TimelineSeconds = marker.TimelineSeconds, Time = (marker.TimelineSeconds - start).ToString("0.000s", CultureInfo.InvariantCulture), Outcome = outcome, Gun = parts.Length > 4 && !string.IsNullOrWhiteSpace(parts[4]) ? parts[4] : item.Clip.Gun, Confidence = confidenceText, DetectionConfidence = detectionConfidence, TemplateId = templateId, Origin = templateId == "manual" ? ShotEventOrigin.UserMarked : ShotEventOrigin.Detected, OriginalLabel = marker.Label };
 				row.GunOptions = KnownGuns(item.Clip.Gun, row.Gun);
-				try
+				foreach (string gun in templateGuns)
 				{
-					foreach (string gun in SfxTemplateCatalog.Load(SfxRoot).Templates.Select((SfxTemplate template) => template.Gun).Where((string gun) => !string.IsNullOrWhiteSpace(gun)).Distinct(StringComparer.OrdinalIgnoreCase))
-					{
-						if (!row.GunOptions.Contains(gun, StringComparer.OrdinalIgnoreCase)) row.GunOptions.Add(gun);
-					}
-				}
-				catch (Exception)
-				{
+					if (!row.GunOptions.Contains(gun, StringComparer.OrdinalIgnoreCase)) row.GunOptions.Add(gun);
 				}
 				draft.Add(row);
 				Markers.Add(row);
@@ -293,7 +302,9 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 				Outcome = outcome,
 				Gun = item.Clip.Gun,
 				Confidence = "manual",
-				TemplateId = "manual"
+				DetectionConfidence = 1.0,
+				TemplateId = "manual",
+				Origin = ShotEventOrigin.UserMarked
 			};
 			row.GunOptions = KnownGuns(item.Clip.Gun, row.Gun);
 			List<MarkerRow> draft;
@@ -335,7 +346,10 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 			{
 				TimelineSeconds = row.TimelineSeconds,
 				Outcome = row.Outcome,
-				Gun = row.Gun
+				Gun = row.Gun,
+				DetectionConfidence = row.DetectionConfidence,
+				TemplateId = row.TemplateId,
+				Origin = row.Origin
 			}).ToList();
 			CommitClipReviewCommand command = new CommitClipReviewCommand
 			{

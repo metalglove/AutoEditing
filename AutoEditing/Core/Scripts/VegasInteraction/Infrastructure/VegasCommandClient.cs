@@ -29,7 +29,7 @@ internal sealed class VegasCommandClient : IVegasCommandClient, IVegasQueryClien
 	private Task<TResult> ExecuteRequestAsync<TResult>(IVegasRequest command)
 	{
 		if (command == null) throw new ArgumentNullException("command");
-		TaskCompletionSource<TResult> completion = new TaskCompletionSource<TResult>();
+		TaskCompletionSource<TResult> completion = new TaskCompletionSource<TResult>(TaskCreationOptions.RunContinuationsAsynchronously);
 		_queueHostAction(delegate
 		{
 			try
