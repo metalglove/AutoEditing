@@ -1,7 +1,7 @@
 {
   "Logging": {
     "LogFile": {
-      "Path": "C:\\Users\\[USERNAME]\\source\\repos\\AutoEditing\\AutoEditing\\Logs\\autoediting.log",
+      "Path": "C:/VEGAS/Logs/autoediting.log",
       "Enabled": true
     },
     "LogLevel": {
@@ -9,8 +9,11 @@
     }
   },
   "QuickTesting": {
-    "ClipsFolder": "C:\\Users\\[USERNAME]\\Downloads\\TestClips\\",
-    "SongPath": "C:\\Users\\[USERNAME]\\Downloads\\testsong.mp3",
-    "OutputFolder": "C:\\Users\\[USERNAME]\\Downloads\\Output\\"
+    "ClipsFolder": "C:/VEGAS/edit",
+    "SongPath": "C:/VEGAS/edit/song.mp3",
+    "OutputFolder": "C:/VEGAS/edit/Output"
+  },
+  "ShotDetection": {
+    "SfxRoot": "C:/VEGAS/sounds/MWIII Snipers SFX"
   }
 }

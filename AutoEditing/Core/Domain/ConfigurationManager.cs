@@ -154,25 +154,25 @@ public static class ConfigurationManager
 
 	public static string GetQuickTestingClipsFolder()
 	{
-		return _config?.QuickTesting?.ClipsFolder ?? "C:\\Users\\Downloads\\TestClips\\";
+		return _config?.QuickTesting?.ClipsFolder ?? "C:\\VEGAS\\edit";
 	}
 
 	public static string GetQuickTestingSongPath()
 	{
-		return _config?.QuickTesting?.SongPath ?? "C:\\Users\\Downloads\\testsong.mp3";
+		return _config?.QuickTesting?.SongPath ?? "C:\\VEGAS\\edit\\song.mp3";
 	}
 
 	public static ShotDetectionConfig GetShotDetection()
 	{
 		return _config?.ShotDetection ?? new ShotDetectionConfig
 		{
-			SfxRoot = "E:EditssoundsMWIII Snipers SFX"
+			SfxRoot = "C:\\VEGAS\\sounds\\MWIII Snipers SFX"
 		};
 	}
 
 	public static string GetOutputFolder()
 	{
-		return _config?.QuickTesting?.OutputFolder ?? "C:\\Users\\Downloads\\Output\\";
+		return _config?.QuickTesting?.OutputFolder ?? "C:\\VEGAS\\edit\\Output\\";
 	}
 
 	public static void ReloadConfiguration()
