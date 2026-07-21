@@ -13,6 +13,10 @@ public sealed class SongAnalysis
 
 	public SongIdentity Song { get; set; }
 
+	public double? TempoBpm { get; set; }
+
+	public double? BeatPhaseSeconds { get; set; }
+
 	public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
 
 	public DateTime UpdatedUtc { get; set; } = DateTime.UtcNow;

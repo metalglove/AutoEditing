@@ -65,3 +65,33 @@ Tools/AnalysisHarness/bin/Debug/net48/AnalysisHarness.exe --self-test-song-analy
 The next layer should expose this model through a song-review workflow. It must
 continue to serialize all VEGAS access through the CQRS interaction boundary
 described in [vegas-interaction-contract.md](vegas-interaction-contract.md).
+
+## Initial structure proposals
+
+`SongStructureAnalyzer` adds an intentionally explainable first analysis pass:
+
+- onset strength is measured around every detected beat;
+- the strongest repeating phase in groups of four proposes downbeats;
+- strong local onset peaks propose accents and transients;
+- RMS energy is summarized in four-bar phrase windows;
+- relative energy and energy change propose intro, build-up, action, climax,
+  breakdown, cinematic, and outro regions;
+- region boundaries propose phrase events, while strong rises also propose a
+  build hit and drop.
+
+These are confidence-scored review candidates, not authoritative musical facts.
+Short or effectively silent audio produces no invented tempo and is represented
+as an `Unused` region.
+
+Inspect a song without VEGAS:
+
+```powershell
+Tools/AnalysisHarness/bin/Debug/net48/AnalysisHarness.exe --debug-song <song-path>
+```
+
+Export the proposal as a validated sidecar:
+
+```powershell
+Tools/AnalysisHarness/bin/Debug/net48/AnalysisHarness.exe `
+  --export-song-analysis <song-path> <output-json>
+```

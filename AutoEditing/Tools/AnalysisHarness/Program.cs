@@ -32,6 +32,16 @@ namespace AnalysisHarness
                 DebugCommands.DebugTempo(args[1]);
                 return 0;
             }
+			if (args.Length == 2 && args[0] == "--debug-song")
+			{
+				DebugCommands.DebugSong(args[1], null);
+				return 0;
+			}
+			if (args.Length == 3 && args[0] == "--export-song-analysis")
+			{
+				DebugCommands.DebugSong(args[1], args[2]);
+				return 0;
+			}
             if (args.Length == 2 && args[0] == "--debug-shots")
             {
                 DebugCommands.DebugShots(args[1]);

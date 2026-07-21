@@ -12,6 +12,10 @@ public sealed class MusicRegion
 
 	public double? Confidence { get; set; }
 
+	public double? Energy { get; set; }
+
+	public double? EnergyDelta { get; set; }
+
 	public MusicAnalysisOrigin Origin { get; set; }
 
 	public MusicAnalysisReviewState ReviewState { get; set; }

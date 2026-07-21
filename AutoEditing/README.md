@@ -68,6 +68,8 @@ present.
 - Per-gun SFX-template catalogs and calibration/indexing.
 - High-recall shot candidate detection followed by template matching.
 - Diagnostic commands for tempo and shot-detector tuning.
+- Diagnostics for printing or exporting confidence-scored beat, downbeat,
+  transient, energy, phrase, and candidate-region proposals.
 
 ### Review UI
 

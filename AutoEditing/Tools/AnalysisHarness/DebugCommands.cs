@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Core.Domain.Audio;
+using Core.Domain.Audio.SongAnalysis;
 
 namespace AnalysisHarness
 {
@@ -12,6 +14,36 @@ namespace AnalysisHarness
     /// </summary>
     internal static class DebugCommands
     {
+		public static void DebugSong(string songPath, string outputPath)
+		{
+			MonoAudio audio = AudioLoader.LoadMono(songPath);
+			SongIdentity identity = SongIdentity.FromFile(songPath, audio.DurationSeconds);
+			SongAnalysis analysis = new SongStructureAnalyzer().Analyze(audio, identity);
+			Console.WriteLine(Path.GetFileName(songPath));
+			Console.WriteLine($"Duration: {audio.DurationSeconds:F2}s");
+			Console.WriteLine(analysis.TempoBpm.HasValue
+				? $"Tempo: {analysis.TempoBpm:F2} BPM, phase {analysis.BeatPhaseSeconds:F3}s"
+				: "Tempo: none (short or effectively silent audio)");
+			Console.WriteLine();
+			Console.WriteLine("Regions:");
+			foreach (MusicRegion region in analysis.Regions)
+			{
+				Console.WriteLine($"  {region.StartSeconds,7:F2}-{region.EndSeconds,7:F2}s  {region.Type,-10} energy={region.Energy.GetValueOrDefault():F2} delta={region.EnergyDelta.GetValueOrDefault():+0.00;-0.00;0.00} confidence={region.Confidence.GetValueOrDefault():F2}");
+			}
+			Console.WriteLine();
+			Console.WriteLine("Event summary:");
+			foreach (IGrouping<MusicEventType, MusicEvent> group in analysis.Events.GroupBy((MusicEvent item) => item.Type).OrderBy((IGrouping<MusicEventType, MusicEvent> group) => group.Key))
+			{
+				Console.WriteLine($"  {group.Key,-16} {group.Count(),4}  first=[{string.Join(", ", group.Take(8).Select((MusicEvent item) => item.TimeSeconds.ToString("F2")))}]");
+			}
+			if (!string.IsNullOrWhiteSpace(outputPath))
+			{
+				new SongAnalysisStore().Save(outputPath, analysis);
+				Console.WriteLine();
+				Console.WriteLine("Exported: " + Path.GetFullPath(outputPath));
+			}
+		}
+
         public static void DebugTempo(string songPath)
         {
             MonoAudio audio = AudioLoader.LoadMono(songPath);

@@ -18,6 +18,8 @@ namespace AnalysisHarness
 				TestPersistenceRoundTrip(directory);
 				TestUnknownSchemaIsRejected(directory);
 				TestReanalysisPreservesReviewedEdits(directory);
+				TestSilenceAndShortAudio();
+				TestStructuredRhythmAnalysis();
 				Console.WriteLine("Song-analysis self-tests passed.");
 			}
 			finally
@@ -138,6 +140,57 @@ namespace AnalysisHarness
 				File.WriteAllBytes(path, new byte[] { 1, 3, 3, 7 });
 			}
 			return SongIdentity.FromFile(path, 180.0);
+		}
+
+		private static void TestSilenceAndShortAudio()
+		{
+			SongStructureAnalyzer analyzer = new SongStructureAnalyzer();
+			MonoAudio silence = new MonoAudio { SampleRate = 8000, Samples = new float[16000] };
+			SongAnalysis silentAnalysis = analyzer.Analyze(silence, SyntheticIdentity("silence", silence.DurationSeconds));
+			Assert(silentAnalysis.Events.Count == 0, "Silence produced invented musical events.");
+			Assert(silentAnalysis.Regions.Count == 1 && silentAnalysis.Regions[0].Type == MusicRegionType.Unused, "Silence was not classified as unused.");
+
+			MonoAudio shortAudio = new MonoAudio { SampleRate = 8000, Samples = new float[2000] };
+			shortAudio.Samples[100] = 1.0f;
+			SongAnalysis shortAnalysis = analyzer.Analyze(shortAudio, SyntheticIdentity("short", shortAudio.DurationSeconds));
+			Assert(!shortAnalysis.TempoBpm.HasValue, "A very short track produced an unreliable tempo.");
+		}
+
+		private static void TestStructuredRhythmAnalysis()
+		{
+			const int sampleRate = 44100;
+			const double duration = 24.0;
+			float[] samples = new float[(int)(sampleRate * duration)];
+			int beatCount = (int)(duration / 0.5);
+			for (int beat = 0; beat < beatCount; beat++)
+			{
+				double time = 0.25 + beat * 0.5;
+				int start = (int)(time * sampleRate);
+				double sectionGain = time < 8.0 ? 0.25 : time < 16.0 ? 0.55 : 1.0;
+				double beatGain = beat % 4 == 0 ? 1.0 : 0.45;
+				for (int offset = 0; offset < 700 && start + offset < samples.Length; offset++)
+				{
+					samples[start + offset] = (float)(sectionGain * beatGain * Math.Sin(offset * 0.12) * (1.0 - offset / 700.0));
+				}
+			}
+			MonoAudio audio = new MonoAudio { SampleRate = sampleRate, Samples = samples };
+			SongAnalysis analysis = new SongStructureAnalyzer().Analyze(audio, SyntheticIdentity("rhythm", duration));
+			Assert(analysis.TempoBpm.HasValue, "Rhythmic audio produced no tempo.");
+			Assert(analysis.Events.Any((MusicEvent item) => item.Type == MusicEventType.Beat), "Rhythmic audio produced no beats.");
+			Assert(analysis.Events.Any((MusicEvent item) => item.Type == MusicEventType.Downbeat), "Rhythmic audio produced no downbeat proposals.");
+			Assert(analysis.Events.All((MusicEvent item) => item.Confidence.HasValue && item.Strength.HasValue), "Detected events are missing evidence scores.");
+			Assert(analysis.Regions.Count > 1, "Energy changes produced no candidate song sections.");
+			Assert(Math.Abs(analysis.Regions[0].StartSeconds) < 0.0001, "Candidate regions do not start at zero.");
+			Assert(Math.Abs(analysis.Regions.Last().EndSeconds - duration) < 0.0001, "Candidate regions do not cover the song end.");
+			for (int index = 1; index < analysis.Regions.Count; index++)
+			{
+				Assert(Math.Abs(analysis.Regions[index - 1].EndSeconds - analysis.Regions[index].StartSeconds) < 0.0001, "Candidate regions overlap or contain a gap.");
+			}
+		}
+
+		private static SongIdentity SyntheticIdentity(string fingerprint, double duration)
+		{
+			return new SongIdentity { ContentFingerprint = fingerprint, LastKnownPath = fingerprint, DurationSeconds = duration };
 		}
 
 		private static void Assert(bool condition, string message)
