@@ -175,6 +175,38 @@ public static class ConfigurationManager
 		return _config?.QuickTesting?.OutputFolder ?? "C:\\VEGAS\\edit\\Output\\";
 	}
 
+	public static string GetSyncLibraryPath()
+	{
+		return Path.Combine(GetUserDataFolder(), "sync-library.json");
+	}
+
+	public static string GetUserPreferencesPath()
+	{
+		return Path.Combine(GetUserDataFolder(), "user-preferences.json");
+	}
+
+	public static UserPreferences LoadUserPreferences()
+	{
+		string path = GetUserPreferencesPath();
+		if (!File.Exists(path))
+		{
+			return new UserPreferences();
+		}
+		return JsonConvert.DeserializeObject<UserPreferences>(File.ReadAllText(path)) ?? new UserPreferences();
+	}
+
+	public static void SaveUserPreferences(UserPreferences preferences)
+	{
+		File.WriteAllText(GetUserPreferencesPath(), JsonConvert.SerializeObject(preferences, Formatting.Indented));
+	}
+
+	private static string GetUserDataFolder()
+	{
+		string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AutoEditing");
+		Directory.CreateDirectory(folder);
+		return folder;
+	}
+
 	public static void ReloadConfiguration()
 	{
 		LoadConfiguration();

@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ScriptPortal.Vegas;
+using Core.Domain.Clip;
 
-namespace Core.Domain.Clip;
+namespace Core.Scripts;
 
-public class ClipValidator
+internal sealed class ClipValidator
 {
 	public bool Validate(Clip clip, Vegas vegas)
 	{

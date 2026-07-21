@@ -5,11 +5,12 @@ using System.Linq;
 using Core.Domain.Audio;
 using Core.Domain.Clip;
 using Core.Domain.Logging;
+using Core.Domain.Editing;
 using ScriptPortal.Vegas;
 
-namespace Core.Domain.Editing;
+namespace Core.Scripts;
 
-public class TimelineBuilder
+internal sealed class TimelineBuilder
 {
 	public Dictionary<ClipPlacement, VideoEvent> BuildTimeline(Vegas vegas, List<ClipPlacement> placements, string songPath)
 	{

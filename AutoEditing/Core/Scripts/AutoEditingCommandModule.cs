@@ -24,7 +24,9 @@ public sealed class AutoEditingCommandModule : ICustomCommandModule
 			((DockableControl)this).DefaultFloatingSize = new Size(1040, 790);
 			((DockableControl)this).PersistDockWindowState = true;
 			((DockableControl)this).AutoLoadCommand = autoLoadCommand;
-			_viewModel = new ShotReviewViewModel(vegas, queueHostAction);
+			VegasCommandClient vegasClient = new VegasCommandClient(vegas, queueHostAction);
+			VegasHostEventSource vegasEvents = new VegasHostEventSource(vegas);
+			_viewModel = new ShotReviewViewModel(vegasClient, vegasClient, vegasEvents);
 			ElementHost value = new ElementHost
 			{
 				Dock = DockStyle.Fill,

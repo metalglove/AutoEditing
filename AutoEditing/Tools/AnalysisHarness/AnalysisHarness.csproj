@@ -13,11 +13,6 @@
        except the files that depend on ScriptPortal.Vegas. -->
   <ItemGroup>
     <Compile Include="..\..\Core\Domain\**\*.cs" Link="Domain\%(RecursiveDir)%(Filename)%(Extension)" />
-    <Compile Remove="..\..\Core\Domain\Audio\ShotReviewWorkflow.cs" />
-    <Compile Remove="..\..\Core\Domain\Clip\ClipValidator.cs" />
-    <Compile Remove="..\..\Core\Domain\Editing\EffectsApplier.cs" />
-    <Compile Remove="..\..\Core\Domain\Editing\MontageOrchestrator.cs" />
-    <Compile Remove="..\..\Core\Domain\Editing\TimelineBuilder.cs" />
   </ItemGroup>
 
   <ItemGroup>

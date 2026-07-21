@@ -16,9 +16,13 @@ public sealed class ShotEvent
 
 	public ShotReviewState ReviewState { get; set; }
 
+	public ShotEventOrigin Origin { get; set; }
+
+	public string Gun { get; set; }
+
 	public bool IsConfirmedKill => Outcome == ShotOutcome.Hit || Outcome == ShotOutcome.Headshot;
 
-	public static ShotEvent Reviewed(double confirmationSeconds, ShotOutcome outcome)
+	public static ShotEvent Reviewed(double confirmationSeconds, ShotOutcome outcome, string gun = null)
 	{
 		if (outcome != ShotOutcome.Hit && outcome != ShotOutcome.Headshot && outcome != ShotOutcome.Miss)
 		{
@@ -31,7 +35,9 @@ public sealed class ShotEvent
 			Outcome = outcome,
 			Confidence = 1.0,
 			TemplateId = "manual",
-			ReviewState = ShotReviewState.Reviewed
+			ReviewState = ShotReviewState.Reviewed,
+			Origin = ShotEventOrigin.UserMarked,
+			Gun = gun
 		};
 	}
 }

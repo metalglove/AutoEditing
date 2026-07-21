@@ -122,6 +122,10 @@ public static class Logger
 				text = text + " --> " + text2;
 			}
 		}
+		if (!string.IsNullOrEmpty(exception.StackTrace))
+		{
+			text = text + Environment.NewLine + exception.StackTrace;
+		}
 		return text;
 	}
 }
