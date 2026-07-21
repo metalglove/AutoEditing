@@ -2,66 +2,59 @@ using System;
 using System.Collections.Generic;
 using NAudio.Wave;
 
-namespace Core.Domain.Audio
+namespace Core.Domain.Audio;
+
+public static class AudioLoader
 {
-    /// <summary>
-    /// Mono PCM audio samples for analysis (beat/shot detection).
-    /// </summary>
-    public class MonoAudio
-    {
-        public float[] Samples { get; set; }
-        public int SampleRate { get; set; }
+	public static MonoAudio LoadMono(string filePath)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0008: Expected O, but got Unknown
+		MediaFoundationReader val = new MediaFoundationReader(filePath);
+		try
+		{
+			ISampleProvider val2 = WaveExtensionMethods.ToSampleProvider((IWaveProvider)(object)val);
+			int channels = val2.WaveFormat.Channels;
+			int sampleRate = val2.WaveFormat.SampleRate;
+			List<float> list = new List<float>((int)(((WaveStream)val).TotalTime.TotalSeconds * (double)sampleRate) + sampleRate);
+			float[] array = new float[channels * 4096];
+			int num;
+			while ((num = val2.Read(array, 0, array.Length)) > 0)
+			{
+				for (int i = 0; i + channels <= num; i += channels)
+				{
+					float num2 = 0f;
+					for (int j = 0; j < channels; j++)
+					{
+						num2 += array[i + j];
+					}
+					list.Add(num2 / (float)channels);
+				}
+			}
+			return new MonoAudio
+			{
+				Samples = list.ToArray(),
+				SampleRate = sampleRate
+			};
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
 
-        public double DurationSeconds
-        {
-            get { return (double)Samples.Length / SampleRate; }
-        }
-    }
-
-    /// <summary>
-    /// Decodes audio from media files (MP3, MP4, WAV, M4A, AAC) into mono PCM
-    /// samples using Windows Media Foundation. Works for both songs and the
-    /// audio track of video clips.
-    /// </summary>
-    public static class AudioLoader
-    {
-        public static MonoAudio LoadMono(string filePath)
-        {
-            using (MediaFoundationReader reader = new MediaFoundationReader(filePath))
-            {
-                ISampleProvider provider = reader.ToSampleProvider();
-                int channels = provider.WaveFormat.Channels;
-                int sampleRate = provider.WaveFormat.SampleRate;
-
-                List<float> mono = new List<float>((int)(reader.TotalTime.TotalSeconds * sampleRate) + sampleRate);
-                float[] buffer = new float[channels * 4096];
-                int samplesRead;
-                while ((samplesRead = provider.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    for (int i = 0; i + channels <= samplesRead; i += channels)
-                    {
-                        float sum = 0f;
-                        for (int c = 0; c < channels; c++)
-                        {
-                            sum += buffer[i + c];
-                        }
-                        mono.Add(sum / channels);
-                    }
-                }
-
-                return new MonoAudio { Samples = mono.ToArray(), SampleRate = sampleRate };
-            }
-        }
-
-        /// <summary>
-        /// Returns the media duration in seconds without decoding the full file.
-        /// </summary>
-        public static double GetDurationSeconds(string filePath)
-        {
-            using (MediaFoundationReader reader = new MediaFoundationReader(filePath))
-            {
-                return reader.TotalTime.TotalSeconds;
-            }
-        }
-    }
+	public static double GetDurationSeconds(string filePath)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0008: Expected O, but got Unknown
+		MediaFoundationReader val = new MediaFoundationReader(filePath);
+		try
+		{
+			return ((WaveStream)val).TotalTime.TotalSeconds;
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
 }

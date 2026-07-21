@@ -1,108 +1,49 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{977E058F-BB49-4CC1-B930-C7EE41D82638}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Core</RootNamespace>
+    <TargetFramework>net48</TargetFramework>
+    <!-- WPF UI is hosted inside a WinForms DockableControl via ElementHost,
+         so both desktop stacks are required. -->
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>Core</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <!-- Enable additional warnings and treat style violations as errors -->
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningsAsErrors>IDE0007;IDE0008</WarningsAsErrors>
-    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <RootNamespace>Core</RootNamespace>
+    <!-- AssemblyInfo.cs is checked in under Properties\ -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>latest</LangVersion>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
+  <!-- The WPF view is loaded at runtime with XamlReader.Load from this embedded
+       resource; ShotReviewView.cs looks it up by this exact LogicalName. -->
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NAudio.Core">
-      <HintPath>..\packages\NAudio.Core.2.2.1\lib\netstandard2.0\NAudio.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="NAudio.Wasapi">
-      <HintPath>..\packages\NAudio.Wasapi.2.2.1\lib\netstandard2.0\NAudio.Wasapi.dll</HintPath>
-    </Reference>
+    <EmbeddedResource Include="Scripts\ShotReviewWindow.xaml" LogicalName="Core.Scripts.ShotReviewWindow.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio.Core" Version="2.2.1" />
+    <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <!-- VEGAS host assembly is provided by VEGAS at runtime; do not copy it locally. -->
+  <ItemGroup>
     <Reference Include="ScriptPortal.Vegas">
       <HintPath>$(ProgramFiles)\VEGAS\VEGAS Pro 20.0\ScriptPortal.Vegas.dll</HintPath>
+      <Private>false</Private>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Windows.Forms">
-      <HintPath>C:\Windows\Microsoft.NET\Framework\v4.0.30319\System.Windows.Forms.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Drawing">
-      <HintPath>C:\Windows\Microsoft.NET\Framework\v4.0.30319\System.Drawing.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Domain\Audio\AudioLoader.cs" />
-    <Compile Include="Domain\Audio\BeatDetector.cs" />
-    <Compile Include="Domain\Audio\ShotDetector.cs" />
-    <Compile Include="Domain\Editing\EffectsApplier.cs" />
-    <Compile Include="Domain\Editing\MontageOrchestrator.cs" />
-    <Compile Include="Domain\Editing\MontagePlanner.cs" />
-    <Compile Include="Domain\Editing\TimelineBuilder.cs" />
-    <Compile Include="Domain\Clip\Clip.cs" />
-    <Compile Include="Domain\Clip\ClipParser.cs" />
-    <Compile Include="Domain\Clip\ClipValidator.cs" />
-    <Compile Include="Domain\Logging\Logger.cs" />
-    <Compile Include="Domain\AppSettings.cs" />
-    <Compile Include="Domain\ConfigurationManager.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scripts\EntryPoint.cs" />
-    <Compile Include="Scripts\Ui\MontageDockView.cs" />
-    <Compile Include="Scripts\Ui\VegasTheme.cs" />
-  </ItemGroup>
+
   <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="appsettings.local.json.example" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="appsettings.local.json" Condition="Exists('appsettings.local.json')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <DependentUpon>appsettings.json</DependentUpon>
     </Content>
   </ItemGroup>
 
-  <!-- Pre-build validation target -->
-  <Target Name="ValidateCodeStyle" BeforeTargets="BeforeBuild;CoreCompile">
-    <Message Text="Running code style validation..." Importance="high" />
-    <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\\.vscode\\build-validate-style.ps1&quot; -ProjectDir &quot;$(MSBuildProjectDirectory)&quot;"
-          ContinueOnError="false"
-          StandardOutputImportance="high"
-          StandardErrorImportance="high" />
-  </Target>
-
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
