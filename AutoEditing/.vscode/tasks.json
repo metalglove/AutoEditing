@@ -100,14 +100,14 @@
 			"detail": "Clean and rebuild the Core project using dotnet CLI"
 		},
 		{
-			"label": "Copy DLL to VEGAS Scripts",
+			"label": "Deploy extension to VEGAS",
 			"type": "shell",
 			"command": "powershell",
 			"args": [
 				"-ExecutionPolicy",
 				"Bypass",
 				"-File",
-				".vscode/copy-dll.ps1"
+				".vscode/deploy-extension.ps1"
 			],
 			"group": "build",
 			"dependsOn": "Build Core Project",
@@ -119,7 +119,7 @@
 				"showReuseMessage": true,
 				"clear": false
 			},
-			"detail": "Copy built DLL to VEGAS Pro Scripts folder for testing"
+			"detail": "Deploy the built extension to the VEGAS Pro Application Extensions folder (also runs automatically after every build; close VEGAS first)"
 		}
 	]
 }

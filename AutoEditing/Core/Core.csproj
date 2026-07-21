@@ -46,4 +46,15 @@
     </Content>
   </ItemGroup>
 
+  <!-- Post-build: deploy to the VEGAS "Application Extensions" folder so VEGAS
+       loads it at startup. ContinueOnError so a running VEGAS (which locks the
+       loaded DLL) warns instead of failing the build; close VEGAS to deploy. -->
+  <Target Name="DeployToVegasExtensions" AfterTargets="Build">
+    <Message Text="Deploying AutoEditing extension to VEGAS Application Extensions..." Importance="high" />
+    <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\.vscode\deploy-extension.ps1&quot; -Configuration $(Configuration) -ProjectDir &quot;$(MSBuildProjectDirectory)\..&quot;"
+          ContinueOnError="true"
+          StandardOutputImportance="high"
+          StandardErrorImportance="high" />
+  </Target>
+
 </Project>
