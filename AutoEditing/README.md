@@ -21,7 +21,10 @@ Core/
 │   │   ├── ClipParser.cs     # Parses clip filenames to extract metadata
 │   │   └── ClipValidator.cs  # Validates clip quality and format
 ├── Scripts/
-│   └── EntryPoint.cs         # VEGAS Pro script entry point with UI
+│   ├── EntryPoint.cs         # VEGAS Pro script entry point (loads the dock view)
+│   └── Ui/
+│       ├── MontageDockView.cs # Docked window UI (DockableControl)
+│       └── VegasTheme.cs      # VEGAS Pro 20 dark theme palette and control styling
 └── Properties/
     └── AssemblyInfo.cs       # Assembly information
 
@@ -59,7 +62,7 @@ Handles all clip-related operations:
 - **Montage Planning**: Every cut lands on a beat, and each clip's first shot lands exactly on a beat a fixed lead-in after the cut
 - **Timeline Building**: Executes the plan on the VEGAS timeline with trimmed source windows (take offsets)
 - **Time Remapping / Effects**: Framework for velocity envelopes, name tags, color correction (still placeholder)
-- **User Interface**: Windows Forms UI with multiple creation modes
+- **User Interface**: Docked VEGAS window (DockableControl) styled to match the VEGAS Pro 20 dark theme, with multiple creation modes
 
 ### Clip Naming Convention
 Clips are named with dash-separated sections, with the gun/type details packed
@@ -121,7 +124,7 @@ AnalysisHarness.exe --debug-shots <clipPath>   # loudest envelope peaks with att
 ## Usage
 
 1. **Launch VEGAS Pro** and create a new project
-2. **Run the script** from Tools → Scripting → Run Script
+2. **Run the script** from Tools → Scripting → Run Script — the *Sniper Montage Creator* opens as a docked window (re-running the script re-activates the existing pane; it can be floated or re-docked like any other VEGAS window)
 3. **Select your clips folder** containing properly named MP4 files
 4. **Select your background music** (MP3, WAV, M4A, AAC supported)
 5. **Choose creation mode**:
