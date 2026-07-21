@@ -137,7 +137,7 @@ public sealed class SfxTemplateCatalog
 	private static bool IsAudio(string path)
 	{
 		string extension = Path.GetExtension(path);
-		return extension.Equals(".wav", StringComparison.OrdinalIgnoreCase) || extension.Equals(".mp3", StringComparison.OrdinalIgnoreCase) || extension.Equals(".m4a", StringComparison.OrdinalIgnoreCase) || extension.Equals(".aac", StringComparison.OrdinalIgnoreCase);
+		return extension.Equals(".wav", StringComparison.OrdinalIgnoreCase) || extension.Equals(".mp3", StringComparison.OrdinalIgnoreCase) || extension.Equals(".m4a", StringComparison.OrdinalIgnoreCase) || extension.Equals(".aac", StringComparison.OrdinalIgnoreCase) || extension.Equals(".flac", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static ShotOutcome InferType(string name)

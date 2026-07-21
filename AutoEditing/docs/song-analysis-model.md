@@ -95,3 +95,41 @@ Export the proposal as a validated sidecar:
 Tools/AnalysisHarness/bin/Debug/net48/AnalysisHarness.exe `
   --export-song-analysis <song-path> <output-json>
 ```
+
+## Dedicated song-map workspace
+
+The wizard's second step is a dedicated song-analysis workspace:
+
+1. Entering the step performs decoding and structure analysis away
+   from the VEGAS host thread, reconciles an existing sidecar, then sends one
+   layout command through the VEGAS CQRS boundary.
+2. Region and sync-point tables expose type, confidence, strength/energy,
+   origin, and inclusion without requiring dense marker-label editing.
+3. The event layer can show regions only, meaningful sync points, every event in
+   the selected region, or the complete detection grid. Changing this layer
+   updates the owned VEGAS event markers as well as the inspector rows.
+4. **Jump to selected** moves the VEGAS cursor without adding another marker.
+5. **Commit song map** queries one immutable timeline snapshot and atomically
+   persists the reviewed times, classifications, and deletions.
+
+The layout owns only one track named `AE|Song Analysis Audio`, markers prefixed
+with `AE|MUSIC|`, and regions prefixed with `AE|MUSIC_REGION|`. Re-analysis
+replaces only those objects; unrelated timeline content is preserved.
+
+VEGAS is a focused preview: reviewed regions are shown, while raw `Beat` and
+`Transient` events are omitted unless explicitly approved. Downbeats, accents,
+phrase boundaries, build hits, and drops remain visible. Move projected markers
+or region boundaries directly in VEGAS; deleting a projected object rejects it
+and immediately removes its inspector row. Deleting the selected event row uses
+a narrowly scoped command to remove only its matching VEGAS marker. Dedicated
+add/split/merge controls remain follow-up work in issue #8.
+
+VEGAS smoke test:
+
+1. Restart VEGAS after deployment, choose a song, and continue to **Song map**.
+2. Confirm the tables populate and the owned audio track,
+   markers, and non-overlapping regions appear without removing unrelated data.
+3. Move one marker, change one classification label, resize one region, and
+   delete one unwanted proposal.
+4. Click **Commit song map**, then re-analyze and confirm the reviewed
+   choices survive reconciliation.

@@ -22,6 +22,8 @@ internal static class VegasCommandHandlerRegistry
 			new LayoutAnalysisCommandHandler(), new LayoutSingleClipCommandHandler(),
 			new RemoveReviewClipCommandHandler(), new CommitClipReviewCommandHandler(),
 			new GetReviewClipSnapshotQueryHandler(), new SetCursorCommandHandler(),
+			new LayoutSongAnalysisCommandHandler(), new GetSongReviewSnapshotQueryHandler(), new RemoveSongEventCommandHandler(),
+			new UpdateSongEventProjectionCommandHandler(),
 			new BuildMontageCommandHandler()
 		};
 		Dictionary<string, IVegasCommandHandler> result = new Dictionary<string, IVegasCommandHandler>(StringComparer.Ordinal);

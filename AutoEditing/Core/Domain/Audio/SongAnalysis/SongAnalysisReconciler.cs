@@ -32,8 +32,14 @@ public sealed class SongAnalysisReconciler
 				unmatchedEvents.Remove(match);
 			}
 		}
-		detected.Events.AddRange(unmatchedEvents.Where((MusicEvent item) => item.ReviewState != MusicAnalysisReviewState.Proposed || item.Editorial?.IsLocked == true));
-		detected.Events.AddRange(existing.Events.Where((MusicEvent item) => item.Origin == MusicAnalysisOrigin.UserCreated));
+		foreach (MusicEvent preserved in unmatchedEvents.Where((MusicEvent item) => item.ReviewState != MusicAnalysisReviewState.Proposed || item.Editorial?.IsLocked == true))
+		{
+			PreserveEventById(detected, preserved);
+		}
+		foreach (MusicEvent manual in existing.Events.Where((MusicEvent item) => item.Origin == MusicAnalysisOrigin.UserCreated))
+		{
+			PreserveEventById(detected, manual);
+		}
 
 		List<MusicRegion> unmatchedRegions = new List<MusicRegion>(existing.Regions.Where((MusicRegion item) => item.Origin == MusicAnalysisOrigin.Detected));
 		foreach (MusicRegion proposal in detected.Regions.Where((MusicRegion item) => item.Origin == MusicAnalysisOrigin.Detected))
@@ -46,11 +52,68 @@ public sealed class SongAnalysisReconciler
 				unmatchedRegions.Remove(match);
 			}
 		}
-		detected.Regions.AddRange(unmatchedRegions.Where((MusicRegion item) => item.ReviewState != MusicAnalysisReviewState.Proposed || item.Editorial?.IsLocked == true));
-		detected.Regions.AddRange(existing.Regions.Where((MusicRegion item) => item.Origin == MusicAnalysisOrigin.UserCreated));
+		foreach (MusicRegion preserved in unmatchedRegions.Where((MusicRegion item) => item.ReviewState != MusicAnalysisReviewState.Proposed || item.Editorial?.IsLocked == true))
+		{
+			PreserveRegionById(detected, preserved);
+		}
+		foreach (MusicRegion manual in existing.Regions.Where((MusicRegion item) => item.Origin == MusicAnalysisOrigin.UserCreated))
+		{
+			PreserveRegionById(detected, manual);
+		}
 		detected.Id = existing.Id;
 		detected.CreatedUtc = existing.CreatedUtc;
+		EnsureUniqueIds(detected);
 		return detected;
+	}
+
+	private static void EnsureUniqueIds(SongAnalysis analysis)
+	{
+		HashSet<string> used = new HashSet<string>(StringComparer.Ordinal);
+		foreach (MusicEvent musicEvent in analysis.Events.OrderByDescending(EventIdentityPriority).ThenBy((MusicEvent item) => item.TimeSeconds))
+		{
+			if (!string.IsNullOrWhiteSpace(musicEvent.Id) && used.Add(musicEvent.Id)) continue;
+			musicEvent.Id = UniqueId(analysis.Song.ContentFingerprint, "reconciled-event-" + musicEvent.Type + "-" + Math.Round(musicEvent.DetectedTimeSeconds ?? musicEvent.TimeSeconds, 3), used);
+		}
+		foreach (MusicRegion region in analysis.Regions.OrderByDescending(RegionIdentityPriority).ThenBy((MusicRegion item) => item.StartSeconds))
+		{
+			if (!string.IsNullOrWhiteSpace(region.Id) && used.Add(region.Id)) continue;
+			region.Id = UniqueId(analysis.Song.ContentFingerprint, "reconciled-region-" + region.Type + "-" + Math.Round(region.DetectedStartSeconds ?? region.StartSeconds, 3), used);
+		}
+	}
+
+	private static string UniqueId(string fingerprint, string kind, HashSet<string> used)
+	{
+		for (int ordinal = 0; ; ordinal++)
+		{
+			string candidate = MusicAnalysisId.Create(fingerprint, kind, ordinal);
+			if (used.Add(candidate)) return candidate;
+		}
+	}
+
+	private static int EventIdentityPriority(MusicEvent musicEvent)
+	{
+		if (musicEvent.Origin == MusicAnalysisOrigin.UserCreated) return 3;
+		if (musicEvent.Editorial?.IsLocked == true) return 2;
+		return musicEvent.ReviewState == MusicAnalysisReviewState.Reviewed ? 1 : 0;
+	}
+
+	private static int RegionIdentityPriority(MusicRegion region)
+	{
+		if (region.Origin == MusicAnalysisOrigin.UserCreated) return 3;
+		if (region.Editorial?.IsLocked == true) return 2;
+		return region.ReviewState == MusicAnalysisReviewState.Reviewed ? 1 : 0;
+	}
+
+	private static void PreserveEventById(SongAnalysis analysis, MusicEvent preserved)
+	{
+		analysis.Events.RemoveAll((MusicEvent item) => string.Equals(item.Id, preserved.Id, StringComparison.Ordinal));
+		analysis.Events.Add(preserved);
+	}
+
+	private static void PreserveRegionById(SongAnalysis analysis, MusicRegion preserved)
+	{
+		analysis.Regions.RemoveAll((MusicRegion item) => string.Equals(item.Id, preserved.Id, StringComparison.Ordinal));
+		analysis.Regions.Add(preserved);
 	}
 
 	private static MusicEvent FindEvent(IEnumerable<MusicEvent> candidates, MusicEvent proposal, double tolerance)

@@ -16,7 +16,10 @@ internal sealed class MontageOrchestrator
 	public void BuildPreparedMontage(Vegas vegas, PreparedMontage prepared, string songPath, bool applyEffects)
 	{
 		TimelineBuilder timelineBuilder = new TimelineBuilder();
-		Dictionary<ClipPlacement, VideoEvent> videoEvents = timelineBuilder.BuildTimeline(vegas, prepared.Placements, songPath);
+		Dictionary<ClipPlacement, VideoEvent> videoEvents = timelineBuilder.BuildTimeline(vegas, prepared.Placements);
+		ShotDetectionConfig shotDetection = ConfigurationManager.GetShotDetection();
+		SfxTemplateCatalog sfxCatalog = SfxTemplateCatalog.Load(shotDetection.SfxRoot);
+		new MontageAudioBuilder().Build(vegas.Project, prepared.Placements, songPath, shotDetection.SfxRoot, sfxCatalog);
 		if (applyEffects)
 		{
 			ApplyEffects(videoEvents);

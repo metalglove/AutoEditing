@@ -10,7 +10,21 @@ public class MontagePlanner
 {
 	private const double KillDipSpeed = 0.35;
 
-	private const double RampSourceSeconds = 0.01;
+	private const double PreferredMinimumCruiseSpeed = 1.2;
+
+	private const double MinimumPostKillFastSourceSeconds = 0.005;
+
+	private const double MaximumPostKillFastSourceSeconds = 0.03;
+
+	private const double MinimumPostKillRampSourceSeconds = 0.1;
+
+	private const double MaximumPostKillRampSourceSeconds = 0.18;
+
+	private const double MinimumPostKillHoldSourceSeconds = 0.035;
+
+	private const double MaximumPostKillHoldSourceSeconds = 0.11;
+
+	private const double SegmentBoundaryEpsilonSeconds = 0.000001;
 
 	private readonly double _preRoll;
 
@@ -60,13 +74,14 @@ public class MontagePlanner
 			}
 			List<double> list3 = AssignBeats(list2, num2, num, beats, songDurationSeconds);
 			List<SpeedProfilePoint> points = new List<SpeedProfilePoint>();
-			AddSegment(points, num2, list2[0].SourceConfirmationTimeSeconds, list3[0] - num, dipAtStart: false, dipAtEnd: true);
+			AddSegment(points, num2, list2[0].SourceConfirmationTimeSeconds, list3[0] - num, postKillTreatmentAtStart: false);
 			for (int num4 = 1; num4 < list2.Count; num4++)
 			{
-				AddSegment(points, list2[num4 - 1].SourceConfirmationTimeSeconds, list2[num4].SourceConfirmationTimeSeconds, list3[num4] - list3[num4 - 1], dipAtStart: true, dipAtEnd: true);
+				AddSegment(points, list2[num4 - 1].SourceConfirmationTimeSeconds, list2[num4].SourceConfirmationTimeSeconds, list3[num4] - list3[num4 - 1], postKillTreatmentAtStart: true);
 			}
-			double targetDuration = num3 - list2[list2.Count - 1].SourceConfirmationTimeSeconds;
-			AddSegment(points, list2[list2.Count - 1].SourceConfirmationTimeSeconds, num3, targetDuration, dipAtStart: true, dipAtEnd: false);
+			double postKillSourceDuration = num3 - list2[list2.Count - 1].SourceConfirmationTimeSeconds;
+			double targetDuration = PostKillTargetDuration(postKillSourceDuration, beats.BeatIntervalSeconds, list2[list2.Count - 1].SourceConfirmationTimeSeconds);
+			AddSegment(points, list2[list2.Count - 1].SourceConfirmationTimeSeconds, num3, targetDuration, postKillTreatmentAtStart: true);
 			SpeedProfile speedProfile = new SpeedProfile(Coalesce(points));
 			double timelineDurationSeconds = speedProfile.TimelineDurationSeconds;
 			if (num + timelineDurationSeconds > songDurationSeconds + 0.002)
@@ -100,6 +115,8 @@ public class MontagePlanner
 			int num4 = Math.Max(0, (int)Math.Ceiling((num - beats.FirstBeatOffsetSeconds + 1E-06) / beats.BeatIntervalSeconds));
 			double num5 = -1.0;
 			double num6 = double.MaxValue;
+			double fallbackBeat = -1.0;
+			double fallbackScore = double.MaxValue;
 			int num7 = num4;
 			while (true)
 			{
@@ -111,27 +128,33 @@ public class MontagePlanner
 				double num9 = num8 - num;
 				if (!(num9 <= 0.0))
 				{
-					bool dipStart = list.Count > 0;
-					double ramp = Math.Min(0.01, num3 / 4.0);
-					double num10 = SegmentDuration(num3, ramp, dipStart, dipEnd: true, _minVelocity);
-					double num11 = SegmentDuration(num3, ramp, dipStart, dipEnd: true, _maxVelocity);
-					if (!(num9 > num10 + 0.002) && !(num9 < num11 - 0.002))
+					bool postKillTreatment = list.Count > 0;
+					double delay;
+					double ramp;
+					double hold;
+					GetPostKillShape(num3, postKillTreatment, num2, out delay, out ramp, out hold);
+					double preferredLongestDuration = SegmentDuration(num3, delay, ramp, hold, postKillTreatment, MinimumCruiseSpeed);
+					double boundedLongestDuration = SegmentDuration(num3, delay, ramp, hold, postKillTreatment, _minVelocity);
+					double num11 = SegmentDuration(num3, delay, ramp, hold, postKillTreatment, _maxVelocity);
+					if (!(num9 > boundedLongestDuration + 0.002) && !(num9 < num11 - 0.002))
 					{
 						double num12 = num3 / num9;
 						double num13 = Math.Abs(Math.Log(num12));
-						if (num13 < num6)
+						if (num9 <= preferredLongestDuration + 0.002 && num13 < num6)
 						{
 							num5 = num8;
 							num6 = num13;
 						}
-						if (num12 < 1.0 && num5 >= 0.0)
+						else if (num13 < fallbackScore)
 						{
-							break;
+							fallbackBeat = num8;
+							fallbackScore = num13;
 						}
 					}
 				}
 				num7++;
 			}
+			if (num5 < 0.0) num5 = fallbackBeat;
 			if (num5 < 0.0)
 			{
 				throw new InvalidOperationException("No bounded sequential beat assignment exists for a reviewed kill.");
@@ -143,7 +166,7 @@ public class MontagePlanner
 		return list;
 	}
 
-	private void AddSegment(List<SpeedProfilePoint> points, double sourceA, double sourceB, double targetDuration, bool dipAtStart, bool dipAtEnd)
+	private void AddSegment(List<SpeedProfilePoint> points, double sourceA, double sourceB, double targetDuration, bool postKillTreatmentAtStart)
 	{
 		double num = sourceB - sourceA;
 		if (num < -1E-09 || targetDuration < -1E-09)
@@ -152,48 +175,77 @@ public class MontagePlanner
 		}
 		if (!(num <= 1E-09))
 		{
-			double num2 = Math.Min(0.01, num / 4.0);
-			double num3 = SolveCruise(num, targetDuration, num2, dipAtStart, dipAtEnd);
-			AddPoint(points, sourceA, dipAtStart ? 0.35 : num3);
-			if (dipAtStart)
+			double delay;
+			double ramp;
+			double hold;
+			GetPostKillShape(num, postKillTreatmentAtStart, sourceA, out delay, out ramp, out hold);
+			double num3 = SolveCruise(num, targetDuration, delay, ramp, hold, postKillTreatmentAtStart);
+			double segmentStart = sourceA;
+			if (points.Count > 0 && Math.Abs(points[points.Count - 1].SourceTimeSeconds - sourceA) < 1E-08 && Math.Abs(points[points.Count - 1].Speed - num3) >= 1E-08)
 			{
-				AddPoint(points, sourceA + num2, num3);
+				segmentStart = Math.Min(sourceB, sourceA + SegmentBoundaryEpsilonSeconds);
 			}
-			if (dipAtEnd)
+			AddPoint(points, segmentStart, num3);
+			if (postKillTreatmentAtStart)
 			{
-				AddPoint(points, sourceB - num2, num3);
+				AddPoint(points, sourceA + delay, num3);
+				AddPoint(points, sourceA + delay + ramp, KillDipSpeed);
+				AddPoint(points, sourceA + delay + ramp + hold, KillDipSpeed);
+				AddPoint(points, sourceA + delay + ramp + hold + ramp, num3);
 			}
-			AddPoint(points, sourceB, dipAtEnd ? 0.35 : num3);
+			AddPoint(points, sourceB, num3);
 		}
 	}
 
-	private static double SegmentDuration(double distance, double ramp, bool dipStart, bool dipEnd, double speed)
+	private static void GetPostKillShape(double distance, bool enabled, double anchorSourceTime, out double delay, out double ramp, out double hold)
 	{
-		double num = 0.0;
-		double num2 = distance;
-		if (dipStart)
+		if (!enabled)
 		{
-			num += ramp / ((0.35 + speed) / 2.0);
-			num2 -= ramp;
+			delay = 0.0;
+			ramp = 0.0;
+			hold = 0.0;
+			return;
 		}
-		if (dipEnd)
-		{
-			num += ramp / ((0.35 + speed) / 2.0);
-			num2 -= ramp;
-		}
-		return num + Math.Max(0.0, num2) / speed;
+		double requestedDelay = Vary(MinimumPostKillFastSourceSeconds, MaximumPostKillFastSourceSeconds, anchorSourceTime, 0.17);
+		double requestedRamp = Vary(MinimumPostKillRampSourceSeconds, MaximumPostKillRampSourceSeconds, anchorSourceTime, 1.31);
+		double requestedHold = Vary(MinimumPostKillHoldSourceSeconds, MaximumPostKillHoldSourceSeconds, anchorSourceTime, 2.73);
+		double requested = requestedDelay + 2.0 * requestedRamp + requestedHold;
+		double scale = Math.Min(1.0, distance * 0.85 / requested);
+		delay = requestedDelay * scale;
+		ramp = requestedRamp * scale;
+		hold = requestedHold * scale;
 	}
 
-	private double SolveCruise(double distance, double duration, double ramp, bool dipStart, bool dipEnd)
+	private static double Vary(double minimum, double maximum, double anchorSourceTime, double salt)
 	{
-		Func<double, double> func = (double speed) => SegmentDuration(distance, ramp, dipStart, dipEnd, speed);
-		double num = func(_minVelocity);
+		double value = Math.Sin((anchorSourceTime + salt) * 12.9898) * 43758.5453;
+		double fraction = value - Math.Floor(value);
+		return minimum + (maximum - minimum) * fraction;
+	}
+
+	private static double SegmentDuration(double distance, double delay, double ramp, double hold, bool postKillTreatment, double speed)
+	{
+		if (!postKillTreatment) return distance / speed;
+		double cruiseDistance = Math.Max(0.0, distance - delay - 2.0 * ramp - hold);
+		return (delay + cruiseDistance) / speed + 2.0 * ramp / ((KillDipSpeed + speed) / 2.0) + hold / KillDipSpeed;
+	}
+
+	private double SolveCruise(double distance, double duration, double delay, double ramp, double hold, bool postKillTreatment)
+	{
+		Func<double, double> func = (double speed) => SegmentDuration(distance, delay, ramp, hold, postKillTreatment, speed);
+		double minimumCruise = MinimumCruiseSpeed;
+		double num = func(minimumCruise);
 		double num2 = func(_maxVelocity);
+		if (duration > num + 0.002)
+		{
+			minimumCruise = _minVelocity;
+			num = func(minimumCruise);
+		}
 		if (duration > num + 0.002 || duration < num2 - 0.002)
 		{
 			throw new InvalidOperationException("Marker spacing cannot be solved within configured velocity bounds.");
 		}
-		double num3 = _minVelocity;
+		double num3 = minimumCruise;
 		double num4 = _maxVelocity;
 		for (int num5 = 0; num5 < 80; num5++)
 		{
@@ -209,6 +261,20 @@ public class MontagePlanner
 		}
 		return (num3 + num4) / 2.0;
 	}
+
+	private double PostKillTargetDuration(double sourceDuration, double beatInterval, double anchorSourceTime)
+	{
+		double delay;
+		double ramp;
+		double hold;
+		GetPostKillShape(sourceDuration, enabled: true, anchorSourceTime, out delay, out ramp, out hold);
+		double slowest = SegmentDuration(sourceDuration, delay, ramp, hold, postKillTreatment: true, MinimumCruiseSpeed);
+		double fastest = SegmentDuration(sourceDuration, delay, ramp, hold, postKillTreatment: true, _maxVelocity);
+		double naturalTarget = Math.Max(sourceDuration, beatInterval * 0.75);
+		return Math.Max(fastest, Math.Min(slowest, naturalTarget));
+	}
+
+	private double MinimumCruiseSpeed => Math.Min(_maxVelocity, Math.Max(_minVelocity, PreferredMinimumCruiseSpeed));
 
 	private static void AddPoint(List<SpeedProfilePoint> points, double source, double speed)
 	{

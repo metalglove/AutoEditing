@@ -53,11 +53,25 @@ public sealed class SongStructureAnalyzer
 			{
 				analysis.Events.Add(CreateDetectedEvent(analysis.Song.ContentFingerprint, "downbeat", index, time, MusicEventType.Downbeat, strength, downbeatConfidence));
 			}
-			if (strength >= 0.72)
+			if (IsLocallyProminentBeat(strengths, index))
 			{
 				analysis.Events.Add(CreateDetectedEvent(analysis.Song.ContentFingerprint, "accent", index, time, MusicEventType.Accent, strength, 0.5 + 0.5 * strength));
 			}
 		}
+	}
+
+	private static bool IsLocallyProminentBeat(double[] strengths, int index)
+	{
+		int start = Math.Max(0, index - 8);
+		int end = Math.Min(strengths.Length - 1, index + 8);
+		double mean = 0.0;
+		for (int item = start; item <= end; item++) mean += strengths[item];
+		mean /= end - start + 1;
+		double variance = 0.0;
+		for (int item = start; item <= end; item++) variance += Math.Pow(strengths[item] - mean, 2.0);
+		double deviation = Math.Sqrt(variance / Math.Max(1, end - start + 1));
+		bool localPeak = (index == 0 || strengths[index] >= strengths[index - 1]) && (index + 1 >= strengths.Length || strengths[index] >= strengths[index + 1]);
+		return localPeak && strengths[index] >= 0.18 && strengths[index] >= mean + 1.45 * deviation;
 	}
 
 	private static MusicEvent CreateDetectedEvent(string fingerprint, string kind, int ordinal, double time, MusicEventType type, double strength, double confidence)
@@ -131,8 +145,8 @@ public sealed class SongStructureAnalyzer
 		}
 		float[] ordered = (float[])onset.Clone();
 		Array.Sort(ordered);
-		double threshold = Math.Max(0.35, ordered[(int)Math.Floor((ordered.Length - 1) * 0.9)]);
-		double minimumSpacing = Math.Min(0.12, beatInterval / 4.0);
+		double threshold = Math.Max(0.5, ordered[(int)Math.Floor((ordered.Length - 1) * 0.96)]);
+		double minimumSpacing = Math.Max(0.18, beatInterval / 4.0);
 		double lastTime = -minimumSpacing;
 		int ordinal = 0;
 		for (int index = 1; index < onset.Length - 1; index++)
@@ -201,7 +215,7 @@ public sealed class SongStructureAnalyzer
 		{
 			return MusicRegionType.BuildUp;
 		}
-		if (energy >= Math.Max(0.6, high))
+		if (energy >= Math.Max(0.9, high) && delta >= 0.07)
 		{
 			return MusicRegionType.Climax;
 		}
@@ -230,7 +244,7 @@ public sealed class SongStructureAnalyzer
 			StartSeconds = start,
 			EndSeconds = end,
 			Type = type,
-			Confidence = 0.55,
+			Confidence = RegionConfidence(type, energy, delta),
 			Energy = energy,
 			EnergyDelta = delta,
 			Origin = MusicAnalysisOrigin.Detected,
@@ -241,6 +255,14 @@ public sealed class SongStructureAnalyzer
 		});
 	}
 
+	private static double RegionConfidence(MusicRegionType type, double energy, double delta)
+	{
+		if (type == MusicRegionType.Intro || type == MusicRegionType.Outro) return Clamp01(0.55 + Math.Abs(0.5 - energy));
+		if (type == MusicRegionType.BuildUp || type == MusicRegionType.Climax) return Math.Min(0.9, 0.5 + Math.Abs(delta) * 2.0);
+		if (type == MusicRegionType.Cinematic || type == MusicRegionType.Breakdown) return Clamp01(0.55 + Math.Max(0.0, 0.35 - energy));
+		return Clamp01(0.45 + Math.Abs(delta));
+	}
+
 	private static void AddPhraseEvents(SongAnalysis analysis)
 	{
 		for (int index = 1; index < analysis.Regions.Count; index++)
@@ -248,12 +270,12 @@ public sealed class SongStructureAnalyzer
 			MusicRegion current = analysis.Regions[index];
 			double time = current.StartSeconds;
 			analysis.Events.Add(CreateDetectedEvent(analysis.Song.ContentFingerprint, "phrase", index, time, MusicEventType.PhraseBoundary, Math.Abs(current.EnergyDelta.GetValueOrDefault()), 0.55));
-			if (current.EnergyDelta.GetValueOrDefault() >= 0.16)
+			if (current.EnergyDelta.GetValueOrDefault() >= 0.07 && current.Energy.GetValueOrDefault() >= 0.75)
 			{
 				double beatInterval = analysis.TempoBpm.HasValue ? 60.0 / analysis.TempoBpm.Value : 0.0;
 				double buildTime = Math.Max(0.0, time - beatInterval);
-				analysis.Events.Add(CreateDetectedEvent(analysis.Song.ContentFingerprint, "build-hit", index, buildTime, MusicEventType.BuildHit, current.EnergyDelta.GetValueOrDefault(), 0.5 + current.EnergyDelta.GetValueOrDefault()));
-				analysis.Events.Add(CreateDetectedEvent(analysis.Song.ContentFingerprint, "drop", index, time, MusicEventType.Drop, current.Energy.GetValueOrDefault(), 0.55 + current.EnergyDelta.GetValueOrDefault()));
+				analysis.Events.Add(CreateDetectedEvent(analysis.Song.ContentFingerprint, "build-hit", index, buildTime, MusicEventType.BuildHit, current.EnergyDelta.GetValueOrDefault(), 0.5 + Math.Min(0.3, current.EnergyDelta.GetValueOrDefault())));
+				analysis.Events.Add(CreateDetectedEvent(analysis.Song.ContentFingerprint, "drop", index, time, MusicEventType.Drop, current.Energy.GetValueOrDefault(), 0.55 + Math.Min(0.3, current.EnergyDelta.GetValueOrDefault())));
 			}
 		}
 	}

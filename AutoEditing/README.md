@@ -17,7 +17,9 @@ work.
 
 ## Current workflow
 
-The docked **AutoEditing Shot Review** extension presents a five-step wizard:
+The docked **AutoEditing Shot Review** extension now includes a dedicated song-map
+workspace between source selection and SFX setup. The remaining workflow steps
+follow it in the same order described below.
 
 1. **Choose sources** — select a clips folder, song, and weapon SFX-template
    folder.
@@ -80,6 +82,9 @@ present.
 - In-memory review drafts for outcome, gun, manual additions, and deletions,
   committed together when a clip is marked ready.
 - Reuse of ready clips without laying every source clip out again.
+- Initial song-map review actions that lay out owned musical markers and regions
+  in VEGAS and atomically commit moved, reclassified, resized, or deleted
+  proposals to the versioned sidecar.
 - Progress, cancellation, logging, and onboarding UI.
 
 ### Planning and timeline generation

@@ -19,15 +19,19 @@ internal sealed class EffectsApplier
 			((BaseList<Envelope>)(object)ev.Envelopes).Add(val);
 			((BaseList<EnvelopePoint>)(object)val.Points).Clear();
 			int num = 0;
-			foreach (SpeedProfilePoint item in points)
+			for (int pointIndex = 0; pointIndex < points.Count; pointIndex++)
 			{
+				SpeedProfilePoint item = points[pointIndex];
 				if (!profile.TryGetTimelineTimeForSourceTime(item.SourceTimeSeconds, out var timelineTimeSeconds))
 				{
 					Logger.LogError($"Speed profile point at source time {item.SourceTimeSeconds:F3}s did not map to a timeline offset; skipping.");
 					continue;
 				}
 				Timecode timelineOffset = Timecode.FromSeconds(timelineTimeSeconds);
-				if (TryAddVelocityPoint(val, timelineOffset, item.Speed, (CurveType)1, item.SourceTimeSeconds))
+				CurveType curve = CurveType.Linear;
+				if (pointIndex + 1 < points.Count && points[pointIndex + 1].Speed < item.Speed) curve = CurveType.Smooth;
+				else if (pointIndex + 1 < points.Count && points[pointIndex + 1].Speed > item.Speed) curve = CurveType.Fast;
+				if (TryAddVelocityPoint(val, timelineOffset, item.Speed, curve, item.SourceTimeSeconds))
 				{
 					num++;
 				}

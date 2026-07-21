@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Domain.Audio;
@@ -12,21 +11,19 @@ namespace Core.Scripts;
 
 internal sealed class TimelineBuilder
 {
-	public Dictionary<ClipPlacement, VideoEvent> BuildTimeline(Vegas vegas, List<ClipPlacement> placements, string songPath)
+	public Dictionary<ClipPlacement, VideoEvent> BuildTimeline(Vegas vegas, List<ClipPlacement> placements)
 	{
 		Project project = vegas.Project;
 		MatchProjectVideoToSourceClips(project, placements);
 		VideoTrack val = project.AddVideoTrack();
 		((Track)val).Name = "AE|Montage Clips";
-		AudioTrack val2 = project.AddAudioTrack();
-		((Track)val2).Name = "AE|Montage Clip Audio";
 		vegas.UpdateUI();
 		Dictionary<ClipPlacement, VideoEvent> dictionary = new Dictionary<ClipPlacement, VideoEvent>();
 		foreach (ClipPlacement placement in placements)
 		{
 			try
 			{
-				VideoEvent val3 = PlaceClip(vegas, project, val, val2, placement);
+				VideoEvent val3 = PlaceClip(vegas, project, val, placement);
 				if (val3 != (VideoEvent)null)
 				{
 					dictionary[placement] = val3;
@@ -37,7 +34,6 @@ internal sealed class TimelineBuilder
 				Logger.LogError("Error placing clip " + placement.Clip.FilePath, ex);
 			}
 		}
-		AddSongTrack(project, songPath);
 		vegas.UpdateUI();
 		return dictionary;
 	}
@@ -69,7 +65,7 @@ internal sealed class TimelineBuilder
 		Logger.Log($"Project video properties after match: {((VideoProperties)project.Video).Width}x{((VideoProperties)project.Video).Height}, " + $"PAR {((VideoProperties)project.Video).PixelAspectRatio:F4}, {((VideoProperties)project.Video).FrameRate:F3}fps.");
 	}
 
-	private static VideoEvent PlaceClip(Vegas vegas, Project project, VideoTrack videoTrack, AudioTrack clipAudioTrack, ClipPlacement placement)
+	private static VideoEvent PlaceClip(Vegas vegas, Project project, VideoTrack videoTrack, ClipPlacement placement)
 	{
 		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ff: Expected O, but got Unknown
@@ -102,16 +98,6 @@ internal sealed class TimelineBuilder
 		((BaseList<Take>)(object)((TrackEvent)val4).Takes).Add(val5);
 		val5.Offset = offset;
 		vegas.UpdateUI();
-		AudioStream val6 = ((IEnumerable)val.Streams).OfType<AudioStream>().FirstOrDefault();
-		if (val6 != (AudioStream)null)
-		{
-			AudioEvent val7 = new AudioEvent(val2, val3);
-			((BaseList<TrackEvent>)(object)((Track)clipAudioTrack).Events).Add((TrackEvent)(object)val7);
-			Take val8 = new Take((MediaStream)(object)val6);
-			((BaseList<Take>)(object)((TrackEvent)val7).Takes).Add(val8);
-			val8.Offset = offset;
-			vegas.UpdateUI();
-		}
 		return val4;
 	}
 
@@ -153,21 +139,4 @@ internal sealed class TimelineBuilder
 		}
 	}
 
-	private static void AddSongTrack(Project project, string songPath)
-	{
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0052: Expected O, but got Unknown
-		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0076: Expected O, but got Unknown
-		Media val = project.MediaPool.AddMedia(songPath);
-		if (val == (Media)null)
-		{
-			throw new InvalidOperationException("Could not import song file.");
-		}
-		AudioTrack val2 = project.AddAudioTrack();
-		((Track)val2).Name = "AE|Montage Song";
-		AudioEvent val3 = new AudioEvent(Timecode.FromSeconds(0.0), val.Length);
-		((BaseList<TrackEvent>)(object)((Track)val2).Events).Add((TrackEvent)(object)val3);
-		((BaseList<Take>)(object)((TrackEvent)val3).Takes).Add(new Take((MediaStream)(object)val.GetAudioStreamByIndex(0)));
-	}
 }

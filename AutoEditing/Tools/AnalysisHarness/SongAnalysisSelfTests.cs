@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Core.Domain.Audio;
@@ -20,6 +21,8 @@ namespace AnalysisHarness
 				TestReanalysisPreservesReviewedEdits(directory);
 				TestSilenceAndShortAudio();
 				TestStructuredRhythmAnalysis();
+				TestReviewedIdWinsReanalysisCollision();
+				TestMatchedIdCannotCollideWithNewProposal();
 				Console.WriteLine("Song-analysis self-tests passed.");
 			}
 			finally
@@ -191,6 +194,63 @@ namespace AnalysisHarness
 		private static SongIdentity SyntheticIdentity(string fingerprint, double duration)
 		{
 			return new SongIdentity { ContentFingerprint = fingerprint, LastKnownPath = fingerprint, DurationSeconds = duration };
+		}
+
+		private static void TestReviewedIdWinsReanalysisCollision()
+		{
+			SongIdentity identity = SyntheticIdentity("collision", 60.0);
+			MusicEvent reviewed = new MusicEvent
+			{
+				Id = "stable-phrase-id",
+				TimeSeconds = 10.0,
+				DetectedTimeSeconds = 10.0,
+				Type = MusicEventType.PhraseBoundary,
+				DetectedType = MusicEventType.PhraseBoundary,
+				Origin = MusicAnalysisOrigin.Detected,
+				ReviewState = MusicAnalysisReviewState.Reviewed
+			};
+			SongAnalysis existing = new SongAnalysis { Song = identity, Events = new List<MusicEvent> { reviewed } };
+			MusicEvent shiftedProposal = new MusicEvent
+			{
+				Id = "stable-phrase-id",
+				TimeSeconds = 30.0,
+				DetectedTimeSeconds = 30.0,
+				Type = MusicEventType.PhraseBoundary,
+				DetectedType = MusicEventType.PhraseBoundary,
+				Origin = MusicAnalysisOrigin.Detected,
+				ReviewState = MusicAnalysisReviewState.Proposed
+			};
+			SongAnalysis detected = new SongAnalysis { Song = identity, Events = new List<MusicEvent> { shiftedProposal } };
+			SongAnalysis reconciled = new SongAnalysisReconciler().Reconcile(existing, detected);
+			Assert(reconciled.Events.Count((MusicEvent item) => item.Id == "stable-phrase-id") == 1, "Re-analysis produced duplicate deterministic event IDs.");
+			Assert(reconciled.Events.Single().ReviewState == MusicAnalysisReviewState.Reviewed && Math.Abs(reconciled.Events.Single().TimeSeconds - 10.0) < 0.001, "Reviewed event did not win an ID collision.");
+		}
+
+		private static void TestMatchedIdCannotCollideWithNewProposal()
+		{
+			SongIdentity identity = SyntheticIdentity("matched-collision", 60.0);
+			MusicEvent oldProposal = DetectedEvent("inherited-id", 20.0);
+			SongAnalysis existing = new SongAnalysis { Song = identity, Events = new List<MusicEvent> { oldProposal } };
+			MusicEvent matchingProposal = DetectedEvent("new-id", 20.01);
+			MusicEvent deterministicCollision = DetectedEvent("inherited-id", 40.0);
+			SongAnalysis detected = new SongAnalysis { Song = identity, Events = new List<MusicEvent> { matchingProposal, deterministicCollision } };
+			SongAnalysis reconciled = new SongAnalysisReconciler().Reconcile(existing, detected);
+			Assert(reconciled.Events.Count == 2, "A legitimate proposal was discarded while repairing an inherited ID collision.");
+			Assert(reconciled.Events.Select((MusicEvent item) => item.Id).Distinct(StringComparer.Ordinal).Count() == 2, "Matching produced duplicate event IDs.");
+		}
+
+		private static MusicEvent DetectedEvent(string id, double time)
+		{
+			return new MusicEvent
+			{
+				Id = id,
+				TimeSeconds = time,
+				DetectedTimeSeconds = time,
+				Type = MusicEventType.PhraseBoundary,
+				DetectedType = MusicEventType.PhraseBoundary,
+				Origin = MusicAnalysisOrigin.Detected,
+				ReviewState = MusicAnalysisReviewState.Proposed
+			};
 		}
 
 		private static void Assert(bool condition, string message)
