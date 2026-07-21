@@ -6,6 +6,7 @@ namespace Core.Scripts;
 public enum WizardStep
 {
 	Sources,
+	SongAnalysis,
 	SfxIndex,
 	Analyze,
 	Review,

@@ -61,11 +61,22 @@ First place to look if source positions are wrong: `Take.Offset` semantics in
 ## Phase 1 — Velocity time-remapping (quickscope feel) ← START HERE
 
 1. **Planner**: add a `SpeedProfile` (piecewise-linear velocity points in source
-   time) to each `ClipPlacement`. Default profile: ~1.2× lead-in, ramp to ~0.35×
-   just before the (first) kill, kill frame at the slow point ON the beat, snap
-   back to 1× on the next beat. Enders/multis: deeper dip or beat-long freeze
+   time) to each `ClipPlacement`. Default profile: at least ~1.2× through the
+   scope and kill, with the kill still landing ON the beat; after scope-out,
+   ramp to ~0.35× and recover to the accelerated cruise. Enders/multis can use a deeper dip or beat-long freeze
    (y=0.0). Solve source-offset/consumption analytically; assert in harness that
    kills land on beats after warping.
+
+Implemented default treatment: the kill remains in the accelerated cruise and
+lands on its assigned beat. A short post-kill delay preserves the scope-out,
+then a long ramp enters a visible ~0.35× hold and recovers to cruise. The nominal
+shape varies deterministically per kill: 0.005–0.03 source-seconds of fast
+post-kill action, 0.1–0.18 source-seconds per ramp, and a 0.035–0.11
+source-second slow hold. This starts the emphasis earlier, keeps it shorter, and
+avoids mechanically identical timing while remaining reproducible. Closely
+spaced kills scale the shape proportionally. Final post-roll is no longer forced
+to occupy two beats; it follows its natural bounded duration. The integral solver accounts for the entire asymmetric treatment
+when assigning beats, so the reviewed kill remains on target.
 2. **EffectsApplier**: real `ApplyVelocityEnvelope(videoEvent, profile)` writing
    the envelope points with sensible `CurveType` (smooth into the dip, fast out).
 3. **Frame-rate note**: 60fps source at 0.35× ≈ 21 unique fps — fine at 30fps

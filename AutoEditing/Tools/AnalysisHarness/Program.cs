@@ -22,11 +22,27 @@ namespace AnalysisHarness
     {
         private static int Main(string[] args)
         {
+			if (args.Length == 1 && args[0] == "--self-test-song-analysis")
+			{
+				SongAnalysisSelfTests.RunAll();
+				MontagePlannerSelfTests.RunAll();
+				return 0;
+			}
             if (args.Length == 2 && args[0] == "--debug-tempo")
             {
                 DebugCommands.DebugTempo(args[1]);
                 return 0;
             }
+			if (args.Length == 2 && args[0] == "--debug-song")
+			{
+				DebugCommands.DebugSong(args[1], null);
+				return 0;
+			}
+			if (args.Length == 3 && args[0] == "--export-song-analysis")
+			{
+				DebugCommands.DebugSong(args[1], args[2]);
+				return 0;
+			}
             if (args.Length == 2 && args[0] == "--debug-shots")
             {
                 DebugCommands.DebugShots(args[1]);
@@ -36,7 +52,7 @@ namespace AnalysisHarness
             string clipsFolder = args.Length > 0 ? args[0] : @"C:\VEGAS\edit";
             string songPath = args.Length > 1
                 ? args[1]
-                : Directory.GetFiles(clipsFolder, "*.mp3").FirstOrDefault();
+				: Directory.GetFiles(clipsFolder, "*.*").FirstOrDefault((string path) => new[] { ".mp3", ".wav", ".m4a", ".aac", ".flac" }.Contains(Path.GetExtension(path), StringComparer.OrdinalIgnoreCase));
             string sfxRoot = args.Length > 2 ? args[2] : ConfigurationManager.GetShotDetection().SfxRoot;
 
             if (!Directory.Exists(clipsFolder))

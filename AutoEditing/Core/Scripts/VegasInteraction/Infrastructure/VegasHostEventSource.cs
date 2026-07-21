@@ -36,7 +36,14 @@ internal sealed class VegasHostEventSource : IVegasHostEventSource
 	}
 
 	private void HandleMarkersChanged(object sender, EventArgs args) { Publish(VegasHostEventKind.MarkersChanged); }
-	private void HandleCursorChanged(object sender, EventArgs args) { Publish(VegasHostEventKind.CursorChanged); }
+	private void HandleCursorChanged(object sender, EventArgs args)
+	{
+		Changed?.Invoke(this, new VegasHostEventArgs
+		{
+			Kind = VegasHostEventKind.CursorChanged,
+			CursorSeconds = _vegas.Transport.CursorPosition.ToMilliseconds() / 1000.0
+		});
+	}
 	private void HandleProjectOpened(object sender, EventArgs args) { Publish(VegasHostEventKind.ProjectOpened); }
 	private void HandleProjectClosed(object sender, EventArgs args) { Publish(VegasHostEventKind.ProjectClosed); }
 	private void HandleTimelineChanged(object sender, EventArgs args) { Publish(VegasHostEventKind.TimelineChanged); }
