@@ -1,0 +1,1191 @@
+{
+  "findingsSchemaVersion": "1.0",
+  "companionNarrative": "inferred-editing-strategies.md",
+  "rawSources": {
+    "v1": "C:\\VEGAS\\project-inspection.json",
+    "v2": "C:\\VEGAS\\project-inspection-v2.json",
+    "v2DiagnosticsRaw": "C:\\VEGAS\\project-inspection-v2-diagnostics-raw.txt"
+  },
+  "checkpoints": [
+    {
+      "checkpoint": 1,
+      "topic": "Project shape, media/plugin state, core effect chain, Shake/stillness discovery",
+      "facts": [
+        {
+          "id": "project-shape",
+          "confidence": "observed",
+          "data": {
+            "vegasVersion": "20.0 (Build 411)",
+            "resolution": "1920x1080",
+            "frameRate": 29.97003,
+            "rulerBPM": 120,
+            "rulerBeatsPerMeasure": 4,
+            "lengthSeconds": 240.975488,
+            "song": "Bad Omens - Glass Houses",
+            "tracks": [
+              {
+                "index": 0,
+                "type": "Video",
+                "role": "film-damage overlay (static, looped)",
+                "eventCount": 1
+              },
+              {
+                "index": 1,
+                "type": "Video",
+                "role": "main cut",
+                "eventCount": 276
+              },
+              {
+                "index": 2,
+                "type": "Audio",
+                "role": "unconfirmed (likely SFX)",
+                "eventCount": 143
+              },
+              {
+                "index": 3,
+                "type": "Audio",
+                "role": "song",
+                "eventCount": 1
+              },
+              {
+                "index": 4,
+                "type": "Audio",
+                "role": "unconfirmed (likely whoosh)",
+                "eventCount": 24
+              }
+            ],
+            "markerCount": 154,
+            "regionCount": 0,
+            "songEventStartSeconds": 23.556867,
+            "songSourceOffsetSeconds": 23.556867,
+            "songFadeInSeconds": 3.086417,
+            "songFadeInCurve": "Fast",
+            "firstTrack1EventStartSeconds": 26.643283
+          }
+        },
+        {
+          "id": "event-source-buckets",
+          "confidence": "calculated",
+          "note": "Bucketed by source folder path substring, Track 1 only.",
+          "data": {
+            "cinematic": 22,
+            "opener": 45,
+            "middle": 171,
+            "single-collat": 17,
+            "closer": 21,
+            "total": 276
+          }
+        },
+        {
+          "id": "media-relink",
+          "confidence": "observed",
+          "data": {
+            "totalMediaItems": 51,
+            "offlineOnOriginalOpen": 48,
+            "relinkMethod": "Media.ReplaceWith(MediaPool.AddMedia(matchedPath)) -- MediaFile.FilePath setter exists but is not publicly accessible from script code",
+            "searchRoots": [
+              "C:\\VEGAS\\montage 4 by editor-1",
+              "C:\\VEGAS\\montage 4 by editor-1\\montage 4"
+            ],
+            "relinkedCount": 48,
+            "savedCleanCopy": "C:\\VEGAS\\montage 4 by editor-1\\montage 4\\Untitled.relinked.veg",
+            "verifiedOfflineCountAfterSaveAndReopen": 0,
+            "verificationMethod": "Fresh VEGAS launch against Untitled.relinked.veg, IsOffline() checked with zero relink code running in that session"
+          }
+        },
+        {
+          "id": "missing-plugins",
+          "confidence": "observed",
+          "data": {
+            "warningPersistsOnEveryOpen": true,
+            "suppressionAttempted": "TPT_szOFXExcludedPlugins preference (pre-existing value: 'BCC10_OFX;BCC11_OFX'); appended full bracketed uniqueIDs and bare GUID -- did NOT suppress the dialog",
+            "referencedMissingPlugins": [
+              {
+                "uniqueId": "{Svfx:com.redgiantsoftware.Universe_Stylize_Glitch_OFX}",
+                "vendor": "Red Giant Universe",
+                "effectName": "Stylize Glitch",
+                "observedUseCount": 2
+              },
+              {
+                "uniqueId": "{Svfx:com.borisfx:BCC_Vector_Blur_Dissolve}",
+                "vendor": "Boris FX Continuum",
+                "effectName": "Vector Blur Dissolve",
+                "usedAs": "transition",
+                "observedUseCount": 3
+              },
+              {
+                "uniqueId": "{Svfx:com.borisfx:BCC4Damaged_TV}",
+                "vendor": "Boris FX Continuum",
+                "effectName": "Damaged TV",
+                "observedUseCount": 1
+              },
+              {
+                "uniqueId": "b47a199b-15e2-4836-bd39-419904b5d292",
+                "vendor": "unknown",
+                "effectName": "unknown",
+                "note": "identified only by class GUID in the dialog, no friendly name shown"
+              }
+            ],
+            "installedEffectsConfirmedReadable": [
+              "S_Shake",
+              "S_Flicker",
+              "S_BlurMoCurves",
+              "S_Glow",
+              "S_DistortRGB",
+              "Bump Map",
+              "Black and White",
+              "Track Noise Gate",
+              "Track EQ",
+              "Track Compressor"
+            ]
+          }
+        },
+        {
+          "id": "videomotion-negative-result",
+          "confidence": "observed",
+          "data": {
+            "claim": "Every one of the 276 Track-1 video events has exactly 1 VideoMotion keyframe (no Pan/Crop animation anywhere in the project).",
+            "sampleSize": 276,
+            "keyframeCountDistribution": {
+              "1": 276
+            }
+          }
+        },
+        {
+          "id": "per-event-effect-distribution",
+          "confidence": "observed",
+          "data": {
+            "totalTrack1Events": 276,
+            "eventsWithAnyPerEventEffect": 252,
+            "effectCounts": {
+              "S_Shake": 250,
+              "S_BlurMoCurves": 224,
+              "Bump Map": 224,
+              "S_Glow": 224,
+              "S_Flicker": 28,
+              "S_DistortRGB": 26,
+              "Black and White": 1
+            },
+            "trackLevelEffectsOnTrack1": [
+              "S_Shake",
+              "S_Flicker"
+            ]
+          }
+        },
+        {
+          "id": "shake-two-recipes",
+          "confidence": "observed",
+          "note": "This is the key reframing finding: the 'screen pump' is a shake-to-zero, not a shake or zoom spike.",
+          "data": {
+            "eventsWithPerEventShake": 250,
+            "amplitudeAnimatedCount": 249,
+            "zDistAnimatedCount": 25,
+            "recipeA_ordinaryCut": {
+              "eventCount": 224,
+              "parameter": "Amplitude",
+              "default": 1,
+              "keyframeValues": [
+                0,
+                0.2,
+                0
+              ],
+              "approxDurationSeconds": 1.1,
+              "zDistAnimated": false
+            },
+            "recipeB_impact": {
+              "eventCount": 25,
+              "sampleEventIds": [
+                "t1_e16",
+                "t1_e33",
+                "t1_e49",
+                "t1_e60",
+                "t1_e73"
+              ],
+              "amplitude": {
+                "default": 1,
+                "keyframes": [
+                  {
+                    "eventRelativeSeconds": -0.116783,
+                    "value": 1.1
+                  },
+                  {
+                    "eventRelativeSeconds": 0,
+                    "value": 0.7
+                  },
+                  {
+                    "eventRelativeSeconds": 0.250251,
+                    "value": 0
+                  }
+                ]
+              },
+              "zDist": {
+                "default": 1,
+                "keyframes": [
+                  {
+                    "eventRelativeSeconds": 0,
+                    "value": 0.9
+                  },
+                  {
+                    "eventRelativeSeconds": 0.250251,
+                    "value": 1
+                  }
+                ]
+              },
+              "identicalAcrossSampledEvents": true,
+              "interpretation": "Camera shake decays to exactly 0 within ~0.25-0.37s of the cut; Z Dist only moves 0.9->1.0 (a nudge, not a zoom punch). One exact reusable preset, not per-event hand tuning, for this recipe."
+            }
+          }
+        },
+        {
+          "id": "velocity-envelope-sample",
+          "confidence": "observed",
+          "note": "Single-sample only (t1_e0) -- do not generalize yet. 275/276 events have a Velocity envelope.",
+          "data": {
+            "eventsWithVelocityEnvelope": 275,
+            "totalTrack1Events": 276,
+            "envelopeRange": {
+              "min": -1,
+              "max": 10,
+              "neutral": 1
+            },
+            "sampleEventId": "t1_e0",
+            "sampleEventStartSeconds": 26.643283,
+            "points": [
+              {
+                "timeSeconds": 0,
+                "value": 3.052631,
+                "curve": "Fast"
+              },
+              {
+                "timeSeconds": 0.832867,
+                "value": 0.698,
+                "curve": "Smooth"
+              },
+              {
+                "timeSeconds": 2.955333,
+                "value": 0.698,
+                "curve": "Slow"
+              },
+              {
+                "timeSeconds": 4.137467,
+                "value": 2.473684,
+                "curve": "Smooth"
+              }
+            ]
+          }
+        }
+      ],
+      "openQuestions": [
+        "Correlate the 25 'impact' S_Shake events against markers and Track-2 audio events to identify actual kill timing.",
+        "Generalize the velocity envelope shape across all 275 events (plateau value distribution, first/middle/final-kill variation).",
+        "Audio treatment recipes for Track 2 (143 events) and Track 4 (24 events).",
+        "Bus/master/track gain chain verification for the -3dB music level claim.",
+        "Track-level S_Shake/S_Flicker parameter detail (animated or static at track scope).",
+        "Visual/render confirmation of representative moments.",
+        "Standalone missing-plugin capability report."
+      ]
+    },
+    {
+      "checkpoint": 2,
+      "topic": "Kill-moment localization; velocity envelope generalized across all 275 events",
+      "facts": [
+        {
+          "id": "impact-events-align-with-audio-and-markers",
+          "confidence": "observed",
+          "note": "Exact-zero timestamp deltas across all 25 samples, not a statistical approximation.",
+          "data": {
+            "impactEventCount": 25,
+            "impactEventsAlignedToTrack2AudioEventStart": 25,
+            "impactEventsAlignedToMarker": 25,
+            "alignmentToleranceSeconds": 0.001,
+            "track2TotalEvents": 143,
+            "track2EventsAlignedToAnyMarker": 122,
+            "track2EventsAlignedToAnyMarkerPct": 0.853,
+            "track2EventsThatAreAlsoImpactCuts": 25,
+            "track2EventsThatAreAlsoImpactCutsPct": 0.175,
+            "interpretation": "Track 2 is almost certainly the gunshot/hit-confirmation SFX layer. Every impact-recipe cut is also a beat-aligned gunshot. Most gunshots (85%) are beat-aligned generally, but only 17% of them are also the site of a new cut carrying the special shake-to-zero treatment -- i.e. within a held clip containing multiple audible hits, only the hit that coincides with an actual edit gets the bespoke visual effect."
+          }
+        },
+        {
+          "id": "velocity-envelope-generalized",
+          "confidence": "observed",
+          "note": "Corrects/refines the checkpoint-1 single-sample note (0.7x plateau was not representative).",
+          "data": {
+            "sampleSize": 275,
+            "pointCountDistribution": {
+              "2": 14,
+              "3": 44,
+              "4": 188,
+              "5": 24,
+              "6": 5
+            },
+            "entryValueStats": {
+              "n": 275,
+              "min": 0.4,
+              "max": 6.236842,
+              "mean": 2.874,
+              "median": 2.871417
+            },
+            "exitValueStats": {
+              "n": 275,
+              "min": 0.4,
+              "max": 5.947369,
+              "mean": 2.253,
+              "median": 2.763158
+            },
+            "plateauMinValueStats_all": {
+              "n": 275,
+              "min": 0.4,
+              "max": 1,
+              "mean": 0.52,
+              "median": 0.5
+            },
+            "plateauMinValueStats_impactEventsOnly": {
+              "n": 25,
+              "min": 0.4,
+              "max": 0.5,
+              "mean": 0.492,
+              "median": 0.5
+            },
+            "plateauMinValueStats_nonImpactEvents": {
+              "n": 250,
+              "min": 0.4,
+              "max": 1,
+              "mean": 0.523,
+              "median": 0.5
+            },
+            "interpretation": "Median plateau is exactly 0.5x across the full corpus, confirming the classic half-speed slow-motion assumption (the earlier single-sample 0.7x reading was not representative). Plateau depth is statistically indistinguishable between impact and non-impact events (median 0.5 both groups) -- velocity ramping and the Shake-based impact treatment are independent editorial layers, not one coupled 'kill recipe'. Entry/exit speeds both comfortably exceed 1x (medians ~2.87x / ~2.76x), confirming ramps genuinely overshoot rather than settling back to normal speed."
+          }
+        }
+      ],
+      "openQuestions": [
+        "Confirm Track 2 event identity directly against SFX filenames/catalog rather than by timing inference alone.",
+        "Precise re-count of the 25 impact events' section distribution.",
+        "Audio treatment recipes for Track 2 (143 events) and Track 4 (24 events): gain, pitch, effects chain, fades.",
+        "Bus/master/track gain chain verification for the -3dB music level claim.",
+        "Track-level S_Shake/S_Flicker parameter detail (animated or static at track scope).",
+        "First/middle/final-kill variation within multi-kill sequences.",
+        "Visual/render confirmation of representative moments.",
+        "Standalone missing-plugin capability report."
+      ]
+    },
+    {
+      "checkpoint": 3,
+      "topic": "Audio treatment recipes for the weapon-SFX and whoosh layers; identified export gaps (native FX params, master bus)",
+      "facts": [
+        {
+          "id": "track2-source-identity",
+          "confidence": "observed",
+          "data": {
+            "track2TotalEvents": 143,
+            "weaponLibraryEvents": 125,
+            "weaponLibrarySourceFile": "Modern Warfare 2 - All Weapons Showcase (Reloads, Sounds, Animations).mp3",
+            "originalGameplayAudioEvents": 18,
+            "originalGameplayAudioNote": "Each of the 18 is sourced from a distinct original gameplay clip file, isGrouped=true, grouped with its corresponding video event.",
+            "interpretation": "Track 2 is the SFX/audio-replacement layer. Most hits (125) get the curated weapon-showcase library; a minority (18) retain original in-game audio."
+          }
+        },
+        {
+          "id": "weapon-sfx-single-source-transform",
+          "confidence": "observed",
+          "data": {
+            "sampleSize": 125,
+            "uniqueSourceOffsetsSeconds": 1,
+            "sourceOffsetSeconds": 1120.186,
+            "playbackRateDistribution": {
+              "1": 125
+            },
+            "normalizeDistribution": {
+              "false": 125
+            },
+            "perEventEffectsPresentOnAll125": [
+              "Pitch Shift",
+              "eFX_Reverb\t(VST2, 64 Bit)"
+            ],
+            "pitchShiftPluginUniqueId": "{ED1B4100-93BE-11D0-AEBC-00A0C9053912}",
+            "reverbPluginUniqueId": "{4D583233-BDF1-E94D-029C-0007E95D36FA}",
+            "interpretation": "All 125 replacement-weapon events use the identical source sample at the identical offset; per-gun sonic variety is produced entirely by per-event Pitch Shift + Reverb settings, not by selecting different source material. Confirms the hypothesis exactly as posed."
+          }
+        },
+        {
+          "id": "gap-native-effect-parameters",
+          "confidence": "observed",
+          "isGap": true,
+          "data": {
+            "affectedEffects": [
+              "Pitch Shift",
+              "eFX_Reverb (VST2, 64-bit)",
+              "Track Noise Gate",
+              "Track EQ",
+              "Track Compressor"
+            ],
+            "reason": "These are native VEGAS/VST effects (isOFX=false). The current inspector's deep parameter/keyframe export only covers the OFX parameter family (OFXParameter/OFXKeyframe); native effects only get identity fields (plugin name/uniqueID/classID, bypass, currentPresetName -- which is null here).",
+            "consequence": "Cannot yet quantify how much Pitch Shift/Reverb vary per weapon-SFX event, nor read the Noise Gate/EQ/Compressor settings on any audio track.",
+            "fix": "Needs a follow-up inspector pass into the classic (non-OFX) Effect.Keyframes/automation API -- not yet explored or reflected."
+          }
+        },
+        {
+          "id": "whoosh-layer",
+          "confidence": "observed",
+          "data": {
+            "track4TotalEvents": 24,
+            "sourceFile": "woosh2.mp3",
+            "sourceFileEventPct": 1
+          }
+        },
+        {
+          "id": "gain-chain-partial",
+          "confidence": "observed",
+          "data": {
+            "trackFaderVolumes": {
+              "track2_sfx": {
+                "linear": 0.660693,
+                "dB": -3.6
+              },
+              "track3_song": {
+                "linear": 0.707946,
+                "dB": -3
+              },
+              "track4_whoosh": {
+                "linear": 0.707946,
+                "dB": -3
+              }
+            },
+            "track3SongEnvelopes": [],
+            "track3SongEventEffects": [],
+            "interpretation": "The song track has zero envelopes at track or event level -- attenuation is a flat -3dB with no ducking/automation around gunfire."
+          }
+        },
+        {
+          "id": "gap-master-bus-not-exported",
+          "confidence": "observed",
+          "isGap": true,
+          "data": {
+            "reason": "Project.MasterBus (and VideoBus) were never read by the inspector.",
+            "consequence": "The -3dB figures above are track-fader-only; true final perceived attenuation (Codex's explicit caution) cannot be confirmed until the master bus chain is captured.",
+            "fix": "Add Project.MasterBus / Project.VideoBus export (both are AudioBusTrack/VideoBusTrack instances, same Effects/Envelopes shape already handled by the existing ExportEffects/ExportEnvelopes functions -- straightforward to add)."
+          }
+        }
+      ],
+      "openQuestions": [
+        "Read native (non-OFX) effect parameters for Pitch Shift/Reverb (weapon SFX) and Track EQ/Compressor/Noise Gate (all audio tracks).",
+        "Export Project.MasterBus / VideoBus to close the gain-chain verification.",
+        "Cross-reference the 24 whoosh events against transitions/section boundaries.",
+        "Closer look at the one tightly-spaced impact pair (t1_e272/t1_e274) as the best multi-kill candidate.",
+        "Visual/render confirmation of representative moments.",
+        "Standalone missing-plugin capability report."
+      ]
+    },
+    {
+      "checkpoint": 4,
+      "topic": "Multi-kill clustering (negative result) and track-level Shake/Flicker static baseline",
+      "facts": [
+        {
+          "id": "impact-events-section-distribution-corrected",
+          "confidence": "observed",
+          "data": {
+            "opener": 3,
+            "middle": 17,
+            "single-collat": 3,
+            "closer": 2,
+            "total": 25
+          }
+        },
+        {
+          "id": "impact-events-spacing",
+          "confidence": "observed",
+          "note": "Corrects an assumption -- this argues against a tightly-clustered multi-kill pattern in this specific recipe.",
+          "data": {
+            "gapsSecondsInTimelineOrder": [
+              11.49,
+              13.58,
+              7.24,
+              7.37,
+              6.24,
+              3.94,
+              8.32,
+              8.64,
+              8.34,
+              9.39,
+              9.34,
+              6.04,
+              7.34,
+              7.52,
+              6.29,
+              5.22,
+              7.32,
+              8.32,
+              10.43,
+              9.36,
+              7.17,
+              8.31,
+              13.75,
+              2.09
+            ],
+            "minGapSeconds": 2.09,
+            "minGapPair": [
+              "t1_e272",
+              "t1_e274"
+            ],
+            "minGapSection": "closer",
+            "interpretation": "25 impact events read as evenly-spaced highlight beats (mostly 6-14s apart), not tightly-clustered multi-kill bursts. The 'first/middle/final kill in a multi-kill' question has little to grab onto in this recipe's data specifically; the one exception (closer-section pair, 2.09s apart) is the best candidate for an actual back-to-back pair and merits a render check."
+          }
+        },
+        {
+          "id": "track-level-shake-flicker-static-baseline",
+          "confidence": "observed",
+          "data": {
+            "animatedAtTrackLevel": false,
+            "S_Shake": {
+              "Amplitude": {
+                "value": 0.06,
+                "default": 1
+              },
+              "Frequency": {
+                "value": 1.5,
+                "default": 8
+              },
+              "TiltRandAmp": {
+                "value": 5,
+                "default": 0
+              }
+            },
+            "S_Flicker": {
+              "Amplitude": {
+                "value": 0.14,
+                "default": 0.2
+              },
+              "WaveFreq": {
+                "value": 27.157895,
+                "default": 5
+              },
+              "RandFreq": {
+                "value": 22,
+                "default": 30
+              }
+            },
+            "interpretation": "The whole-track ambient layer is a deliberately subtle, constant 'handheld/damaged-film' texture (low shake amplitude, slow shake frequency, fast fine-grained flicker), consistent with the Track-0 vintage-film-damage overlay theme. Because the baseline is already subtle, the per-event Amplitude dip to exactly 0 at impact cuts (checkpoint 1, Section 3) reads as a bigger relative contrast -- 'quietly textured' to 'perfectly still' right at the payoff."
+          }
+        }
+      ],
+      "openQuestions": [
+        "Read native (non-OFX) effect parameters for Pitch Shift/Reverb (weapon SFX) and Track EQ/Compressor/Noise Gate (all audio tracks).",
+        "Export Project.MasterBus / VideoBus to close the gain-chain verification.",
+        "Cross-reference the 24 whoosh events against transitions/section boundaries.",
+        "Closer look at the one tightly-spaced impact pair (t1_e272/t1_e274) as the best multi-kill candidate.",
+        "Visual/render confirmation of representative moments.",
+        "Standalone missing-plugin capability report."
+      ]
+    },
+    {
+      "checkpoint": 5,
+      "topic": "Gain chain fully closed (MasterBus/VideoBus empty); classic-effect automation confirmed absent everywhere (hard capability limit, not an open question anymore)",
+      "inspectorVersion": "3.0",
+      "rawSourceForThisCheckpoint": "C:\\VEGAS\\project-inspection-v3.json",
+      "facts": [
+        {
+          "id": "master-video-bus-empty",
+          "confidence": "observed",
+          "data": {
+            "masterBus": {
+              "name": "Master",
+              "mute": false,
+              "effectCount": 0,
+              "envelopeCount": 0
+            },
+            "videoBus": {
+              "name": "Video",
+              "effectCount": 0,
+              "envelopeCount": 0
+            },
+            "interpretation": "No hidden bus/master gain adjustment or effect exists anywhere in the project. Combined with checkpoint 3 (song track/event has zero envelopes) and the track-fader values already recorded, the full gain chain is now confirmed: -3.0dB song / -3.6dB SFX is exactly what reaches the render, with no automation or bus modification at any stage."
+          }
+        },
+        {
+          "id": "classic-keyframes-confirmed-empty-everywhere",
+          "confidence": "observed",
+          "data": {
+            "weaponSfxEventsChecked": 143,
+            "weaponSfxEventsWithClassicKeyframes": 0,
+            "trackLevelClassicEffectsChecked": [
+              "Track Noise Gate",
+              "Track EQ",
+              "Track Compressor"
+            ],
+            "trackLevelClassicEffectsWithKeyframes": 0,
+            "reflectionConfirmedApiLimit": "Keyframe.Preset has no getter (write-only); CurrentPresetName returns null for these effects.",
+            "conclusion": "This is now a confirmed, permanent capability limit, not an open question: the exact per-event Pitch Shift/Reverb/EQ/Compressor settings are not readable through ScriptPortal.Vegas at all. The mechanism (one source sample, per-event Pitch Shift + Reverb, statically configured, no timeline animation) is proven; the exact numeric values are not accessible without binary-format parsing, which is explicitly out of scope."
+          }
+        }
+      ],
+      "openQuestions": [
+        "Cross-reference the 24 whoosh events against transitions/section boundaries.",
+        "Closer look at the one tightly-spaced impact pair (t1_e272/t1_e274) as the best multi-kill candidate.",
+        "Visual/render confirmation of representative moments.",
+        "Standalone missing-plugin capability report.",
+        "Consolidate into the full required deliverable set."
+      ]
+    },
+    {
+      "checkpoint": 6,
+      "topic": "Whoosh-to-cinematic transition timing; closest analog to a multi-kill sequence",
+      "facts": [
+        {
+          "id": "section-boundaries-track1",
+          "confidence": "observed",
+          "data": {
+            "totalBoundaryCrossings": 39,
+            "note": "Frequent middle<->cinematic weaving from ~70s onward, roughly every 5-6s once established."
+          }
+        },
+        {
+          "id": "whoosh-precedes-cinematic-transitions",
+          "confidence": "observed",
+          "data": {
+            "totalWhooshEvents": 24,
+            "eventsWithConsistentLeadIn": 22,
+            "leadInRangeSeconds": [
+              1.85,
+              3.5
+            ],
+            "outliers": [
+              {
+                "id": "t4_e11",
+                "deltaSeconds": 5.73,
+                "note": "before the middle<->cinematic pattern is fully established"
+              },
+              {
+                "id": "t4_e23",
+                "deltaSeconds": 9.22,
+                "note": "leads into the closer section -- longer, deliberate final buildup"
+              }
+            ],
+            "interpretation": "Whoosh is a lead-in transition cue specifically for cuts into cinematic cutaways, consistently anticipating the cut by ~2-3.5s rather than landing on it."
+          }
+        },
+        {
+          "id": "whoosh-event-shape",
+          "confidence": "observed",
+          "data": {
+            "sampleEventId": "t4_e0",
+            "fadeIn": {
+              "lengthSeconds": 0,
+              "curve": "Fast",
+              "gain": 0.738095
+            },
+            "fadeOut": {
+              "lengthSeconds": 3.960552,
+              "curve": "Slow",
+              "gain": 0.738095
+            },
+            "eventLengthSeconds": 3.960552,
+            "interpretation": "Fade-out spans the entire event -- the whole clip is one continuous decay from an instant onset, not a gated stinger."
+          }
+        },
+        {
+          "id": "closest-multikill-analog",
+          "confidence": "observed",
+          "data": {
+            "events": [
+              {
+                "id": "t1_e272",
+                "startSeconds": 234.217,
+                "lengthSeconds": 1.034,
+                "isImpactRecipe": true
+              },
+              {
+                "id": "t1_e273",
+                "startSeconds": 235.235,
+                "lengthSeconds": 1.068,
+                "isImpactRecipe": false
+              },
+              {
+                "id": "t1_e274",
+                "startSeconds": 236.303,
+                "lengthSeconds": 0.834,
+                "isImpactRecipe": true
+              }
+            ],
+            "sourceFile": "Closer 01.mp4",
+            "pattern": "hit, beat, hit",
+            "interpretation": "Best available example of intentional back-to-back impact structuring in the whole project. Per checkpoint 4's negative result, this reads as a closer-specific punctuation device, not evidence of a general first/middle/final-kill recipe elsewhere in the edit."
+          }
+        }
+      ],
+      "openQuestions": [
+        "Visual/render confirmation of representative moments.",
+        "Standalone missing-plugin capability report.",
+        "Consolidate into the full required deliverable set."
+      ]
+    },
+    {
+      "checkpoint": 7,
+      "topic": "Visual confirmation via 16 SaveSnapshot frame captures; CORRECTS checkpoint 1's Section 3.1 characterization of the impact mechanism",
+      "framesDirectory": "C:\\VEGAS\\representative-frames",
+      "captureLog": "C:\\VEGAS\\representative-frames\\capture-log.txt",
+      "facts": [
+        {
+          "id": "impact-mechanism-corrected",
+          "confidence": "observed",
+          "supersedesFactId": "shake-two-recipes (checkpoint 1)",
+          "data": {
+            "shakeInstanceCountDistribution": {
+              "0": 26,
+              "1": 224,
+              "2": 26
+            },
+            "motionBlurOnPerInstanceCount": 52,
+            "motionBlurOffPerInstanceCount": 224,
+            "twoInstanceEvents_motionBlurLengths": [
+              0.8,
+              2
+            ],
+            "twoInstanceEvents_motionBlurEnabled": true,
+            "singleInstanceEvents_motionBlurEnabled": false,
+            "ambientTrackLevelMotionBlurEnabled": false,
+            "overlapWithEarlierImpactSet": {
+              "impactSetSize": 25,
+              "twoInstanceSetSize": 26,
+              "overlap": 25
+            },
+            "visualConfirmation": {
+              "ordinaryRecipeSample": {
+                "eventId": "t1_e3",
+                "frames": [
+                  "03_opener-dip_t1_e3_pre.png",
+                  "03_opener-dip_t1_e3_at.png",
+                  "03_opener-dip_t1_e3_post.png"
+                ],
+                "observation": "all three frames sharp, no visible blur or distortion"
+              },
+              "impactRecipeSample": {
+                "eventId": "t1_e16",
+                "frames": [
+                  "04_impact-distortRGB_t1_e16_pre.png",
+                  "04_impact-distortRGB_t1_e16_at.png",
+                  "04_impact-distortRGB_t1_e16_settled.png"
+                ],
+                "observation": "pre=sharp, at(+53ms)=strong directional motion-blur smear with chromatic fringing, settled(+0.6s)=sharp again with game's own kill-confirmation text visible"
+              }
+            },
+            "correctedInterpretation": "The impact recipe is not merely 'shake amplitude decays to zero'. It stacks a SECOND S_Shake instance with the Motion Blur boolean explicitly forced true (a static, non-animated override) at Mo Blur Length 0.8 and 2.0 on the two instances respectively -- identical across every sampled event. Because Sapphire's shake motion-blur length scales with actual per-frame shake motion, the brief above-baseline Amplitude spike (1.1->0.7) at the cut produces a genuine visible motion-blur smear, and killing Amplitude to 0 within ~0.25-0.37s kills the blur too, producing a sharp landed frame. This was only discovered by rendering actual frames -- parameter values alone (checkpoint 1) suggested a much simpler 'shake to zero = stillness' story that undersold what's actually on screen."
+          }
+        },
+        {
+          "id": "cold-open-visually-confirmed",
+          "confidence": "observed",
+          "data": {
+            "frame": "00_pre-song-blackfield.png",
+            "timeSeconds": 10,
+            "observation": "completely blank canvas, confirming no content exists before the first video event at ~26.6s"
+          }
+        },
+        {
+          "id": "black-and-white-effect-visually-confirmed",
+          "confidence": "observed",
+          "data": {
+            "frame": "05_black-and-white_t1_e113.png",
+            "eventId": "t1_e113",
+            "observation": "genuinely desaturated/grayscale, confirming the project's one-off Black and White effect renders as expected"
+          }
+        },
+        {
+          "id": "closer-triple-visually-confirmed",
+          "confidence": "observed",
+          "data": {
+            "frames": [
+              "06_closer-triple_e274_hit2_at.png",
+              "06_closer-triple_e274_hit2_post.png"
+            ],
+            "observation": "Both frames (at +47ms and +297ms into the 834ms-long t1_e274) still show heavy blur, consistent with the effect's ~250-370ms decay window overlapping most of this short event's visible duration."
+          }
+        }
+      ],
+      "openQuestions": [
+        "Consolidate into the full required deliverable set.",
+        "Optional: audio-synced short segment renders if a suitable RenderTemplate can be found/built."
+      ]
+    },
+    {
+      "checkpoint": 8,
+      "topic": "Both recipes confirmed as exact byte-identical presets; copy-paste-trim workflow inferred from fixed-duration keyframe timing",
+      "facts": [
+        {
+          "id": "ordinary-recipe-confirmed-single-preset",
+          "confidence": "observed",
+          "data": {
+            "clusterSize": 224,
+            "sampledEvents": [
+              "t1_e3",
+              "t1_e4",
+              "t1_e5",
+              "t1_e6",
+              "t1_e7",
+              "t1_e8",
+              "t1_e9",
+              "t1_e10"
+            ],
+            "identicalAcrossAllSampled": {
+              "S_Shake.Amplitude": [
+                {
+                  "t": 0,
+                  "v": 0
+                },
+                {
+                  "t": 0.167,
+                  "v": 0.2
+                },
+                {
+                  "t": 1.101,
+                  "v": 0
+                }
+              ],
+              "S_BlurMoCurves.Z Dist": [
+                {
+                  "t": 0,
+                  "v": 1
+                },
+                {
+                  "t": 0.167,
+                  "v": 0.96
+                },
+                {
+                  "t": 1.869,
+                  "v": 1
+                }
+              ],
+              "Bump Map.Intensity": [
+                {
+                  "t": 0,
+                  "v": 0.05
+                },
+                {
+                  "t": 1.101,
+                  "v": 0
+                }
+              ],
+              "S_Glow.Brightness": [
+                {
+                  "t": 0,
+                  "v": 2
+                },
+                {
+                  "t": 0.767,
+                  "v": 0
+                }
+              ]
+            },
+            "conclusion": "Directly and completely answers 'one preset or many variations' (Codex Q4) for both clusters: both the 224-event and 25-event groups are single reusable presets, not per-event hand tuning, across every parameter checked."
+          }
+        },
+        {
+          "id": "keyframe-timing-fixed-not-scaled-to-event-length",
+          "confidence": "observed",
+          "data": {
+            "sampledEventLengthRangeSeconds": [
+              0.434,
+              1.201
+            ],
+            "keyframeCurveDurationSeconds": 1.101,
+            "observation": "Every sampled event carries the identical 1.101s-long curve regardless of its own (often shorter) length -- the curve's tail is simply never reached on short events.",
+            "interpretation": "Inferred-High: reveals the actual editorial workflow -- one fully-configured template event's effect chain was copy-pasted onto every subsequent cut, then each was trimmed to its own final length independently, without re-timing the keyframes. Reusable insight for an automated planner: anchor the recipe to event start and let natural trimming truncate it, rather than rescaling the curve per clip duration."
+          }
+        }
+      ],
+      "openQuestions": [
+        "Final consolidation into the full required deliverable set (in progress)."
+      ]
+    },
+    {
+      "checkpoint": 9,
+      "topic": "Compositing modes and crossfade transitions (closes Codex Priority 9)",
+      "facts": [
+        {
+          "id": "composite-modes",
+          "confidence": "observed",
+          "data": {
+            "track0_overlay": {
+              "compositeMode": "Screen",
+              "compositeLevel": 1
+            },
+            "track1_main": {
+              "compositeMode": "SrcAlpha",
+              "compositeLevel": 1
+            },
+            "interpretation": "Screen-mode blending is the conventional technique for layering a dust/scratch/light-leak texture over footage without darkening it -- confirms the overlay's intended visual role."
+          }
+        },
+        {
+          "id": "crossfade-transitions",
+          "confidence": "observed",
+          "data": {
+            "totalEventBoundaryPairs": 275,
+            "overlappingPairs": 114,
+            "overlappingPairsPct": 0.415,
+            "exactAdjacentHardCutPairs": 161,
+            "gapPairs": 0,
+            "overlapDurationSecondsStats": {
+              "min": 0.0167,
+              "max": 0.367,
+              "median": 0.05
+            },
+            "overlapDurationBuckets": {
+              "<0.05s": 45,
+              "0.05-0.2s": 66,
+              "0.2-0.5s": 3,
+              ">0.5s": 0
+            },
+            "overlapMatchesAdjacentFadeLengths": true,
+            "conclusion": "Overlap duration exactly equals both the outgoing event's fadeOut length and the incoming event's fadeIn length in every sampled case (to 6 decimal places) -- this is VEGAS's default auto-crossfade from overlapping fade curves, NOT a dedicated Transition plug-in object. Distinct from the 3 explicit uses of the missing Boris FX Vector Blur Dissolve transition. ~41% of cuts use a short (17-367ms, median 50ms) built-in crossfade; the remaining 59% are true hard cuts; zero timeline gaps anywhere."
+          }
+        }
+      ],
+      "openQuestions": []
+    },
+    {
+      "checkpoint": 10,
+      "topic": "Self-audit prompted by 'are you certain every angle is covered' -- closes several previously-unexamined schema fields, finds one genuinely missed technique (reversed subclip), and one remaining unconfirmed gap (CustomData)",
+      "facts": [
+        {
+          "id": "track-motion-confirmed-unused",
+          "confidence": "observed",
+          "data": {
+            "track0": {
+              "hasMotionData": false,
+              "hasGlowData": false,
+              "hasShadowData": false
+            },
+            "track1": {
+              "hasMotionData": false,
+              "hasGlowData": false,
+              "hasShadowData": false
+            }
+          }
+        },
+        {
+          "id": "reversed-subclip-found",
+          "confidence": "observed",
+          "isNewFinding": true,
+          "data": {
+            "mediaFilePath": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-26-10-11-DVR_1.mp4 - subclip 1 (reversed)",
+            "sourceResolution": "2560x1440",
+            "sourceFrameRate": 60,
+            "availableLengthSeconds": 14.8,
+            "useCount": 1,
+            "interpretation": "Not previously reported in any prior checkpoint or in inferred-effect-presets.json. A distinct one-off technique: a reversed-playback subclip created from cinematic footage. Should get its own preset entry (accent.reversed-cinematic-clip) if reproduced."
+          }
+        },
+        {
+          "id": "unparsed-ofx-types-confirmed-static",
+          "confidence": "observed",
+          "data": {
+            "instancesChecked": 9107,
+            "typesChecked": [
+              "Page",
+              "PushButton",
+              "Custom",
+              "Group",
+              "Double2D",
+              "Double3D",
+              "RGB"
+            ],
+            "anyAnimated": 0,
+            "interpretation": "Closes a real potential blind spot in the earlier corpus-wide animated-parameter scan, which only fully implemented Double/Integer/Boolean/Choice types."
+          }
+        },
+        {
+          "id": "beat-alignment-precision-refined",
+          "confidence": "observed",
+          "data": {
+            "markersWithNoAudioOrCutWithin20ms": 8,
+            "totalMarkers": 154,
+            "allEightHaveOrdinaryCutWithinFrames": true,
+            "deltaRangeSeconds": [
+              0.033,
+              0.16
+            ],
+            "interpretation": "No evidence of deliberately-unsynchronized markers -- ordinary cuts are loosely beat-adjacent (1-5 frames), only impact cuts are frame-exact (<1ms). Refines rather than contradicts the earlier finding."
+          }
+        },
+        {
+          "id": "gap-customdata-never-exported",
+          "confidence": "observed",
+          "isGap": true,
+          "data": {
+            "reason": "CustomDataContainer field does not exist in any inspector schema version (v1-v3).",
+            "consequence": "Genuinely unverified, not confirmed-empty like the items above. Low expected yield for this project type but not checked."
+          }
+        }
+      ],
+      "openQuestions": [],
+      "status": "All Codex priorities and original task-spec requirements addressed, plus a self-audit pass. Remaining known gaps (native effect exact values, CustomData, render-template export, independent timecode cross-check) are explicitly documented, not silently absent. See inferred-editing-strategies.md Section 15 for the final deliverable list."
+    },
+    {
+      "checkpoint": 11,
+      "topic": "Adversarial verification pass -- actively tried to falsify prior headline conclusions, reconciled with Codex's independent reports, delivered 12 new files. Full reconciliation ledger: reconciled-final-findings.json.",
+      "facts": [
+        {
+          "id": "multi-kill-clustering-falsified",
+          "confidence": "observed",
+          "supersedesFactId": "checkpoint4-no-clustering-pattern",
+          "isNewFinding": true,
+          "data": {
+            "method": "source-run grouping (46 contiguous same-source-file runs across all 276 Track-1 events)",
+            "multiEventRuns": 24,
+            "matchingEscalationPattern": 18,
+            "pattern": "long run of ordinary-family events, escalating to impact-family treatment at or immediately before the run's last event",
+            "priorClaim": "no clustering pattern exists among the 25 impact events",
+            "whyPriorClaimWasWrong": "checked spacing only within the impact-event population itself, not the ordinary events surrounding them in the same source run",
+            "crossValidatedAgainst": "Codex representative-moments-validation.md (t1_e51->t1_e55->t1_e60 example), found via a different method"
+          }
+        },
+        {
+          "id": "preset-signature-count-corrected",
+          "confidence": "observed",
+          "supersedesFactId": "checkpoint8-byte-identical-presets",
+          "isNewFinding": true,
+          "data": {
+            "method": "SHA1 signature over full effect chain + all keyframe times/values/interpolation, all 276 Track-1 events",
+            "distinctSignatures": 7,
+            "breakdown": {
+              "ordinary-compact": 187,
+              "ordinary-long": 36,
+              "no-effects": 24,
+              "impact-canonical": 24,
+              "impact-variant-1": 1,
+              "impact-variant-2 (t1_e275, trimmed tail)": 1,
+              "black-and-white-accent": 1
+            },
+            "priorClaim": "both recipes are single byte-identical presets with zero variation across all sampled events",
+            "correction": "each recipe is one reusable template applied at more than one fixed duration, not one literal invariant preset"
+          }
+        },
+        {
+          "id": "crossfade-predictors-resolved",
+          "confidence": "observed",
+          "supersedesFactId": "checkpoint9-41-percent-crossfade",
+          "isNewFinding": true,
+          "data": {
+            "sourceChangeOverlapRate": "45/45 = 100%",
+            "sameSourceOverlapRate": "69/230 = 30.0%",
+            "ordinaryToImpactOverlapRate": "0/21 = 0% (always a hard cut, zero exceptions)",
+            "crossfadeMechanism": "VEGAS automatic crossfade generation (114/114 Smooth/Smooth curves, 112/114 exact-symmetric fade lengths matching overlap duration) -- not hand-authored transition curves"
+          }
+        },
+        {
+          "id": "track-vs-event-fx-interaction",
+          "confidence": "observed",
+          "isNewFinding": true,
+          "data": {
+            "method": "render ablation, 2 events x 4 track/event FX bypass combinations, PNG pixel metrics",
+            "finding": "event-level FX dominates/masks track-level ambient FX on impact events; track-level FX proportionally more visible on ordinary events"
+          }
+        },
+        {
+          "id": "musical-tempo-and-marker-grid",
+          "confidence": "observed",
+          "isNewFinding": true,
+          "data": {
+            "audioOnsetTempoEstimate": "115 BPM (134/794 IOI votes)",
+            "markerGridBestFitTempo": "116 BPM (grid search over marker IOIs)",
+            "markerGridSpacing": "half-time (every 2nd beat), k=2 dominant at 115/153 (~75%) of intervals",
+            "globalRigidGridTest": "FAILED -- local residual 71ms (13.6% of beat) but global phase-fit residual 229ms; windowed local-BPM 96-150 range within stable ~113-122 BPM window means",
+            "implication": "song is not on one fixed extrapolatable tempo grid across its 240s runtime; any automated beat-grid cut-placement must track locally, not extrapolate"
+          }
+        },
+        {
+          "id": "retained-audio-purpose-characterized",
+          "confidence": "observed",
+          "supersedesFactId": "checkpoint3-18-retained-audio-events",
+          "isNewFinding": true,
+          "data": {
+            "totalTrack2Events": 143,
+            "weaponLibraryEvents": 125,
+            "gameplayAudioEvents": 18,
+            "pairingRule": "100% (18/18) of gameplay-audio events start at 0ms delta from, and share source file with, a 'none'-family Track-1 video event",
+            "noneFamilySplit": {
+              "rawDvrCaptures": "18/24, all get paired native audio",
+              "curatedBridgeClips": "6/24 (Opener/Quad/Closer folders), none get paired audio"
+            }
+          }
+        },
+        {
+          "id": "ducking-mechanism-confirmed-absent",
+          "confidence": "observed",
+          "isNewFinding": true,
+          "data": {
+            "trackLevelEnvelopes": "0 across all 5 tracks (extending already-confirmed 0 at bus/master level)",
+            "conclusion": "no ducking/volume-automation mechanism exists anywhere in the project; any perceived duck during gunfire is psychoacoustic masking only, not authored"
+          }
+        },
+        {
+          "id": "cinematic-connective-pairing-rule",
+          "confidence": "observed",
+          "isNewFinding": true,
+          "data": {
+            "totalConnectiveClips": 22,
+            "prevIsImpact": "15/22 (68%)",
+            "nextIsOrdinary": "20/22 (91%)",
+            "bothPattern": "15/22 (68%)",
+            "crossfadeInRate": "21/21 (100%)",
+            "crossfadeOutRate": "22/22 (100%)",
+            "whooshPrecedesRate": "19/22 (86%), 1.85-3.49s ahead",
+            "staysWithinSection": "20/22 (91%)"
+          }
+        },
+        {
+          "id": "ordinary-recipe-not-truly-imperceptible",
+          "confidence": "observed",
+          "supersedesFactId": "checkpoint7-ordinary-cut-no-visible-effect",
+          "isNewFinding": true,
+          "data": {
+            "method": "controlled on/off ablation on t1_e3 (BlurMoCurves + Glow bypassed vs active), identical timestamp",
+            "edgeEnergyRatio": "0.716 (ON is 28% less sharp than OFF)",
+            "meanLumaDelta": "+2.59 (ON is brighter)",
+            "meanAbsPixelDiff": 6.19,
+            "conclusion": "real, measurable, not negligible -- narrows but does not retract 'reads as a plain cut at normal viewing speed'"
+          }
+        },
+        {
+          "id": "missing-plugin-location-re-verified-absent-from-effects",
+          "confidence": "observed",
+          "isNewFinding": true,
+          "data": {
+            "searched": "all Track-level and Event-level Effects entries across all 5 tracks and all events, project-inspection-v3.json",
+            "matches": 0,
+            "conclusion": "confirms by elimination (not direct proof) that the 4 missing plugins are not attached via Track/Event Effects; VEGAS's Transition object was never exported by any inspector version, leaving the original 'used as transition' classification unconfirmed structurally"
+          }
+        },
+        {
+          "id": "color-finishing-classification",
+          "confidence": "observed",
+          "isNewFinding": true,
+          "data": {
+            "projectPixelFormat": "Float32Bit",
+            "overlayCompositing": "Track 0, CompositeMode=Screen, compositeLevel=1, single ~211s event",
+            "sectionLevelEffects": "none found",
+            "finalOutputProcessing": "none found -- no adjustment track, no master-bus effect, no render-time LUT"
+          }
+        },
+        {
+          "id": "automation-safety-incident",
+          "confidence": "observed",
+          "isNewFinding": true,
+          "data": {
+            "rootCause": "script compile error (TrackEvent.Effects vs required VideoEvent cast), not a novel dialog type",
+            "contributingFactor": "title-only window matching (FindWindow by title alone, not scoped to launched PID) plausibly prevented auto-dismissal when a redundant concurrent VEGAS instance was present",
+            "safetyBehaviorConfirmed": "automation did not blind-click the unidentified dialog; killed the stuck process instead",
+            "recommendedFix": "PID-scoped window matching + refuse-to-launch-if-any-VEGAS-instance-exists, per docs/vegas-integration-probe.md's already-prescribed design"
+          }
+        }
+      ],
+      "openQuestions": [
+        "OFX keyframe time-domain reference frame (event-relative vs timeline-absolute) -- Part 3 fixture testing not attempted this pass",
+        "Exact chain location of the 4 missing plugins (Transition object never exported by any inspector version)",
+        "GPU vs CPU render pixel differences -- not tested",
+        "Exact per-event Pitch Shift / Reverb parameter values on the 125 weapon-SFX events -- confirmed permanently unreadable via classic-effect API limits"
+      ],
+      "status": "Adversarial verification pass complete. See adversarial-verification-report.md (narrative) and reconciled-final-findings.json (full Confirmed/Revised/Falsified/StillUnresolved ledger) for the complete synthesis."
+    }
+  ]
+}

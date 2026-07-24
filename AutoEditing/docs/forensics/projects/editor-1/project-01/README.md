@@ -39,6 +39,11 @@ neither of which is established yet.
   throughout; where they disagreed, the resolution is recorded in
   [evidence-register.md](evidence-register.md).
 
+Portable machine-readable evidence is available under
+[`../../../data/editor-1/project-01/`](../../../data/editor-1/project-01/).
+Sanitized reproduction scripts are under
+[`../../../../../Tools/Forensics/editor-1/project-01/`](../../../../../Tools/Forensics/editor-1/project-01/).
+
 ## Document index
 
 | Document | Covers |

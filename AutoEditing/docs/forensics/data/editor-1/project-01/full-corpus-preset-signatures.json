@@ -1,0 +1,4114 @@
+{
+ "schemaVersion": "1.0",
+ "method": "SHA1(effect chain order + plugin IDs + bypass + MotionBlur/MoBlurLength + all animated-parameter keyframe times/values/interpolation + classic-keyframe count), 12-hex-char prefix",
+ "totalEvents": 276,
+ "distinctSignatures": 8,
+ "signatureGroups": [
+  {
+   "signatureHash": "9326fc860de1",
+   "count": 187,
+   "sampleEffectChain": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ],
+   "eventIds": [
+    "t1_e13",
+    "t1_e14",
+    "t1_e18",
+    "t1_e19",
+    "t1_e20",
+    "t1_e21",
+    "t1_e22",
+    "t1_e23",
+    "t1_e24",
+    "t1_e25",
+    "t1_e26",
+    "t1_e27",
+    "t1_e28",
+    "t1_e29",
+    "t1_e30",
+    "t1_e31",
+    "t1_e32",
+    "t1_e34",
+    "t1_e36",
+    "t1_e37",
+    "t1_e38",
+    "t1_e39",
+    "t1_e40",
+    "t1_e41",
+    "t1_e42",
+    "t1_e43",
+    "t1_e44",
+    "t1_e45",
+    "t1_e46",
+    "t1_e47",
+    "t1_e48",
+    "t1_e51",
+    "t1_e52",
+    "t1_e53",
+    "t1_e54",
+    "t1_e55",
+    "t1_e56",
+    "t1_e57",
+    "t1_e58",
+    "t1_e59",
+    "t1_e62",
+    "t1_e63",
+    "t1_e64",
+    "t1_e65",
+    "t1_e66",
+    "t1_e67",
+    "t1_e68",
+    "t1_e69",
+    "t1_e70",
+    "t1_e71",
+    "t1_e72",
+    "t1_e75",
+    "t1_e76",
+    "t1_e77",
+    "t1_e78",
+    "t1_e81",
+    "t1_e82",
+    "t1_e83",
+    "t1_e84",
+    "t1_e86",
+    "t1_e87",
+    "t1_e88",
+    "t1_e89",
+    "t1_e90",
+    "t1_e91",
+    "t1_e92",
+    "t1_e93",
+    "t1_e94",
+    "t1_e95",
+    "t1_e97",
+    "t1_e99",
+    "t1_e100",
+    "t1_e101",
+    "t1_e102",
+    "t1_e103",
+    "t1_e106",
+    "t1_e107",
+    "t1_e108",
+    "t1_e109",
+    "t1_e110",
+    "t1_e111",
+    "t1_e112",
+    "t1_e116",
+    "t1_e118",
+    "t1_e119",
+    "t1_e120",
+    "t1_e121",
+    "t1_e122",
+    "t1_e123",
+    "t1_e124",
+    "t1_e125",
+    "t1_e126",
+    "t1_e127",
+    "t1_e128",
+    "t1_e130",
+    "t1_e132",
+    "t1_e133",
+    "t1_e134",
+    "t1_e135",
+    "t1_e136",
+    "t1_e137",
+    "t1_e138",
+    "t1_e139",
+    "t1_e140",
+    "t1_e141",
+    "t1_e142",
+    "t1_e144",
+    "t1_e145",
+    "t1_e146",
+    "t1_e147",
+    "t1_e148",
+    "t1_e149",
+    "t1_e150",
+    "t1_e151",
+    "t1_e152",
+    "t1_e155",
+    "t1_e156",
+    "t1_e157",
+    "t1_e158",
+    "t1_e159",
+    "t1_e160",
+    "t1_e161",
+    "t1_e162",
+    "t1_e163",
+    "t1_e165",
+    "t1_e166",
+    "t1_e167",
+    "t1_e168",
+    "t1_e169",
+    "t1_e170",
+    "t1_e171",
+    "t1_e172",
+    "t1_e173",
+    "t1_e176",
+    "t1_e177",
+    "t1_e178",
+    "t1_e179",
+    "t1_e180",
+    "t1_e181",
+    "t1_e182",
+    "t1_e185",
+    "t1_e186",
+    "t1_e187",
+    "t1_e188",
+    "t1_e189",
+    "t1_e190",
+    "t1_e191",
+    "t1_e194",
+    "t1_e195",
+    "t1_e196",
+    "t1_e197",
+    "t1_e198",
+    "t1_e199",
+    "t1_e200",
+    "t1_e201",
+    "t1_e202",
+    "t1_e205",
+    "t1_e206",
+    "t1_e207",
+    "t1_e220",
+    "t1_e229",
+    "t1_e230",
+    "t1_e233",
+    "t1_e234",
+    "t1_e235",
+    "t1_e236",
+    "t1_e237",
+    "t1_e238",
+    "t1_e239",
+    "t1_e240",
+    "t1_e241",
+    "t1_e244",
+    "t1_e245",
+    "t1_e246",
+    "t1_e247",
+    "t1_e248",
+    "t1_e262",
+    "t1_e263",
+    "t1_e264",
+    "t1_e265",
+    "t1_e266",
+    "t1_e267",
+    "t1_e268",
+    "t1_e269",
+    "t1_e270",
+    "t1_e271",
+    "t1_e273"
+   ]
+  },
+  {
+   "signatureHash": "3a48ffaa6082",
+   "count": 36,
+   "sampleEffectChain": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ],
+   "eventIds": [
+    "t1_e3",
+    "t1_e4",
+    "t1_e5",
+    "t1_e6",
+    "t1_e7",
+    "t1_e8",
+    "t1_e9",
+    "t1_e10",
+    "t1_e11",
+    "t1_e12",
+    "t1_e210",
+    "t1_e211",
+    "t1_e212",
+    "t1_e213",
+    "t1_e214",
+    "t1_e215",
+    "t1_e216",
+    "t1_e221",
+    "t1_e222",
+    "t1_e223",
+    "t1_e224",
+    "t1_e225",
+    "t1_e226",
+    "t1_e227",
+    "t1_e228",
+    "t1_e249",
+    "t1_e250",
+    "t1_e251",
+    "t1_e252",
+    "t1_e255",
+    "t1_e256",
+    "t1_e257",
+    "t1_e258",
+    "t1_e259",
+    "t1_e260",
+    "t1_e261"
+   ]
+  },
+  {
+   "signatureHash": "da39a3ee5e6b",
+   "count": 24,
+   "sampleEffectChain": [],
+   "eventIds": [
+    "t1_e2",
+    "t1_e15",
+    "t1_e17",
+    "t1_e35",
+    "t1_e50",
+    "t1_e61",
+    "t1_e74",
+    "t1_e79",
+    "t1_e98",
+    "t1_e105",
+    "t1_e114",
+    "t1_e117",
+    "t1_e131",
+    "t1_e154",
+    "t1_e175",
+    "t1_e184",
+    "t1_e193",
+    "t1_e204",
+    "t1_e209",
+    "t1_e217",
+    "t1_e219",
+    "t1_e232",
+    "t1_e243",
+    "t1_e254"
+   ]
+  },
+  {
+   "signatureHash": "51bf6e855d1d",
+   "count": 24,
+   "sampleEffectChain": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ],
+   "eventIds": [
+    "t1_e16",
+    "t1_e33",
+    "t1_e49",
+    "t1_e60",
+    "t1_e73",
+    "t1_e80",
+    "t1_e85",
+    "t1_e96",
+    "t1_e104",
+    "t1_e115",
+    "t1_e129",
+    "t1_e143",
+    "t1_e153",
+    "t1_e164",
+    "t1_e174",
+    "t1_e183",
+    "t1_e192",
+    "t1_e203",
+    "t1_e208",
+    "t1_e218",
+    "t1_e231",
+    "t1_e242",
+    "t1_e253",
+    "t1_e272"
+   ]
+  },
+  {
+   "signatureHash": "5fd5fe6bfa56",
+   "count": 2,
+   "sampleEffectChain": [
+    "S_Flicker"
+   ],
+   "eventIds": [
+    "t1_e0",
+    "t1_e1"
+   ]
+  },
+  {
+   "signatureHash": "5a77d2b298c1",
+   "count": 1,
+   "sampleEffectChain": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow",
+    "Black and White"
+   ],
+   "eventIds": [
+    "t1_e113"
+   ]
+  },
+  {
+   "signatureHash": "154b12097faf",
+   "count": 1,
+   "sampleEffectChain": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ],
+   "eventIds": [
+    "t1_e274"
+   ]
+  },
+  {
+   "signatureHash": "3848cc08cb28",
+   "count": 1,
+   "sampleEffectChain": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ],
+   "eventIds": [
+    "t1_e275"
+   ]
+  }
+ ],
+ "perEventCanonical": [
+  {
+   "inspectorId": "t1_e0",
+   "startSeconds": 26.643283,
+   "lengthSeconds": 4.320983,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-28-18-13-DVR 3_1-2x-RIFE-RIFE3-9-120fps-2x-RIFE-RIFE3.9-120fps.mp4",
+   "section": "cinematic",
+   "signatureHash": "5fd5fe6bfa56",
+   "effectDescriptions": [
+    "S_Flicker"
+   ]
+  },
+  {
+   "inspectorId": "t1_e1",
+   "startSeconds": 30.78075,
+   "lengthSeconds": 4.187517,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-37-34-21-DVR_1-2x-RIFE-RIFE3-9-120fps-2x-RIFE-RIFE3.9-120fps.mp4",
+   "section": "cinematic",
+   "signatureHash": "5fd5fe6bfa56",
+   "effectDescriptions": [
+    "S_Flicker"
+   ]
+  },
+  {
+   "inspectorId": "t1_e2",
+   "startSeconds": 34.9349,
+   "lengthSeconds": 1.1011,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-09-54-04-DVR_1-2x-RIFE-RIFE3.9-120fps.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e3",
+   "startSeconds": 35.98595,
+   "lengthSeconds": 1.05105,
+   "sourceFile": "Opener 01.mp4",
+   "section": "opener",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e4",
+   "startSeconds": 37.037,
+   "lengthSeconds": 0.567233,
+   "sourceFile": "Opener 01.mp4",
+   "section": "opener",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e5",
+   "startSeconds": 37.604233,
+   "lengthSeconds": 0.567233,
+   "sourceFile": "Opener 01.mp4",
+   "section": "opener",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e6",
+   "startSeconds": 38.171467,
+   "lengthSeconds": 0.467133,
+   "sourceFile": "Opener 01.mp4",
+   "section": "opener",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e7",
+   "startSeconds": 38.6386,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Opener 01.mp4",
+   "section": "opener",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e8",
+   "startSeconds": 39.155783,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Opener 01.mp4",
+   "section": "opener",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e9",
+   "startSeconds": 39.656283,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Opener 01.mp4",
+   "section": "opener",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e10",
+   "startSeconds": 40.206833,
+   "lengthSeconds": 0.5005,
+   "sourceFile": "Opener 01.mp4",
+   "section": "opener",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e11",
+   "startSeconds": 40.707333,
+   "lengthSeconds": 0.45045,
+   "sourceFile": "Opener 01.mp4",
+   "section": "opener",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e12",
+   "startSeconds": 41.157783,
+   "lengthSeconds": 0.433767,
+   "sourceFile": "Opener 01.mp4",
+   "section": "opener",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e13",
+   "startSeconds": 41.59155,
+   "lengthSeconds": 0.433767,
+   "sourceFile": "Opener 01.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e14",
+   "startSeconds": 42.025317,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Opener 01.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e15",
+   "startSeconds": 42.5425,
+   "lengthSeconds": 0.684017,
+   "sourceFile": "Opener 01.mp4",
+   "section": "opener",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e16",
+   "startSeconds": 43.226517,
+   "lengthSeconds": 2.118783,
+   "sourceFile": "Opener 01.mp4",
+   "section": "opener",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e17",
+   "startSeconds": 45.2452,
+   "lengthSeconds": 1.1011,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 16-00-40-44-DVR 2_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e18",
+   "startSeconds": 46.262883,
+   "lengthSeconds": 1.2012,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e19",
+   "startSeconds": 47.464083,
+   "lengthSeconds": 0.467133,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e20",
+   "startSeconds": 47.931217,
+   "lengthSeconds": 0.433767,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e21",
+   "startSeconds": 48.364983,
+   "lengthSeconds": 0.633967,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e22",
+   "startSeconds": 48.99895,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e23",
+   "startSeconds": 49.516133,
+   "lengthSeconds": 0.467133,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e24",
+   "startSeconds": 49.983267,
+   "lengthSeconds": 0.467133,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e25",
+   "startSeconds": 50.4504,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e26",
+   "startSeconds": 50.967583,
+   "lengthSeconds": 0.617283,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e27",
+   "startSeconds": 51.584867,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e28",
+   "startSeconds": 52.10205,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e29",
+   "startSeconds": 52.6526,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e30",
+   "startSeconds": 53.119733,
+   "lengthSeconds": 0.583917,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e31",
+   "startSeconds": 53.70365,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e32",
+   "startSeconds": 54.20415,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e33",
+   "startSeconds": 54.721333,
+   "lengthSeconds": 1.067733,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e34",
+   "startSeconds": 55.789067,
+   "lengthSeconds": 1.017683,
+   "sourceFile": "Opener 02.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e35",
+   "startSeconds": 56.6566,
+   "lengthSeconds": 2.335667,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-35-23-18-DVR_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e36",
+   "startSeconds": 58.875483,
+   "lengthSeconds": 1.05105,
+   "sourceFile": "Opener 03.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e37",
+   "startSeconds": 59.926533,
+   "lengthSeconds": 1.05105,
+   "sourceFile": "Opener 03.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e38",
+   "startSeconds": 60.927533,
+   "lengthSeconds": 1.117783,
+   "sourceFile": "Opener 03.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e39",
+   "startSeconds": 62.045317,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Opener 03.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e40",
+   "startSeconds": 62.529133,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Opener 03.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e41",
+   "startSeconds": 63.079683,
+   "lengthSeconds": 0.5005,
+   "sourceFile": "Opener 03.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e42",
+   "startSeconds": 63.546817,
+   "lengthSeconds": 0.583917,
+   "sourceFile": "Opener 03.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e43",
+   "startSeconds": 64.130733,
+   "lengthSeconds": 0.467133,
+   "sourceFile": "Opener 03.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e44",
+   "startSeconds": 64.5645,
+   "lengthSeconds": 0.6006,
+   "sourceFile": "Opener 03.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e45",
+   "startSeconds": 65.1651,
+   "lengthSeconds": 1.05105,
+   "sourceFile": "Opener 03.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e46",
+   "startSeconds": 66.182783,
+   "lengthSeconds": 1.034367,
+   "sourceFile": "Opener 03.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e47",
+   "startSeconds": 67.21715,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Opener 03.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e48",
+   "startSeconds": 67.6676,
+   "lengthSeconds": 0.633967,
+   "sourceFile": "Opener 03.mp4",
+   "section": "opener",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e49",
+   "startSeconds": 68.301567,
+   "lengthSeconds": 1.067733,
+   "sourceFile": "Opener 03.mp4",
+   "section": "opener",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e50",
+   "startSeconds": 69.302567,
+   "lengthSeconds": 1.167833,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-40-11-23-DVR_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e51",
+   "startSeconds": 70.453717,
+   "lengthSeconds": 0.984317,
+   "sourceFile": "Quad X2 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e52",
+   "startSeconds": 71.438033,
+   "lengthSeconds": 0.483817,
+   "sourceFile": "Quad X2 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e53",
+   "startSeconds": 71.92185,
+   "lengthSeconds": 0.567233,
+   "sourceFile": "Quad X2 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e54",
+   "startSeconds": 72.489083,
+   "lengthSeconds": 0.483817,
+   "sourceFile": "Quad X2 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e55",
+   "startSeconds": 72.92285,
+   "lengthSeconds": 0.583917,
+   "sourceFile": "Quad X2 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e56",
+   "startSeconds": 73.506767,
+   "lengthSeconds": 0.5005,
+   "sourceFile": "Quad X2 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e57",
+   "startSeconds": 73.940533,
+   "lengthSeconds": 0.617283,
+   "sourceFile": "Quad X2 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e58",
+   "startSeconds": 74.557817,
+   "lengthSeconds": 0.45045,
+   "sourceFile": "Quad X2 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e59",
+   "startSeconds": 74.958217,
+   "lengthSeconds": 0.583917,
+   "sourceFile": "Quad X2 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e60",
+   "startSeconds": 75.542133,
+   "lengthSeconds": 0.85085,
+   "sourceFile": "Quad X2 001.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e61",
+   "startSeconds": 76.309567,
+   "lengthSeconds": 0.767433,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-19-45-08-DVR_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e62",
+   "startSeconds": 76.9769,
+   "lengthSeconds": 0.667333,
+   "sourceFile": "Quad X2 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e63",
+   "startSeconds": 77.644233,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad X2 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e64",
+   "startSeconds": 78.161417,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Quad X2 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e65",
+   "startSeconds": 78.695283,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Quad X2 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e66",
+   "startSeconds": 79.1791,
+   "lengthSeconds": 0.567233,
+   "sourceFile": "Quad X2 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e67",
+   "startSeconds": 79.746333,
+   "lengthSeconds": 0.5005,
+   "sourceFile": "Quad X2 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e68",
+   "startSeconds": 80.246833,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad X2 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e69",
+   "startSeconds": 80.797383,
+   "lengthSeconds": 0.483817,
+   "sourceFile": "Quad X2 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e70",
+   "startSeconds": 81.2812,
+   "lengthSeconds": 0.583917,
+   "sourceFile": "Quad X2 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e71",
+   "startSeconds": 81.865117,
+   "lengthSeconds": 0.65065,
+   "sourceFile": "Quad X2 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e72",
+   "startSeconds": 82.515767,
+   "lengthSeconds": 0.4004,
+   "sourceFile": "Quad X2 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e73",
+   "startSeconds": 82.916167,
+   "lengthSeconds": 1.084417,
+   "sourceFile": "Quad X2 005.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e74",
+   "startSeconds": 83.950533,
+   "lengthSeconds": 0.867533,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-38-14-22-DVR_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e75",
+   "startSeconds": 84.751333,
+   "lengthSeconds": 0.8008,
+   "sourceFile": "Quad 005 (single single collat).mp4",
+   "section": "single-collat",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e76",
+   "startSeconds": 85.552133,
+   "lengthSeconds": 1.001,
+   "sourceFile": "Quad 005 (single single collat).mp4",
+   "section": "single-collat",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e77",
+   "startSeconds": 86.553133,
+   "lengthSeconds": 1.001,
+   "sourceFile": "Quad 005 (single single collat).mp4",
+   "section": "single-collat",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e78",
+   "startSeconds": 87.554133,
+   "lengthSeconds": 0.667333,
+   "sourceFile": "Quad 005 (single single collat).mp4",
+   "section": "single-collat",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e79",
+   "startSeconds": 88.221467,
+   "lengthSeconds": 0.934267,
+   "sourceFile": "Quad 005 (single single collat).mp4",
+   "section": "single-collat",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e80",
+   "startSeconds": 89.155733,
+   "lengthSeconds": 1.267933,
+   "sourceFile": "Quad 005 (single single collat).mp4",
+   "section": "single-collat",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e81",
+   "startSeconds": 90.156733,
+   "lengthSeconds": 1.134467,
+   "sourceFile": "Glovali - Quad 003 (single single collat).mp4",
+   "section": "single-collat",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e82",
+   "startSeconds": 91.2912,
+   "lengthSeconds": 0.367033,
+   "sourceFile": "Glovali - Quad 003 (single single collat).mp4",
+   "section": "single-collat",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e83",
+   "startSeconds": 91.658233,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Glovali - Quad 003 (single single collat).mp4",
+   "section": "single-collat",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e84",
+   "startSeconds": 92.1921,
+   "lengthSeconds": 0.9009,
+   "sourceFile": "Glovali - Quad 003 (single single collat).mp4",
+   "section": "single-collat",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e85",
+   "startSeconds": 93.093,
+   "lengthSeconds": 1.634967,
+   "sourceFile": "Glovali - Quad 003 (single single collat).mp4",
+   "section": "single-collat",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e86",
+   "startSeconds": 94.360933,
+   "lengthSeconds": 1.067733,
+   "sourceFile": "Quad X2 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e87",
+   "startSeconds": 95.411983,
+   "lengthSeconds": 0.834167,
+   "sourceFile": "Quad X2 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e88",
+   "startSeconds": 96.24615,
+   "lengthSeconds": 0.75075,
+   "sourceFile": "Quad X2 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e89",
+   "startSeconds": 96.963533,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Quad X2 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e90",
+   "startSeconds": 97.4974,
+   "lengthSeconds": 0.567233,
+   "sourceFile": "Quad X2 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e91",
+   "startSeconds": 98.014583,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Quad X2 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e92",
+   "startSeconds": 98.54845,
+   "lengthSeconds": 1.05105,
+   "sourceFile": "Quad X2 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e93",
+   "startSeconds": 99.582817,
+   "lengthSeconds": 0.967633,
+   "sourceFile": "Quad X2 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e94",
+   "startSeconds": 100.55045,
+   "lengthSeconds": 0.433767,
+   "sourceFile": "Quad X2 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e95",
+   "startSeconds": 100.95085,
+   "lengthSeconds": 0.467133,
+   "sourceFile": "Quad X2 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e96",
+   "startSeconds": 101.417983,
+   "lengthSeconds": 1.334667,
+   "sourceFile": "Quad X2 002.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e97",
+   "startSeconds": 102.75265,
+   "lengthSeconds": 1.017683,
+   "sourceFile": "Quad X2 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e98",
+   "startSeconds": 103.736967,
+   "lengthSeconds": 1.2012,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-16-16-06-DVR_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e99",
+   "startSeconds": 104.821383,
+   "lengthSeconds": 1.067733,
+   "sourceFile": "Quad 014.mp4",
+   "section": "single-collat",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e100",
+   "startSeconds": 105.889117,
+   "lengthSeconds": 1.017683,
+   "sourceFile": "Quad 014.mp4",
+   "section": "single-collat",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e101",
+   "startSeconds": 106.9068,
+   "lengthSeconds": 1.034367,
+   "sourceFile": "Quad 014.mp4",
+   "section": "single-collat",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e102",
+   "startSeconds": 107.824383,
+   "lengthSeconds": 1.134467,
+   "sourceFile": "Quad 014.mp4",
+   "section": "single-collat",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e103",
+   "startSeconds": 108.95885,
+   "lengthSeconds": 1.1011,
+   "sourceFile": "Quad 014.mp4",
+   "section": "single-collat",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e104",
+   "startSeconds": 110.05995,
+   "lengthSeconds": 1.001,
+   "sourceFile": "Quad 014.mp4",
+   "section": "single-collat",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e105",
+   "startSeconds": 111.0109,
+   "lengthSeconds": 1.234567,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-24-22-09-DVR_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e106",
+   "startSeconds": 112.145367,
+   "lengthSeconds": 1.001,
+   "sourceFile": "Quad 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e107",
+   "startSeconds": 113.146367,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Quad 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e108",
+   "startSeconds": 113.630183,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e109",
+   "startSeconds": 114.180733,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Quad 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e110",
+   "startSeconds": 114.647867,
+   "lengthSeconds": 0.633967,
+   "sourceFile": "Quad 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e111",
+   "startSeconds": 115.281833,
+   "lengthSeconds": 0.5005,
+   "sourceFile": "Quad 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e112",
+   "startSeconds": 115.748967,
+   "lengthSeconds": 0.567233,
+   "sourceFile": "Quad 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e113",
+   "startSeconds": 116.3162,
+   "lengthSeconds": 1.117783,
+   "sourceFile": "Quad 003.mp4",
+   "section": "middle",
+   "signatureHash": "5a77d2b298c1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow",
+    "Black and White"
+   ]
+  },
+  {
+   "inspectorId": "t1_e114",
+   "startSeconds": 117.3172,
+   "lengthSeconds": 1.084417,
+   "sourceFile": "Quad 003.mp4",
+   "section": "middle",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e115",
+   "startSeconds": 118.401617,
+   "lengthSeconds": 1.084417,
+   "sourceFile": "Quad 003.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e116",
+   "startSeconds": 119.486033,
+   "lengthSeconds": 0.984317,
+   "sourceFile": "Quad 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e117",
+   "startSeconds": 120.4203,
+   "lengthSeconds": 1.2012,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-37-15-20-DVR_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e118",
+   "startSeconds": 121.554767,
+   "lengthSeconds": 1.034367,
+   "sourceFile": "Quad X2 004.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e119",
+   "startSeconds": 122.589133,
+   "lengthSeconds": 0.5005,
+   "sourceFile": "Quad X2 004.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e120",
+   "startSeconds": 123.056267,
+   "lengthSeconds": 0.567233,
+   "sourceFile": "Quad X2 004.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e121",
+   "startSeconds": 123.6235,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Quad X2 004.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e122",
+   "startSeconds": 124.140683,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Quad X2 004.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e123",
+   "startSeconds": 124.657867,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Quad X2 004.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e124",
+   "startSeconds": 125.141683,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad X2 004.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e125",
+   "startSeconds": 125.692233,
+   "lengthSeconds": 0.483817,
+   "sourceFile": "Quad X2 004.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e126",
+   "startSeconds": 126.142683,
+   "lengthSeconds": 0.6006,
+   "sourceFile": "Quad X2 004.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e127",
+   "startSeconds": 126.743283,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Quad X2 004.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e128",
+   "startSeconds": 127.210417,
+   "lengthSeconds": 0.583917,
+   "sourceFile": "Quad X2 004.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e129",
+   "startSeconds": 127.794333,
+   "lengthSeconds": 1.017683,
+   "sourceFile": "Quad X2 004.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e130",
+   "startSeconds": 128.812017,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Quad X2 004.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e131",
+   "startSeconds": 129.295833,
+   "lengthSeconds": 1.034367,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-50-17-35-DVR_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e132",
+   "startSeconds": 130.246783,
+   "lengthSeconds": 0.667333,
+   "sourceFile": "Quad 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e133",
+   "startSeconds": 130.914117,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Quad 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e134",
+   "startSeconds": 131.397933,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e135",
+   "startSeconds": 131.948483,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Quad 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e136",
+   "startSeconds": 132.465667,
+   "lengthSeconds": 0.5005,
+   "sourceFile": "Quad 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e137",
+   "startSeconds": 132.966167,
+   "lengthSeconds": 0.467133,
+   "sourceFile": "Quad 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e138",
+   "startSeconds": 133.416617,
+   "lengthSeconds": 0.45045,
+   "sourceFile": "Quad 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e139",
+   "startSeconds": 133.867067,
+   "lengthSeconds": 0.483817,
+   "sourceFile": "Quad 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e140",
+   "startSeconds": 134.317517,
+   "lengthSeconds": 0.5005,
+   "sourceFile": "Quad 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e141",
+   "startSeconds": 134.818017,
+   "lengthSeconds": 1.317983,
+   "sourceFile": "Quad 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e142",
+   "startSeconds": 136.136,
+   "lengthSeconds": 1.001,
+   "sourceFile": "Quad 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e143",
+   "startSeconds": 137.137,
+   "lengthSeconds": 1.067733,
+   "sourceFile": "Quad 005.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e144",
+   "startSeconds": 138.204733,
+   "lengthSeconds": 0.667334,
+   "sourceFile": "Quad 005.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e145",
+   "startSeconds": 138.6385,
+   "lengthSeconds": 0.9009,
+   "sourceFile": "Quad 011.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e146",
+   "startSeconds": 139.455983,
+   "lengthSeconds": 0.817483,
+   "sourceFile": "Quad 011.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e147",
+   "startSeconds": 140.273467,
+   "lengthSeconds": 0.567233,
+   "sourceFile": "Quad 011.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e148",
+   "startSeconds": 140.824017,
+   "lengthSeconds": 0.6006,
+   "sourceFile": "Quad 011.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e149",
+   "startSeconds": 141.424617,
+   "lengthSeconds": 0.417083,
+   "sourceFile": "Quad 011.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e150",
+   "startSeconds": 141.808333,
+   "lengthSeconds": 0.467133,
+   "sourceFile": "Quad 011.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e151",
+   "startSeconds": 142.275467,
+   "lengthSeconds": 0.45045,
+   "sourceFile": "Quad 011.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e152",
+   "startSeconds": 142.709233,
+   "lengthSeconds": 0.467133,
+   "sourceFile": "Quad 011.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e153",
+   "startSeconds": 143.176367,
+   "lengthSeconds": 1.334667,
+   "sourceFile": "Quad 011.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e154",
+   "startSeconds": 144.410933,
+   "lengthSeconds": 1.234567,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-40-30-24-DVR_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e155",
+   "startSeconds": 145.49535,
+   "lengthSeconds": 1.017683,
+   "sourceFile": "Quad 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e156",
+   "startSeconds": 146.513033,
+   "lengthSeconds": 0.5005,
+   "sourceFile": "Quad 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e157",
+   "startSeconds": 146.963483,
+   "lengthSeconds": 0.583917,
+   "sourceFile": "Quad 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e158",
+   "startSeconds": 147.5474,
+   "lengthSeconds": 0.5005,
+   "sourceFile": "Quad 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e159",
+   "startSeconds": 148.0479,
+   "lengthSeconds": 0.617283,
+   "sourceFile": "Quad 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e160",
+   "startSeconds": 148.665183,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Quad 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e161",
+   "startSeconds": 149.182367,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Quad 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e162",
+   "startSeconds": 149.716233,
+   "lengthSeconds": 0.383717,
+   "sourceFile": "Quad 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e163",
+   "startSeconds": 150.0499,
+   "lengthSeconds": 0.467133,
+   "sourceFile": "Quad 001.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e164",
+   "startSeconds": 150.517033,
+   "lengthSeconds": 1.001,
+   "sourceFile": "Quad 001.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e165",
+   "startSeconds": 151.434617,
+   "lengthSeconds": 1.4014,
+   "sourceFile": "Quad 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e166",
+   "startSeconds": 152.836017,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e167",
+   "startSeconds": 153.369883,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Quad 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e168",
+   "startSeconds": 153.887067,
+   "lengthSeconds": 0.483817,
+   "sourceFile": "Quad 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e169",
+   "startSeconds": 154.3542,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Quad 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e170",
+   "startSeconds": 154.888067,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Quad 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e171",
+   "startSeconds": 155.40525,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e172",
+   "startSeconds": 155.9558,
+   "lengthSeconds": 1.067733,
+   "sourceFile": "Quad 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e173",
+   "startSeconds": 157.023533,
+   "lengthSeconds": 1.017683,
+   "sourceFile": "Quad 002.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e174",
+   "startSeconds": 158.041217,
+   "lengthSeconds": 0.867533,
+   "sourceFile": "Quad 002.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e175",
+   "startSeconds": 158.8587,
+   "lengthSeconds": 1.368033,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-26-10-11-DVR_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e176",
+   "startSeconds": 160.076583,
+   "lengthSeconds": 1.117783,
+   "sourceFile": "Quad 006.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e177",
+   "startSeconds": 161.194367,
+   "lengthSeconds": 0.5005,
+   "sourceFile": "Quad 006.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e178",
+   "startSeconds": 161.628133,
+   "lengthSeconds": 0.6006,
+   "sourceFile": "Quad 006.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e179",
+   "startSeconds": 162.228733,
+   "lengthSeconds": 0.6006,
+   "sourceFile": "Quad 006.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e180",
+   "startSeconds": 162.779283,
+   "lengthSeconds": 0.6006,
+   "sourceFile": "Quad 006.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e181",
+   "startSeconds": 163.379883,
+   "lengthSeconds": 0.483817,
+   "sourceFile": "Quad 006.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e182",
+   "startSeconds": 163.830333,
+   "lengthSeconds": 0.5005,
+   "sourceFile": "Quad 006.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e183",
+   "startSeconds": 164.330833,
+   "lengthSeconds": 1.034367,
+   "sourceFile": "Quad 006.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e184",
+   "startSeconds": 165.2651,
+   "lengthSeconds": 0.7007,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-50-56-36-DVR_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e185",
+   "startSeconds": 165.882383,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Quad 007.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e186",
+   "startSeconds": 166.399567,
+   "lengthSeconds": 0.467133,
+   "sourceFile": "Quad 007.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e187",
+   "startSeconds": 166.81665,
+   "lengthSeconds": 0.6006,
+   "sourceFile": "Quad 007.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e188",
+   "startSeconds": 167.41725,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Quad 007.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e189",
+   "startSeconds": 167.934433,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad 007.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e190",
+   "startSeconds": 168.484983,
+   "lengthSeconds": 0.483817,
+   "sourceFile": "Quad 007.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e191",
+   "startSeconds": 168.935433,
+   "lengthSeconds": 0.617283,
+   "sourceFile": "Quad 007.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e192",
+   "startSeconds": 169.552716,
+   "lengthSeconds": 1.001,
+   "sourceFile": "Quad 007.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e193",
+   "startSeconds": 170.4703,
+   "lengthSeconds": 1.267933,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-17-11-07-DVR1_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e194",
+   "startSeconds": 171.604766,
+   "lengthSeconds": 1.034367,
+   "sourceFile": "Quad X2 006.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e195",
+   "startSeconds": 172.639133,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Quad X2 006.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e196",
+   "startSeconds": 173.139633,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Quad X2 006.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e197",
+   "startSeconds": 173.656816,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad X2 006.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e198",
+   "startSeconds": 174.157316,
+   "lengthSeconds": 0.583917,
+   "sourceFile": "Quad X2 006.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e199",
+   "startSeconds": 174.741233,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad X2 006.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e200",
+   "startSeconds": 175.258416,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad X2 006.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e201",
+   "startSeconds": 175.808966,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Quad X2 006.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e202",
+   "startSeconds": 176.32615,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad X2 006.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e203",
+   "startSeconds": 176.8767,
+   "lengthSeconds": 2.068733,
+   "sourceFile": "Quad X2 006.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e204",
+   "startSeconds": 178.845333,
+   "lengthSeconds": 1.434767,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-55-05-38-DVR_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e205",
+   "startSeconds": 180.163316,
+   "lengthSeconds": 2.969633,
+   "sourceFile": "Quad X2 007.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e206",
+   "startSeconds": 183.049533,
+   "lengthSeconds": 1.568233,
+   "sourceFile": "Quad X2 007.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e207",
+   "startSeconds": 184.617766,
+   "lengthSeconds": 0.583917,
+   "sourceFile": "Quad X2 007.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e208",
+   "startSeconds": 185.201683,
+   "lengthSeconds": 2.168833,
+   "sourceFile": "Quad X2 007.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e209",
+   "startSeconds": 187.2871,
+   "lengthSeconds": 1.134467,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-17-11-07-DVR_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e210",
+   "startSeconds": 188.354833,
+   "lengthSeconds": 1.034367,
+   "sourceFile": "Quad 008.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e211",
+   "startSeconds": 189.3892,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Quad 008.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e212",
+   "startSeconds": 189.856333,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad 008.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e213",
+   "startSeconds": 190.406883,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad 008.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e214",
+   "startSeconds": 190.957433,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad 008.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e215",
+   "startSeconds": 191.507983,
+   "lengthSeconds": 1.017683,
+   "sourceFile": "Quad 008.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e216",
+   "startSeconds": 192.525666,
+   "lengthSeconds": 0.9009,
+   "sourceFile": "Quad 008.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e217",
+   "startSeconds": 193.426566,
+   "lengthSeconds": 2.2022,
+   "sourceFile": "Quad 008.mp4",
+   "section": "middle",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e218",
+   "startSeconds": 195.628766,
+   "lengthSeconds": 1.935317,
+   "sourceFile": "Quad 008.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e219",
+   "startSeconds": 197.4973,
+   "lengthSeconds": 1.334667,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-41-29-25-DVR_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e220",
+   "startSeconds": 198.715183,
+   "lengthSeconds": 1.084417,
+   "sourceFile": "Quad 004.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e221",
+   "startSeconds": 199.7996,
+   "lengthSeconds": 0.5005,
+   "sourceFile": "Quad 004.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e222",
+   "startSeconds": 200.266733,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Quad 004.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e223",
+   "startSeconds": 200.8006,
+   "lengthSeconds": 0.567233,
+   "sourceFile": "Quad 004.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e224",
+   "startSeconds": 201.334466,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Quad 004.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e225",
+   "startSeconds": 201.85165,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Quad 004.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e226",
+   "startSeconds": 202.385516,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad 004.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e227",
+   "startSeconds": 202.936066,
+   "lengthSeconds": 0.333667,
+   "sourceFile": "Quad 004.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e228",
+   "startSeconds": 203.269733,
+   "lengthSeconds": 0.467133,
+   "sourceFile": "Quad 004.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e229",
+   "startSeconds": 203.736866,
+   "lengthSeconds": 0.6006,
+   "sourceFile": "Quad 004.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e230",
+   "startSeconds": 204.25405,
+   "lengthSeconds": 0.734067,
+   "sourceFile": "Quad 004.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e231",
+   "startSeconds": 204.988116,
+   "lengthSeconds": 1.1011,
+   "sourceFile": "Quad 004.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e232",
+   "startSeconds": 206.039167,
+   "lengthSeconds": 1.7017,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-46-46-32-DVR_1-2x-RIFE-RIFE3.9-120fps.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e233",
+   "startSeconds": 207.590716,
+   "lengthSeconds": 0.483817,
+   "sourceFile": "Quad X2 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e234",
+   "startSeconds": 208.074533,
+   "lengthSeconds": 0.717383,
+   "sourceFile": "Quad X2 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e235",
+   "startSeconds": 208.741866,
+   "lengthSeconds": 0.4004,
+   "sourceFile": "Quad X2 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e236",
+   "startSeconds": 209.142266,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad X2 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e237",
+   "startSeconds": 209.642766,
+   "lengthSeconds": 0.6006,
+   "sourceFile": "Quad X2 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e238",
+   "startSeconds": 210.243366,
+   "lengthSeconds": 0.417083,
+   "sourceFile": "Quad X2 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e239",
+   "startSeconds": 210.627083,
+   "lengthSeconds": 0.433767,
+   "sourceFile": "Quad X2 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e240",
+   "startSeconds": 211.06085,
+   "lengthSeconds": 0.483817,
+   "sourceFile": "Quad X2 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e241",
+   "startSeconds": 211.527983,
+   "lengthSeconds": 0.633967,
+   "sourceFile": "Quad X2 003.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e242",
+   "startSeconds": 212.16195,
+   "lengthSeconds": 1.154817,
+   "sourceFile": "Quad X2 003.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e243",
+   "startSeconds": 213.213,
+   "lengthSeconds": 2.268933,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-55-36-39-DVR_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e244",
+   "startSeconds": 215.431883,
+   "lengthSeconds": 1.05105,
+   "sourceFile": "Quad 009.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e245",
+   "startSeconds": 216.482933,
+   "lengthSeconds": 0.5005,
+   "sourceFile": "Quad 009.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e246",
+   "startSeconds": 216.933383,
+   "lengthSeconds": 0.583917,
+   "sourceFile": "Quad 009.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e247",
+   "startSeconds": 217.5173,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad 009.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e248",
+   "startSeconds": 218.0178,
+   "lengthSeconds": 0.6006,
+   "sourceFile": "Quad 009.mp4",
+   "section": "middle",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e249",
+   "startSeconds": 218.6184,
+   "lengthSeconds": 0.467133,
+   "sourceFile": "Quad 009.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e250",
+   "startSeconds": 219.052166,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Quad 009.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e251",
+   "startSeconds": 219.602716,
+   "lengthSeconds": 0.433767,
+   "sourceFile": "Quad 009.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e252",
+   "startSeconds": 220.0198,
+   "lengthSeconds": 0.45045,
+   "sourceFile": "Quad 009.mp4",
+   "section": "middle",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e253",
+   "startSeconds": 220.47025,
+   "lengthSeconds": 1.267933,
+   "sourceFile": "Quad 009.mp4",
+   "section": "middle",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e254",
+   "startSeconds": 221.654767,
+   "lengthSeconds": 1.3013,
+   "sourceFile": "Call of Duty  Modern Warfare 2 (2022) 2022-10-28 - 15-42-05-26-DVR_1.mp4",
+   "section": "cinematic",
+   "signatureHash": "da39a3ee5e6b",
+   "effectDescriptions": []
+  },
+  {
+   "inspectorId": "t1_e255",
+   "startSeconds": 222.889333,
+   "lengthSeconds": 1.418083,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e256",
+   "startSeconds": 224.307416,
+   "lengthSeconds": 0.55055,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e257",
+   "startSeconds": 224.857966,
+   "lengthSeconds": 0.984317,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e258",
+   "startSeconds": 225.842283,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e259",
+   "startSeconds": 226.342783,
+   "lengthSeconds": 0.567233,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e260",
+   "startSeconds": 226.910016,
+   "lengthSeconds": 0.517183,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e261",
+   "startSeconds": 227.393833,
+   "lengthSeconds": 0.483817,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "3a48ffaa6082",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e262",
+   "startSeconds": 227.87765,
+   "lengthSeconds": 0.533867,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e263",
+   "startSeconds": 228.394833,
+   "lengthSeconds": 0.567233,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e264",
+   "startSeconds": 228.962066,
+   "lengthSeconds": 0.95095,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e265",
+   "startSeconds": 229.913016,
+   "lengthSeconds": 1.167833,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e266",
+   "startSeconds": 231.08085,
+   "lengthSeconds": 0.567233,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e267",
+   "startSeconds": 231.598033,
+   "lengthSeconds": 0.417083,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e268",
+   "startSeconds": 232.015116,
+   "lengthSeconds": 0.6006,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e269",
+   "startSeconds": 232.58235,
+   "lengthSeconds": 0.583917,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e270",
+   "startSeconds": 233.166266,
+   "lengthSeconds": 0.583917,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e271",
+   "startSeconds": 233.7335,
+   "lengthSeconds": 0.483817,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e272",
+   "startSeconds": 234.217316,
+   "lengthSeconds": 1.034367,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "51bf6e855d1d",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e273",
+   "startSeconds": 235.235,
+   "lengthSeconds": 1.067733,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "9326fc860de1",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_BlurMoCurves",
+    "Bump Map",
+    "S_Glow"
+   ]
+  },
+  {
+   "inspectorId": "t1_e274",
+   "startSeconds": 236.302733,
+   "lengthSeconds": 0.834167,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "154b12097faf",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  },
+  {
+   "inspectorId": "t1_e275",
+   "startSeconds": 237.1369,
+   "lengthSeconds": 0.316983,
+   "sourceFile": "Closer 01.mp4",
+   "section": "closer",
+   "signatureHash": "3848cc08cb28",
+   "effectDescriptions": [
+    "S_Shake",
+    "S_Shake",
+    "S_Flicker",
+    "S_DistortRGB"
+   ]
+  }
+ ]
+}

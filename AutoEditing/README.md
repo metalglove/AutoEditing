@@ -302,6 +302,9 @@ VEGAS timeline behavior.
   ranked native VEGAS, built-in/OFX, and open-source effect candidates.
 - [`beat_this_cpp` evaluation](docs/beat-this-cpp-benchmark.md) - three-song
   agreement, performance, packaging, and Windows integration findings.
+- [Forensic editing research](docs/forensics/README.md) - anonymized
+  project-specific evidence, cross-editor comparisons, portable datasets,
+  reproduction tools, and the macOS/Windows review workflow.
 
 When documents disagree, use the semantic-montage MVP documents for product
 scope and verify implementation claims against the current code.

@@ -1,0 +1,18 @@
+{
+  "on": {
+    "edgeEnergy": 1.6674558962692916,
+    "rgSeparation": 4.876943359375,
+    "gbSeparation": 5.8237944878472225,
+    "meanLuma": 91.92447325627612
+  },
+  "off": {
+    "edgeEnergy": 2.3288310145409756,
+    "rgSeparation": 4.98314453125,
+    "gbSeparation": 4.459129774305556,
+    "meanLuma": 89.33140297739575
+  },
+  "edgeRatioOnOverOff": 0.7160055349047967,
+  "lumaDeltaOnMinusOff": 2.5930702788803615,
+  "meanAbsDiffOnVsOff": 6.1901863606770835,
+  "meanAbsDiffRestoredVsOn": 0
+}

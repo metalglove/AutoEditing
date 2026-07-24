@@ -39,6 +39,11 @@ two data points establish a repeated pattern worth testing further, not a proven
   crossfade-predictor breakdown** were performed this pass — explicitly listed as reduced-scope
   items in [limitations.md](limitations.md), not silently dropped.
 
+A compact machine-readable projection of the evidence register is available at
+[`../../../data/editor-2/project-01/evidence-summary.json`](../../../data/editor-2/project-01/evidence-summary.json).
+Sanitized reproduction scripts are under
+[`../../../../../Tools/Forensics/editor-2/project-01/`](../../../../../Tools/Forensics/editor-2/project-01/).
+
 ## Document index
 
 | Document | Covers |

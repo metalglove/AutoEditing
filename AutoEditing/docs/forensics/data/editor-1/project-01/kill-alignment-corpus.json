@@ -1,0 +1,1892 @@
+{
+ "schemaVersion": "1.0",
+ "method": "For all 125 weapon-library-sourced Track-2 events: nearest marker delta, nearest Track-1 event start delta + its preset family, velocity envelope phase at that instant.",
+ "totalGunEvents": 125,
+ "classificationCounts": {
+  "probable-kill (marker+cut, ordinary treatment)": 95,
+  "confirmed-kill (marker+cut+impact-family)": 25,
+  "probable-kill (cut-aligned only)": 2,
+  "unknown/counterexample": 2,
+  "musical-gun-replacement (marker-near, not cut-aligned)": 1
+ },
+ "familyCounts": {
+  "ordinary": 99,
+  "impact": 25,
+  "none": 1
+ },
+ "velocityPhaseIndexCounts": {
+  "0": 122,
+  "no-envelope": 1,
+  "-1": 2
+ },
+ "perEvent": [
+  {
+   "gunEventId": "t2_e1",
+   "gunStartSeconds": 37.037,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e4",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.935235,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e2",
+   "gunStartSeconds": 38.171,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e6",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.899479,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e3",
+   "gunStartSeconds": 39.156,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e8",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e4",
+   "gunStartSeconds": 40.207,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e10",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e5",
+   "gunStartSeconds": 41.158,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e12",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e6",
+   "gunStartSeconds": 42.025,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e14",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e7",
+   "gunStartSeconds": 43.227,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e16",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e9",
+   "gunStartSeconds": 47.464,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e19",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e10",
+   "gunStartSeconds": 48.365,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e21",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e11",
+   "gunStartSeconds": 49.516,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e23",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e12",
+   "gunStartSeconds": 50.45,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e25",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e13",
+   "gunStartSeconds": 51.585,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e27",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e14",
+   "gunStartSeconds": 52.653,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e29",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e15",
+   "gunStartSeconds": 53.704,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e31",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.431744,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e16",
+   "gunStartSeconds": 54.721,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e33",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e17",
+   "gunStartSeconds": 59.927,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e37",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e18",
+   "gunStartSeconds": 62.045,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e39",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e19",
+   "gunStartSeconds": 63.08,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e41",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.470001,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e20",
+   "gunStartSeconds": 64.131,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e43",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.431749,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e21",
+   "gunStartSeconds": 65.165,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e45",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e22",
+   "gunStartSeconds": 67.217,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e47",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e23",
+   "gunStartSeconds": 68.302,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e49",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e25",
+   "gunStartSeconds": 71.438,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e52",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e26",
+   "gunStartSeconds": 72.489,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e54",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.899476,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e27",
+   "gunStartSeconds": 73.507,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e56",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e28",
+   "gunStartSeconds": 74.558,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e58",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e29",
+   "gunStartSeconds": 75.542,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e60",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e31",
+   "gunStartSeconds": 77.644,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e63",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e32",
+   "gunStartSeconds": 78.695,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e65",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e33",
+   "gunStartSeconds": 79.746,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e67",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e34",
+   "gunStartSeconds": 81.281,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e70",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.473684,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e35",
+   "gunStartSeconds": 82.916,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e73",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e36",
+   "gunStartSeconds": 85.552,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e76",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e37",
+   "gunStartSeconds": 87.554,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e78",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e38",
+   "gunStartSeconds": 89.156,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e80",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e39",
+   "gunStartSeconds": 91.291,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e82",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e40",
+   "gunStartSeconds": 92.192,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e84",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e41",
+   "gunStartSeconds": 93.093,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e85",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e42",
+   "gunStartSeconds": 96.246,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e88",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e43",
+   "gunStartSeconds": 97.497,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e90",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e44",
+   "gunStartSeconds": 98.548,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e92",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e45",
+   "gunStartSeconds": 100.55,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e94",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e46",
+   "gunStartSeconds": 101.418,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e96",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e48",
+   "gunStartSeconds": 105.889,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e100",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.917507,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e49",
+   "gunStartSeconds": 106.907,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e101",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.723814,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e50",
+   "gunStartSeconds": 110.06,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e104",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.816705,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e52",
+   "gunStartSeconds": 113.146,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e107",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e53",
+   "gunStartSeconds": 114.181,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e109",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e54",
+   "gunStartSeconds": 115.282,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e111",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e55",
+   "gunStartSeconds": 116.316,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e113",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.495939,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e56",
+   "gunStartSeconds": 118.402,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e115",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e58",
+   "gunStartSeconds": 122.589,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e119",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e59",
+   "gunStartSeconds": 123.624,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e121",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e60",
+   "gunStartSeconds": 124.658,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e123",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.342105,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e61",
+   "gunStartSeconds": 125.692,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e125",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e62",
+   "gunStartSeconds": 126.743,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e127",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e63",
+   "gunStartSeconds": 127.794,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e129",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e65",
+   "gunStartSeconds": 130.914,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e133",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 1.980099,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e66",
+   "gunStartSeconds": 131.948,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e135",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e67",
+   "gunStartSeconds": 132.966,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e137",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e68",
+   "gunStartSeconds": 133.867,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e139",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e69",
+   "gunStartSeconds": 134.818,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e141",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e70",
+   "gunStartSeconds": 137.137,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e143",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.894055,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e71",
+   "gunStartSeconds": 140.273,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e147",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e72",
+   "gunStartSeconds": 141.425,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e149",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e73",
+   "gunStartSeconds": 142.275,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e151",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e74",
+   "gunStartSeconds": 143.176,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e153",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e76",
+   "gunStartSeconds": 146.513,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e156",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e77",
+   "gunStartSeconds": 147.547,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e158",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.688465,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e78",
+   "gunStartSeconds": 148.665,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e160",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.553538,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e79",
+   "gunStartSeconds": 149.716,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e162",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e80",
+   "gunStartSeconds": 150.517,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e164",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e81",
+   "gunStartSeconds": 152.836,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e166",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e82",
+   "gunStartSeconds": 153.887,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e168",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e83",
+   "gunStartSeconds": 154.888,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e170",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e84",
+   "gunStartSeconds": 155.956,
+   "nearestMarkerDeltaMs": 162.2,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e172",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (cut-aligned only)"
+  },
+  {
+   "gunEventId": "t2_e85",
+   "gunStartSeconds": 158.041,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e174",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.811036,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e87",
+   "gunStartSeconds": 161.194,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e177",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e88",
+   "gunStartSeconds": 162.229,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e179",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e89",
+   "gunStartSeconds": 163.38,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e181",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e90",
+   "gunStartSeconds": 164.331,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e183",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e92",
+   "gunStartSeconds": 166.4,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e186",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.342105,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e93",
+   "gunStartSeconds": 167.417,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e188",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e94",
+   "gunStartSeconds": 168.485,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e190",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.644181,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e95",
+   "gunStartSeconds": 169.553,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e192",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e97",
+   "gunStartSeconds": 172.639,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e195",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e98",
+   "gunStartSeconds": 173.657,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e197",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e99",
+   "gunStartSeconds": 174.741,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e199",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.688465,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e100",
+   "gunStartSeconds": 175.809,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e201",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e101",
+   "gunStartSeconds": 176.877,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e203",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.127564,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e103",
+   "gunStartSeconds": 180.897,
+   "nearestMarkerDeltaMs": 3169.8,
+   "nearestVideoEventStartDeltaMs": 734.1,
+   "nearestVideoEventId": "t1_e205",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": null,
+   "classification": "unknown/counterexample"
+  },
+  {
+   "gunEventId": "t2_e104",
+   "gunStartSeconds": 181.765,
+   "nearestMarkerDeltaMs": 2302.3,
+   "nearestVideoEventStartDeltaMs": 1284.6,
+   "nearestVideoEventId": "t1_e206",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": -1,
+    "note": "not at an exact point"
+   },
+   "classification": "unknown/counterexample"
+  },
+  {
+   "gunEventId": "t2_e105",
+   "gunStartSeconds": 184.067,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 550.5,
+   "nearestVideoEventId": "t1_e207",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": -1,
+    "note": "not at an exact point"
+   },
+   "classification": "musical-gun-replacement (marker-near, not cut-aligned)"
+  },
+  {
+   "gunEventId": "t2_e106",
+   "gunStartSeconds": 185.202,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e208",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 1.963161,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e108",
+   "gunStartSeconds": 189.389,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e211",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e109",
+   "gunStartSeconds": 190.407,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e213",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e110",
+   "gunStartSeconds": 191.508,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e215",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.871417,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e111",
+   "gunStartSeconds": 193.427,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e217",
+   "nearestVideoEventFamily": "none",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.884328,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (cut-aligned only)"
+  },
+  {
+   "gunEventId": "t2_e112",
+   "gunStartSeconds": 195.629,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e218",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e114",
+   "gunStartSeconds": 199.8,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e221",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e115",
+   "gunStartSeconds": 200.801,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e223",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e116",
+   "gunStartSeconds": 201.852,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e225",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e117",
+   "gunStartSeconds": 202.936,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e227",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e118",
+   "gunStartSeconds": 203.737,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e229",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e119",
+   "gunStartSeconds": 204.988,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e231",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e121",
+   "gunStartSeconds": 208.075,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e234",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e122",
+   "gunStartSeconds": 209.142,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e236",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e123",
+   "gunStartSeconds": 210.243,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e238",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e124",
+   "gunStartSeconds": 211.061,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e240",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e125",
+   "gunStartSeconds": 212.162,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e242",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e127",
+   "gunStartSeconds": 216.483,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e245",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.342105,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e128",
+   "gunStartSeconds": 217.517,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e247",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.760947,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e129",
+   "gunStartSeconds": 218.618,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e249",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e130",
+   "gunStartSeconds": 219.603,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e251",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.342105,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e131",
+   "gunStartSeconds": 220.47,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e253",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e133",
+   "gunStartSeconds": 224.307,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e256",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e134",
+   "gunStartSeconds": 225.842,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e258",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e135",
+   "gunStartSeconds": 226.91,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e260",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e136",
+   "gunStartSeconds": 227.878,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e262",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e137",
+   "gunStartSeconds": 228.962,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e264",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e138",
+   "gunStartSeconds": 231.081,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e266",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3.052631,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e139",
+   "gunStartSeconds": 232.015,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e268",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e140",
+   "gunStartSeconds": 233.166,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e270",
+   "nearestVideoEventFamily": "ordinary",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.473684,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "probable-kill (marker+cut, ordinary treatment)"
+  },
+  {
+   "gunEventId": "t2_e141",
+   "gunStartSeconds": 234.217,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e272",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 2.999997,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  },
+  {
+   "gunEventId": "t2_e142",
+   "gunStartSeconds": 236.303,
+   "nearestMarkerDeltaMs": 0,
+   "nearestVideoEventStartDeltaMs": 0,
+   "nearestVideoEventId": "t1_e274",
+   "nearestVideoEventFamily": "impact",
+   "velocityPhaseAtGunStart": {
+    "atPointIndex": 0,
+    "value": 3,
+    "isFirst": true,
+    "isLast": false
+   },
+   "classification": "confirmed-kill (marker+cut+impact-family)"
+  }
+ ],
+ "convergentValidationNote": "The 3 non-confirmed-kill events (t2_e103 at 180.897s, t2_e104 at 181.765s, t2_e105 at 184.067s) match exactly the three counterexamples independently identified by Codex in project-audio-forensics.md (155.9558/180.897383/181.764916s plus a 4th at 184.067216s). Likely a rapid-fire/held-shot section where multiple gunshots occur within one continuous video event rather than at a cut.",
+ "velocityPhaseNote": "122/125 (97.6%) weapon-SFX events start exactly at velocity envelope point index 0 (the events own start, i.e. the fast-entry point) -- this extends and confirms the earlier fast-entry finding (previously only checked on 25 impact events) across the FULL 125-event corpus. The 2 non-index-0 cases and 1 no-envelope case correspond to the same counterexample cluster above."
+}
