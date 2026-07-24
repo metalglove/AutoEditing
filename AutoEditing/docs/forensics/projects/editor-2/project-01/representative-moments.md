@@ -12,7 +12,7 @@ All frames preserved, unmodified, at `C:\VEGAS\editor-2-project-01-analysis\fram
 
 - **Timestamp**: 2.0s. **Track/event**: `t2_e0` (title generator) over `t4_e0` (raw DVR footage,
   `S_FilmDamage`).
-- **File**: `01_intro_title_dap_presents.png`.
+- **File**: `01_intro_title_editor-2_presents.png`.
 - **Why selected**: opening/title moment.
 - **Visual evidence**: aerial/drone gameplay footage with legible white title text overlaid
   (editor-identity text redacted in this description; the underlying image file itself, stored

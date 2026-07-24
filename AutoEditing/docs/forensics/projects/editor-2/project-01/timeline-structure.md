@@ -71,7 +71,7 @@ any kind anywhere.**
 - Track 2's two title-card events span the same window: "[Editor 2] PRESENTS" (0-5.333s,
   editor-identity redacted from the original text) then "GLOVALIIN" (5.333-8.625s, the recipient's
   name — not redacted, per this package's anonymization scope).
-- **Visually confirmed**: `01_intro_title_dap_presents.png` (captured at 2.0s) shows the
+- **Visually confirmed**: `01_intro_title_editor-2_presents.png` (captured at 2.0s) shows the
   "[Editor 2] PRESENTS"-equivalent text legibly rendered over aerial/drone gameplay footage.
   **[E2-P01-VIS-002, DIRECT_PROJECT_OBSERVATION]**
 - **A genuine 1.375-second gap** exists in Track 4's coverage immediately after the intro (t4_e1
