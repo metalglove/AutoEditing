@@ -56,7 +56,8 @@ neither should be treated as *the* AutoEditing default; both are candidate optio
 
 ## Marker/event alignment of the primary hit/impact audio
 
-Editor 1: 122/125 (97.6%) of replacement-gun events within 30ms of a marker. Editor 2: 7/7 (100%)
+Editor 1: 122/125 (97.6%) of replacement-gun events within 1µs of a marker — snapped rather than
+merely close (the nearest non-aligned event is 162ms away, so nothing falls between). Editor 2: 7/7 (100%)
 of hit-accent events at exactly 0ms delta from both a marker and a video-event boundary.
 
 **Classification: Shared mechanically and contextually — the single strongest replicated finding

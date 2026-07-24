@@ -15,14 +15,14 @@ against the other project. Classification values as defined in [README.md](READM
 | Track-level ambient `S_Flicker` | Yes | Yes | **Shared** |
 | Track-level ambient `S_Shake` (in addition to Flicker) | Yes | No | **Editor 1-specific** |
 | Single fixed source excerpt reused for hit/impact SFX | Yes, with per-instance processing | Partially — native audio reuse + one small unprocessed accent sample | **Shared technique, different parameters** |
-| Hit/impact SFX aligned to markers and cuts simultaneously | 97.6% within 30ms | 100% at 0ms | **Shared mechanically and contextually** (strongest replicated finding) |
+| Hit/impact SFX aligned to markers and cuts simultaneously | 97.6% within 1µs (snapped) | 100% at 0ms | **Shared mechanically and contextually** (strongest replicated finding) |
 | No ducking/volume-automation mechanism | Confirmed absent | Confirmed absent | **Shared (as an absence)** |
 | Dedicated whoosh/transition-cue sample | Yes, 24 uses | None found | **Editor 1-specific** |
 | Fast-in/Slow-out fade convention on music | Yes | Yes | **Shared** |
 | Track-fader attenuation on audio (non-zero dB) | Yes (-3.0/-3.6dB) | No (0dB) | **Contradicted** |
 | Missing/unavailable plugin dependencies | 4 unavailable | 0 unavailable | **Plugin/capability-dependent**, not an editor-technique finding |
 | Dominant velocity curve shape (4-point single-dip) | 68% of events | Not found — 7-point double-dip dominates instead (81%) | **Contradicted** |
-| Velocity plateau ≈0.5x | n=275, mean 0.52 | n=1 detailed sample, 0.5x | **Shared technique, different parameters (unconfirmed at scale for E2)** |
+| Velocity plateau ≈0.5x | n=188, median 0.500 (p10–p75 all exactly 0.500) | n=1 detailed sample, 0.5x | **Shared technique, different parameters (unconfirmed at scale for E2)** |
 | Curated-vs-raw/connective source-tiering by filename pattern | Yes | Yes | **Shared technique, different parameters** (tiering concept shared; per-tier treatment differs) |
 | Connective-footage placement rule (after impact, before setup, crossfaded both sides) | Yes, well-evidenced | Not tested this pass | **Insufficiently supported** (E2 side reduced scope) |
 

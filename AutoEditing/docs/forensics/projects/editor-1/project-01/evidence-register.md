@@ -25,7 +25,7 @@ replaced with redirect stubs — see [README.md](README.md)).
 | STR-005 | Track-level static S_Shake/S_Flicker, unanimated | Track 1 | DIRECT_PROJECT_OBSERVATION | C:\VEGAS project-inspection-v3.json | Observation | High | Medium (via ablation VIS-003) | Medium | — | none | No | No |
 | STR-006 | TrackMotion confirmed unused, both video tracks | project | DIRECT_PROJECT_OBSERVATION | C:\VEGAS project-inspection-v3.json | Observation | High | n/a | n/a | — | none | No | No |
 | STR-007 | Body order not chronological/filename order | Track 1 | DIRECT_PROJECT_OBSERVATION | E1-orig project-structure-forensics.md | Observation | High | n/a | Low (selection rationale unknown) | 20 named sources | selection criterion unknown | Yes (candidate) | No |
-| STR-008 | 276 events reduce to 44 same-source runs; curated sources split far more aggressively | Track 1 | DIRECT_PROJECT_OBSERVATION | E1-orig + C:\VEGAS multikill-source-runs.js | Observation | High | n/a | n/a | — | none | Yes (candidate) | No |
+| STR-008 | 276 events reduce to 46 same-source runs (24 multi-event, 22 single-event); curated sources split far more aggressively | Track 1 | DIRECT_PROJECT_OBSERVATION | E1-orig + C:\VEGAS multikill-source-runs.js; recomputed from `full-corpus-preset-signatures.json` (see corrections log) | Observation | High | n/a | n/a | — | corrected from 44 (see corrections log C-001) | Yes (candidate) | No |
 | STR-009 | Opener structure: 3 cinematic + Opener01/02/03 interleaved with bridges | Track 1 | DIRECT_PROJECT_OBSERVATION | E1-orig project-structure-forensics.md | Observation | High | n/a | n/a | 26.643–69.303s | none | No | No |
 | STR-010 | 15/22 raw/connective clips sit impact→connective→ordinary; 91% same-section | Track 1 | EDITOR_1_PROJECT_PATTERN | C:\VEGAS cinematic-pairing-analysis.md | Observation | High | n/a | Medium | 22 raw/connective events | single-project only | Yes | Yes (experimental) |
 | STR-011 | 15/19 body gameplay transitions mediated by a raw/connective clip; 4 direct exceptions | Track 1 | EDITOR_1_PROJECT_PATTERN | E1-orig project-structure-forensics.md | Observation | High | n/a | Medium | 4 named exceptions | single-project only | Yes | No |
@@ -43,7 +43,7 @@ replaced with redirect stubs — see [README.md](README.md)).
 | ID | Claim | Scope | Classification | Source | Obs/Inf | Struct. | Visual | Semantic | Files/timestamps | Limitations | Cross-proj? | Prod-rule? |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | TIM-001 | (see STR table above) | | | | | | | | | | | |
-| TIM-002 | 122/125 gun events within 30ms of a marker (97.6%), n extended from 25 to 125 | Track 2/1 | DIRECT_PROJECT_OBSERVATION | C:\VEGAS kill-alignment-corpus.json | Observation | High | n/a | Medium (3 confirmed counterexamples) | t2_e103/104/105 | none | Yes | Yes (should change now) |
+| TIM-002 | 122/125 gun events (97.6%) are marker-aligned to within **1µs** — i.e. snapped, not merely close; n extended from 25 to 125 | Track 2/1 | DIRECT_PROJECT_OBSERVATION | C:\VEGAS kill-alignment-corpus.json; recomputed from `velocity-kills-output.json` | Observation | High | n/a | Medium (3 confirmed counterexamples) | t2_e103/104/105 | previously stated as "within 30ms"; the data has a hard cliff (122 within 1µs, next-nearest 162ms), so no event falls between those bounds and the 30ms threshold was not load-bearing (see corrections log C-003) | Yes | Yes (should change now) |
 | TIM-003 | 122/125 gun events within 1ms of marker+boundary+velocity point simultaneously (Editor 1's original n=125 count, schema-1) | Track 2/1 | DIRECT_PROJECT_OBSERVATION | E1-orig project-audio-forensics.md | Observation | High | n/a | Medium | 3 exceptions at 155.956/180.897/181.765s | none | Yes | Yes (should change now) |
 
 ## Velocity (VEL)
@@ -52,8 +52,8 @@ replaced with redirect stubs — see [README.md](README.md)).
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | VEL-001 | 7 velocity curve-shape families, dominant `fast→slow→slow→fast` (147) | Track 1 | DIRECT_PROJECT_OBSERVATION | E1-orig project-preset-clustering.md | Observation | High | n/a | n/a | none | Yes (candidate) | No |
 | VEL-002 | 4-point curves dominate (188/275) in independent recount | Track 1 | DIRECT_PROJECT_OBSERVATION | C:\VEGAS inferred-editing-strategies.md | Observation | High | n/a | n/a | grouping differs slightly from VEL-001 | No | No |
-| VEL-003 | Plateau median 0.5x, mean 0.52x, n=275 | Track 1 | DIRECT_PROJECT_OBSERVATION | C:\VEGAS inferred-editing-strategies.md | Observation | High | n/a | n/a | none | Yes (candidate) | No |
-| VEL-004 | Entry/exit median ~2.87x/2.76x, both above 1x | Track 1 | DIRECT_PROJECT_OBSERVATION | C:\VEGAS inferred-editing-strategies.md | Observation | High | n/a | n/a | none | Yes (candidate) | No |
+| VEL-003 | Plateau median 0.5x, mean 0.52x, n=275 | Track 1 | DIRECT_PROJECT_OBSERVATION | C:\VEGAS inferred-editing-strategies.md (**not committed**) | Observation | High | n/a | n/a | the n=275 mean (0.52) is **not verifiable from committed data** — the committed corpus supports plateau median 0.500 at n=188 (`velocity-kills-output.json` `fourPointRecipe.lowSpeed`, where p10/p25/median/p75 are all exactly 0.500) and median 0.500/mean 0.568 at n=123 (per-event kill rows). The 0.5x median replicates; treat the 0.52 mean as uncorroborated (see corrections log C-004) | Yes (candidate) | No |
+| VEL-004 | Entry/exit speeds both well above 1x. Committed-data figures (n=188 four-point events): entry median **2.763x**, exit median **3.000x** | Track 1 | DIRECT_PROJECT_OBSERVATION | `velocity-kills-output.json` `fourPointRecipe`; also `velocity-kill-timing-findings.md` table | Observation | High | n/a | n/a | **Supersedes a previously stated "entry ~2.87x / exit ~2.76x"** sourced from the non-committed `C:\VEGAS inferred-editing-strategies.md`. That pair is unverifiable from committed data and conflicts with it on the exit figure (2.76 vs 3.00); note 2.76 is the committed *entry* median, suggesting a possible transposition. The "both above 1x" conclusion is unaffected (see corrections log C-005) | Yes (candidate) | No |
 | VEL-005 | Parameterized velocity family, not one hard envelope | Track 1 | DIRECT_PROJECT_OBSERVATION | E1-orig project-preset-clustering.md | Observation | High | n/a | n/a | none | Yes (candidate) | Yes (experimental) |
 | VEL-006 | Sample envelope shape, t1_e0, 4 points | Track 1 | DIRECT_PROJECT_OBSERVATION | C:\VEGAS inferred-editing-strategies.md | Observation | High | n/a | n/a | superseded by VEL-003 for the plateau figure | No | No |
 | VEL-007 | Terminal-family velocity skews non-recovering (11 four-point, 6 three-point leading shapes) | Track 1 | DIRECT_PROJECT_OBSERVATION | E1-orig project-preset-clustering.md | Observation | High | n/a | n/a | none | No | No |
@@ -62,13 +62,18 @@ replaced with redirect stubs — see [README.md](README.md)).
 | VEL-010 | 18/24 multi-event source-runs follow ordinary→impact escalation pattern | Track 1 | EDITOR_1_PROJECT_PATTERN | C:\VEGAS multikill-source-runs.js + inferred-editing-strategies.md §7 | Observation | High | n/a | Medium | single-project only | Yes | Yes (experimental) |
 | VEL-011 | 24 no-effects events still have velocity envelopes | Track 1 | DIRECT_PROJECT_OBSERVATION | E1-orig project-preset-clustering.md | Observation | High | n/a | n/a | none | No | No |
 | VEL-012 | 1/276 standard-chain event has no velocity envelope at all | Track 1 | DIRECT_PROJECT_OBSERVATION | E1-orig project-preset-clustering.md | Observation | High | n/a | n/a | unexplained exception | No | No |
+| VEL-013 | The kill/hit lands on the **terminal (last) velocity point**, not in the slow plateau — `pointIndex/points` = 3/4 ×106, 4/5 ×8, 5/6 ×3, 2/3 ×4 (107/125 at index 3 per the source doc's count) | Track 1/2 | DIRECT_PROJECT_OBSERVATION | velocity-kill-timing-findings.md; `velocity-kills-output.json` `weaponRows` | Observation | High | n/a | Medium (kill placement is a high-confidence inference, not frame-verified — see limitations.md) | previously unindexed (see corrections log C-006) | Yes | Yes (experimental) |
+| VEL-014 | The kill coincides with a **cut**: 122/125 sit exactly at their video event's end (`videoEndDelta`=0), which is simultaneously the next event's start (gapless coverage). Yields the identity `marker = hit-SFX start = outgoing event end = incoming event start` | Track 1/2 | DIRECT_PROJECT_OBSERVATION | velocity-kill-timing-findings.md executive finding; `velocity-kills-output.json` | Observation | High | n/a | Medium (same caveat as VEL-013) | previously unindexed (C-006); 4 documented counterexamples — this is a dominant strategy, not an invariant | Yes | Yes (experimental) |
+| VEL-015 | Canonical four-point curve-type sequence is `Fast > Smooth > Slow > Fast` (96/188), then `Fast > Smooth > Slow > Smooth` (45/188); the top four sequences (180/188 = 96%) all carry `Slow` at point 3 | Track 1 | DIRECT_PROJECT_OBSERVATION | velocity-kill-timing-findings.md; `velocity-kills-output.json` `fourPointRecipe.curves` | Observation | High | n/a | n/a | previously unindexed (C-006) | Yes | Yes (experimental) |
+| VEL-016 | Four-point dip timing medians: entry ramp **151ms**, plateau **209ms**, exit ramp **226ms** — the exit ramp is ~1.5× the entry ramp (deliberately asymmetric); tail after final point 0ms | Track 1 | DIRECT_PROJECT_OBSERVATION | velocity-kill-timing-findings.md table; `velocity-kills-output.json` `fourPointRecipe` | Observation | High | n/a | n/a | previously unindexed (C-006) | Yes | Yes (experimental) |
+| VEL-017 | The **first** kill of a same-source run has a materially longer approach from the plateau (low-entry→gun median 727ms) than middle (399ms) or final (433ms) kills; middle and final are near-identical, and terminal speed does not distinguish position | Track 1/2 | DIRECT_PROJECT_OBSERVATION | velocity-kill-timing-findings.md position table | Observation | High | n/a | Medium | previously unindexed (C-006); argues against a distinct "final kill" velocity recipe | Yes | No |
 
 ## Effects and presets (FX)
 
 | ID | Claim | Scope | Classification | Source | Obs/Inf | Struct. | Visual | Semantic | Limitations | Cross-proj? | Prod-rule? |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | FX-001 | Project-wide effect instance counts (12 effect types) | project | DIRECT_PROJECT_OBSERVATION | E1-orig project-inspection-ofx-findings.md | Observation | High | n/a | n/a | none | No | No |
-| FX-002 | 7 distinct full-corpus signatures, not 2 (falsifies "byte-identical" claim) | Track 1 | DIRECT_PROJECT_OBSERVATION | C:\VEGAS full-corpus-preset-signatures.json | Observation | High | n/a | n/a | none | No | No |
+| FX-002 | 8 distinct full-corpus signatures, not 2 (falsifies "byte-identical" claim) | Track 1 | DIRECT_PROJECT_OBSERVATION | C:\VEGAS full-corpus-preset-signatures.json (`distinctSignatures: 8`) | Observation | High | n/a | n/a | none | corrected from 7 (see corrections log C-002) | No | No |
 | FX-003 | t1_e275 has no gun audio at start; trimmed tail, not independent kill | Track 1/2 | DIRECT_PROJECT_OBSERVATION | C:\VEGAS query | Observation | High | Medium | Medium | single query, not re-verified | No | No |
 | FX-004 | Ordinary-family stored parameters, 2 duration variants | Track 1 | DIRECT_PROJECT_OBSERVATION | E1-orig forensic-synthesis.md | Observation | High | n/a | n/a | none | Yes (candidate) | Yes (experimental) |
 | FX-005 | Reconciliation gap: S_Shake/Bump Map bypass state discrepancy | Track 1 | DIRECT_PROJECT_OBSERVATION | C:\VEGAS direct query vs E1-orig chain description | Observation | Medium (unreconciled) | n/a | n/a | see limitations.md | No | No |
@@ -154,13 +159,36 @@ additional validation.
 | Retain native audio on raw/unedited gameplay footage that receives no effect treatment; replace audio only on curated/treated highlight clips | FX-010, AUD-004 | Requires Editor 2 comparison |
 | Do not implement an inferred "ducking" feature based on this project | AUD-002 | Should not be generalized — this project simply doesn't use one; ducking would be a new AutoEditing capability, not a reproduction |
 
+## Corrections log
+
+Numeric and traceability corrections applied to this register after an audit that recomputed claims
+against the committed portable data under `docs/forensics/data/editor-1/project-01/`. Per this
+repository's convention (see `docs/forensics/README.md`, "retain falsified or superseded claims"),
+the superseded values are recorded here rather than silently overwritten.
+
+| ID | Claim affected | Was | Now | How resolved |
+|---|---|---|---|---|
+| C-001 | STR-008 (and `timeline-structure.md`) | 44 same-source runs | **46** (24 multi-event + 22 single-event, covering all 276 events) | Recomputed directly: maximal consecutive same-`sourceFile` grouping over the 276 rows of `full-corpus-preset-signatures.json` `perEventCanonical`, ordered by `startSeconds`. Independently matches `project-inspection-findings.json` ("46 contiguous same-source-file runs") and `velocity-findings.md`, which already said 46 — STR-008 was the outlier. |
+| C-002 | FX-002 (and `effects-and-presets.md`) | 7 distinct signatures | **8** | `full-corpus-preset-signatures.json` reports `distinctSignatures: 8`, and the signature table in `effects-and-presets.md` already listed 8 rows summing to 276 (187+36+24+24+2+1+1+1). The prose figure was an arithmetic slip against its own table. |
+| C-003 | TIM-002 (and `audio-treatment.md`, cross-project `rule-comparison.md`/`audio-comparison.md`) | "122/125 within 30ms" | "122/125 within **1µs** (snapped)" | Recomputed from `velocity-kills-output.json` `weaponRows`: 122 events are within 1µs; the next-nearest is 162ms, then 2.30s and 3.17s. Nothing falls between 1µs and 162ms, so the 30ms threshold was not load-bearing and understated the finding — the editor snapped kills exactly rather than landing near a tolerance. |
+| C-004 | VEL-003 | "median 0.5x, mean 0.52x, n=275" | median 0.500 retained; the n=275 mean flagged **uncorroborated** | The n=275 figures cite `C:\VEGAS inferred-editing-strategies.md`, which is deliberately not committed. Committed data supports plateau median 0.500 at n=188 (with p10/p25/median/p75 all exactly 0.500) and median 0.500/mean 0.568 at n=123. The 0.5x median replicates; the 0.52 mean cannot be checked. |
+| C-005 | VEL-004 (and `velocity-findings.md`, cross-project `velocity-comparison.md`) | "entry ~2.87x / exit ~2.76x" | **entry 2.763x / exit 3.000x** (n=188) | The original pair cites the same non-committed artifact and conflicts with committed data on the exit figure (2.76 vs 3.00). 2.76 is the committed *entry* median, suggesting a transposition. `velocity-kill-timing-findings.md`'s own table already reported 2.763/3.000. The "both above 1x" conclusion is unaffected. |
+| C-006 | VEL-013 … VEL-017 | *(absent from this register)* | Added | `velocity-kill-timing-findings.md` is listed in this package's document index and contains its central findings — kill-on-terminal-velocity-point, kill-coincides-with-cut, the canonical `Fast>Smooth>Slow>Fast` curve sequence, the dip timing table, and the first-vs-middle/final approach asymmetry — but none carried an evidence ID. Because the cross-project comparison and `autoediting-implications.md` are built by walking evidence IDs, those findings never propagated to either. This is a propagation defect, not a measurement error: the analysis was correct and simply did not reach the documents intended to drive production decisions. |
+
+Known remaining inconsistency, not resolved here: `velocity-kills-output.json` reports
+`counts.multiShotSequences: 22` alongside `sourceSequenceCounts.multiShotSequences: 24`. These count
+different things — 24 is the number of kill-bearing same-source runs (summing to all 125 kills), while
+22 appears to be the timeline-adjacency sequence count from `counts.inferredSequences`. The raw
+artifact is left unedited; the distinction is recorded here because the labels do not disambiguate it.
+
 ## Validation notes
 
 - Every evidence ID above is unique within this register (verified by construction — no ID appears
   twice with a different claim).
 - Every ID referenced from another document in this package (`project-profile.md`,
-  `timeline-structure.md`, `velocity-findings.md`, `effects-and-presets.md`, `audio-treatment.md`,
-  `transitions-and-compositing.md`, `representative-moments.md`, `limitations.md`) resolves to a
-  row in this register.
+  `timeline-structure.md`, `velocity-findings.md`, `velocity-kill-timing-findings.md`,
+  `effects-and-presets.md`, `audio-treatment.md`, `transitions-and-compositing.md`,
+  `representative-moments.md`, `limitations.md`) resolves to a row in this register. Coverage of
+  `velocity-kill-timing-findings.md` was added retroactively — see corrections log C-006.
 - IDs are grouped by their evidence-register category prefix (STR/TIM/VEL/FX/AUD/TRN/VIS/LIM),
   matching the required `E1-P01-<CATEGORY>-<NNN>` format.

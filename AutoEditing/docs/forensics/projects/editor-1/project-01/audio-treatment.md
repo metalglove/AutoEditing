@@ -114,7 +114,7 @@ normalize/normalizeGain state. **[E1-P01-AUD-008, DIRECT_PROJECT_OBSERVATION]**
 **Extended from an initial n=25 sample to the full n=125 corpus (this investigation's adversarial
 pass, `kill-alignment-corpus.json`):**
 
-- **122/125 (97.6%) start within 30ms of a timeline marker; median delta 0ms** (effectively
+- **122/125 (97.6%) start within 1µs of a timeline marker — snapped, not merely close; median delta 0ms** (effectively
   frame-exact).
 - 3 confirmed counterexamples (`t2_e103` at 180.897s, `t2_e104` at 181.765s, `t2_e105` at
   184.067s), independently cross-validated by Editor 1's separate analysis, which found the same

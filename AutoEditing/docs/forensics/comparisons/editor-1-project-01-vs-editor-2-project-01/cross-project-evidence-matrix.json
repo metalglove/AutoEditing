@@ -146,6 +146,30 @@
       "editor2EvidenceIds": [],
       "confidence": "low",
       "note": "Editor 2 has no comparable escalation-tier structure to test this against"
+    },
+    {
+      "topic": "kill-position-within-velocity-envelope",
+      "classification": "INSUFFICIENTLY_SUPPORTED",
+      "editor1EvidenceIds": ["E1-P01-VEL-013", "E1-P01-VEL-014"],
+      "editor2EvidenceIds": [],
+      "confidence": "low",
+      "note": "Editor 1: kill lands on the terminal velocity point at ~3.0x and coincides with a cut (122/125 at event end). Editor 2: not tested - its limitations.md names this as an open item (the hit-accent burst was not cross-checked against velocity-envelope shape). Added retroactively; see E1-P01 corrections log C-006."
+    },
+    {
+      "topic": "velocity-curve-types-on-dip",
+      "classification": "INSUFFICIENTLY_SUPPORTED",
+      "editor1EvidenceIds": ["E1-P01-VEL-015"],
+      "editor2EvidenceIds": [],
+      "confidence": "low",
+      "note": "Editor 1: canonical sequence Fast>Smooth>Slow>Fast (96/188); 180/188 use Slow at point 3. Editor 2: curve types were not extracted this pass. Added retroactively; see C-006."
+    },
+    {
+      "topic": "velocity-dip-timing-distribution",
+      "classification": "INSUFFICIENTLY_SUPPORTED",
+      "editor1EvidenceIds": ["E1-P01-VEL-016", "E1-P01-VEL-017"],
+      "editor2EvidenceIds": [],
+      "confidence": "low",
+      "note": "Editor 1: entry ramp ~151ms, plateau ~209ms, exit ramp ~226ms (exit ~1.5x entry); first-in-run kills approach from the plateau over ~727ms vs ~399/433ms for middle/final. Editor 2: no timing distribution computed (n=1 detailed sample). Added retroactively; see C-006."
     }
   ]
 }

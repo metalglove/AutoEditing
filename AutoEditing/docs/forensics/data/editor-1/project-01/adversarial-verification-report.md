@@ -114,3 +114,21 @@ Genuine gaps (OFX time-domain, exact missing-plugin location, GPU/CPU parity) ar
 than guessed at. See `reconciled-final-findings.json` for the complete, itemized ledger and the
 closing should-change-now / remain-experimental / requires-unavailable-plugins /
 requires-more-reference-projects / should-not-be-generalized breakdown.
+
+## Post-hoc corrections to this report
+
+This narrative is preserved as written (it is the dated record of one pass). Two figures in it were
+later corrected against the committed portable data; the authoritative versions are in the
+corrections log in
+[`../../../projects/editor-1/project-01/evidence-register.md`](../../../projects/editor-1/project-01/evidence-register.md):
+
+- "full-corpus signature hashing found 7 distinct signatures" → **8** (`full-corpus-preset-signatures.json`
+  reports `distinctSignatures: 8`, and the signature table in `effects-and-presets.md` lists 8 rows
+  summing to 276). See C-002.
+- "(97.6% within 30ms) musical alignment of kills to markers" → 97.6% within **1µs**. The data has a
+  hard cliff — 122 events within 1µs, next-nearest 162ms — so the 30ms bound understated the finding.
+  See C-003.
+
+This report's own source-run figure ("46 runs, 24 multi-event") was **confirmed correct** by
+recomputation; the conflicting "44" in an earlier revision of the evidence register was the error.
+See C-001.

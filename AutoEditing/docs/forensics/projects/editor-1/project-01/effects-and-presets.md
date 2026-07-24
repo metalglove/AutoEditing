@@ -37,7 +37,7 @@ An earlier pass (both Editor 1's and this investigation's) characterized the pro
 essentially two exact, byte-identical presets applied uniformly. A full-corpus SHA1 signature hash
 — computed over effect-chain order, plugin unique IDs, bypass state, Motion Blur toggle, and every
 animated parameter's keyframe times/values/interpolation, across **all 276 Track-1 events** —
-found **7 distinct signatures**, not 2:
+found **8 distinct signatures**, not 2:
 
 | Signature group | Count | Description |
 |---|---:|---|

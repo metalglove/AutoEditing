@@ -87,6 +87,14 @@ The evidence register classifies every claim into exactly one of four tiers:
   (n=230); an escalation from ordinary to impact treatment is always a hard cut (0%, n=21, zero
   exceptions). The crossfades themselves carry the signature of VEGAS's automatic
   overlap-based crossfade generation, not a hand-authored transition palette.
+- This project cuts its picture at (almost) every kill: 122/125 kills sit exactly at a video-event
+  boundary, on the envelope's terminal velocity point at ~3.0x, and snapped to a timeline marker to
+  within 1µs — giving the identity `marker = hit-SFX start = outgoing event end = incoming event
+  start`. The 50% slow-motion valley therefore sits between kills rather than on one, and the
+  canonical velocity curve is `Fast > Smooth > Slow > Fast` with a ~150ms entry ramp, ~210ms
+  plateau, and a deliberately longer ~225ms exit ramp. (Kill *placement* here is a high-confidence
+  inference from audio/marker/cut coincidence, not frame-verified — see
+  [limitations.md](limitations.md) — and 4 counterexamples are documented.)
 - This project's 125 replacement gunshot-SFX events all derive from one fixed source excerpt,
   individually processed per event by a `Pitch Shift → Reverb` chain — exact per-event values are
   not recoverable through the available scripting API, but the mechanism itself is fully confirmed.

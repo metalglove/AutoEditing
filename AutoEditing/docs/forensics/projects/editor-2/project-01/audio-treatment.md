@@ -66,8 +66,12 @@ verified event-by-event** this pass — flagged as an open item in
 ## Hit-accent sample (`SA-B 50 Hit.mp3`, 7 uses, on Track 5)
 
 - **7/7 (100%) start at exactly 0ms delta from both a timeline marker and a Track-4 video event
-  start** — even tighter than Editor 1's 97.6%-within-30ms figure for its (much larger, 125-event)
-  replacement-SFX corpus. **[E2-P01-AUD-008, DIRECT_PROJECT_OBSERVATION]**
+  start** — the same snapped-alignment behavior Editor 1's project shows (122/125 = 97.6% within
+  1µs), at 100% here but on a far smaller sample (7 events vs. Editor 1's 125). The original
+  characterization of this as "tighter than" Editor 1's figure rested on Editor 1's alignment being
+  stated as "within 30ms"; on the corrected 1µs figure both projects are effectively frame-snapped,
+  and the meaningful difference is Editor 2's 100% hit rate on a much smaller corpus, not a tighter
+  tolerance. **[E2-P01-AUD-008, DIRECT_PROJECT_OBSERVATION]**
 - All 7 events: `normalize=false`, `gain=1`, no event-level effects.
 - All 7 are clustered within an 8-second span (125.292-133.292s+1.0s length ≈ 133.3s) — a rapid
   multi-hit burst (see [velocity-findings.md](velocity-findings.md)).

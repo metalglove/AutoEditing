@@ -18,7 +18,7 @@ evidence IDs from both packages, sample sizes/counterexamples, and required vali
 |---|---|---|---|
 | Fast-in/Slow-out fade curve on the music track | E1 AUD-001, E2 AUD-004 | Medium-high | Both projects use it, but it's a style choice, not load-bearing |
 | `Mo Blur Length≈0.8` as a starting point for a Shake-based hit effect (below Sapphire's documented 1.0 realistic default) | E1 FX-007, E2 FX-002 | Medium | Real convergence on one value; still only 2 data points |
-| Velocity plateau ≈0.5x | E1 VEL-003 (n=275), E2 VEL-003 (n=1) | Medium (E1) / Low (E2) | Treat as a reasonable default range, not a fixed constant |
+| Velocity plateau ≈0.5x | E1 VEL-003 (n=188 committed), E2 VEL-003 (n=1) | Medium-high (E1) / Low (E2) | In E1 this is a hard convention, not a range: p10/p25/median/p75 of the plateau value are all exactly 0.500. Still only 2 projects, so treat 0.5x as a strong default rather than a proven constant |
 
 ## 3. Editor/project-specific presets (do not generalize)
 
@@ -46,11 +46,31 @@ Not deeply explored in either investigation — flagged as a genuine gap. The cl
 the automatic-crossfade mechanism itself (item 1 above), which is already a native VEGAS behavior
 requiring no plugin.
 
+## 5a. Single-project velocity mechanics (Editor 1 only, but the most directly implementable numbers in either package)
+
+*(Added retroactively. These findings existed in
+`projects/editor-1/project-01/velocity-kill-timing-findings.md` from the original investigation but
+carried no evidence IDs, so they never reached this document — see E1-P01 corrections log C-006.
+Every row below is Editor 1 only; Editor 2's package explicitly did not measure any of them.)*
+
+| Proposal | Evidence | Confidence | Notes |
+|---|---|---|---|
+| Place the kill on the **terminal velocity point** at full cruise (~3.0x), not inside the slow plateau | E1 VEL-013 | Medium (1 project, structurally strong: 107/125) | The dip resolves *before* the kill; because picture is split at every kill, that same dip reads as the "after the previous kill" slow-motion |
+| Make the kill coincide with a **cut** — `marker = hit-SFX start = outgoing event end = incoming event start` | E1 VEL-014 (122/125) | Medium (1 project) | AutoEditing currently places multiple kills inside one continuous event, so this is a structural change, not a parameter change. 4 counterexamples documented — treat as a default strategy, not an invariant |
+| Emit velocity curve types `Fast > Smooth > Slow > Fast` | E1 VEL-015 (96/188; 180/188 use `Slow` at point 3) | Medium (1 project) | Note `Slow` at the plateau exit — a curve type a slope-based inference rule cannot produce for a flat plateau |
+| Dip timing: entry ramp ~150ms, plateau ~210ms, exit ramp ~225ms | E1 VEL-016 | Medium (1 project) | The exit ramp is ~1.5× the entry ramp — deliberately asymmetric, and the opposite of a "fast recovery" assumption |
+| Give the **first** kill of a run a longer approach (~730ms) than middle/final (~400–430ms) | E1 VEL-017 | Low-medium (1 project) | Terminal speed does *not* distinguish run position, so any special final-kill treatment likely lives in effects/audio, not velocity |
+
+Because none of these replicate across two projects, they belong in a named style preset rather than
+in the default rulebook — but they are considerably more specific than most of what two projects
+could establish, and are the strongest available starting values if a velocity preset is built.
+
 ## 6. Experimental rules (require further validation before use)
 
 | Rule | Why experimental |
 |---|---|
 | Connective-footage placement (after impact, before setup, crossfaded both sides, whoosh-preceded) | Well-evidenced in Editor 1 only; not tested against Editor 2 this pass |
+| Everything in §5a (kill-on-terminal-point, kill-on-cut, curve types, dip timing, first-kill asymmetry) | Editor 1 only; Editor 2's package explicitly did not measure velocity curve types, dip timing, or kill-to-envelope position |
 | Curated-vs-raw source tiering with per-tier differential treatment | Both projects tier their sources, but *what* each tier gets differs completely — no shared per-tier rule can be proposed yet |
 | Single fixed source-excerpt reuse for hit/impact SFX | Confirmed as a shared *principle* but not a shared *mechanism* — needs a third project to see which specific technique (if either) is more common |
 

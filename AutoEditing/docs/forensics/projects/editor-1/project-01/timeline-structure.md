@@ -63,7 +63,7 @@ project. What criterion Editor 1 used to choose this order cannot be established
 structure alone (would need musical-structure correlation, rendered-frame content, or interview
 evidence — none available). **[E1-P01-STR-007, DIRECT_PROJECT_OBSERVATION]**
 
-276 Track-1 events reduce to only 44 contiguous same-source runs after grouping. Curated-highlight
+276 Track-1 events reduce to only 46 contiguous same-source runs after grouping. Curated-highlight
 sources are split far more aggressively (opener/middle/closer sources: 188+45+21 = 254 events from
 24 source files) than raw/connective sources (almost always single-event runs).
 **[E1-P01-STR-008, DIRECT_PROJECT_OBSERVATION]**

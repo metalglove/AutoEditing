@@ -35,12 +35,19 @@ a full plateau, and 5–6 point curves (29) likely correspond to multi-stage eve
 
 ## Velocity-point values and curve types
 
-- **Plateau (minimum) value:** median 0.5×, mean 0.52×, range 0.4×–1.0×, n=275. This confirms a
-  ~50% slow-motion plateau as the corpus-wide norm (a single early-sampled event at 0.7× was not
-  representative). **[E1-P01-VEL-003, DIRECT_PROJECT_OBSERVATION]**
-- **Entry/exit speed:** wide range (0.4×–6.2×), median ~2.87× entry / ~2.76× exit — both
-  comfortably above 1×, meaning the "fast" ends of the ramp genuinely exceed normal speed rather
-  than merely returning to 1.0×. **[E1-P01-VEL-004, DIRECT_PROJECT_OBSERVATION]**
+- **Plateau (minimum) value:** median 0.5×, range 0.4×–1.0×. This confirms a ~50% slow-motion
+  plateau as the corpus-wide norm (a single early-sampled event at 0.7× was not representative).
+  In the committed corpus the 0.5× figure is not merely a central tendency: across the 188
+  four-point events, p10/p25/median/p75 of the plateau value are **all exactly 0.500**, i.e. a hard
+  convention rather than a distribution centred near 0.5. The previously stated `mean 0.52×, n=275`
+  comes from a non-committed artifact and is uncorroborated — see VEL-003's limitations column in
+  [evidence-register.md](evidence-register.md). **[E1-P01-VEL-003, DIRECT_PROJECT_OBSERVATION]**
+- **Entry/exit speed:** wide range (0.4×–6.2×). Committed-data medians (n=188 four-point events):
+  **2.763× entry / 3.000× exit** — both comfortably above 1×, meaning the "fast" ends of the ramp
+  genuinely exceed normal speed rather than merely returning to 1.0×. This supersedes a previously
+  stated "~2.87× entry / ~2.76× exit" pair, which is unverifiable from committed data and conflicts
+  with it on the exit figure; see VEL-004 in [evidence-register.md](evidence-register.md).
+  **[E1-P01-VEL-004, DIRECT_PROJECT_OBSERVATION]**
 - The largest single rounded-value cluster in Editor 1's independent count is only 27 events:
   `2.8 → 0.5 → 0.5 → 3.0`. Common entry values cluster around ~2.2×, ~3.0×, and ~3.1×, with a
   recurring 0.5× plateau. This supports a **parameterized velocity family** (fast approach, short
