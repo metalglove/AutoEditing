@@ -60,12 +60,15 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 	private bool _rebuildingSongRows;
 	private bool _isLogExpanded;
 	private string _drawerFilter = string.Empty;
+	private double _effectIntensity = 1.0;
+	private double _effectDensity = 1.0;
 
 	public ObservableCollection<WizardStepDefinition> Steps { get; } = new ObservableCollection<WizardStepDefinition>();
 	public ObservableCollection<MarkerRow> Markers { get; } = new ObservableCollection<MarkerRow>();
 	public ObservableCollection<ClipDrawerRow> DrawerRows { get; } = new ObservableCollection<ClipDrawerRow>();
 	public ObservableCollection<SongEventRow> SongEvents { get; } = new ObservableCollection<SongEventRow>();
 	public ObservableCollection<SongRegionRow> SongRegions { get; } = new ObservableCollection<SongRegionRow>();
+	public ObservableCollection<EffectSelectionRow> EffectSelections { get; } = new ObservableCollection<EffectSelectionRow>();
 	public ICollectionView DrawerView { get; }
 	public SongEventRow SelectedSongEvent { get => _selectedSongEvent; set { if (Set(ref _selectedSongEvent, value)) { OnPropertyChanged("HasSelectedSongEvent"); RefreshCommands(); } } }
 	public bool HasSelectedSongEvent => SelectedSongEvent != null;
@@ -99,7 +102,36 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 	public bool IsSfxStep => CurrentStep == WizardStep.SfxIndex;
 	public bool IsAnalyzeStep => CurrentStep == WizardStep.Analyze;
 	public bool IsReviewStep => CurrentStep == WizardStep.Review;
+	public bool IsEffectsStep => CurrentStep == WizardStep.Effects;
 	public bool IsDrawerStep => CurrentStep == WizardStep.Drawer;
+	public double EffectIntensity { get => _effectIntensity; set { if (Set(ref _effectIntensity, value)) OnPropertyChanged("EffectIntensitySummary"); } }
+	public double EffectDensity { get => _effectDensity; set { if (Set(ref _effectDensity, value)) OnPropertyChanged("EffectDensitySummary"); } }
+	public List<DisplayChoice<double>> EffectIntensityChoices { get; } = new List<DisplayChoice<double>>
+	{
+		new DisplayChoice<double>(0.65, "Subtle"),
+		new DisplayChoice<double>(1.0, "Balanced"),
+		new DisplayChoice<double>(1.35, "Strong")
+	};
+	public List<DisplayChoice<double>> EffectDensityChoices { get; } = new List<DisplayChoice<double>>
+	{
+		new DisplayChoice<double>(0.65, "Sparse"),
+		new DisplayChoice<double>(1.0, "Balanced"),
+		new DisplayChoice<double>(1.35, "Frequent")
+	};
+	public string EffectIntensitySummary => EffectIntensity < 0.8 ? "Subtle" : EffectIntensity > 1.2 ? "Strong" : "Balanced";
+	public string EffectDensitySummary => EffectDensity < 0.8 ? "Sparse" : EffectDensity > 1.2 ? "Frequent" : "Balanced";
+	public EffectSelectionOptions EffectSelection => new EffectSelectionOptions
+	{
+		EnableScreenPumps = EffectSelections.First(item => item.Name == "Screen pumps").IsEnabled,
+		EnableFlashes = false,
+		EnableShake = false,
+		EnableSpeedChanges = false,
+		EnableTransitions = false,
+		EnableTitles = false,
+		IncludeManualTreatments = true,
+		Intensity = EffectIntensity,
+		Density = EffectDensity
+	};
 	public string ReviewHeader => _analysisBatch == null || _analysisBatch.Items.Count == 0 ? "No clips to review" : "Clip " + (_reviewPosition + 1) + " of " + _analysisBatch.Items.Count + " · " + Path.GetFileName(_analysisBatch.Items[_reviewPosition].Clip.FilePath);
 
 	public ICommand BrowseClipsCommand { get; }
@@ -151,6 +183,7 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		DrawerView = CollectionViewSource.GetDefaultView(DrawerRows);
 		DrawerView.Filter = IsDrawerRowVisible;
 		InitializeSteps();
+		InitializeEffectSelections();
 		BrowseClipsCommand = Command(BrowseClips, () => IsIdle);
 		BrowseSongCommand = Command(BrowseSong, () => IsIdle);
 		BrowseSfxCommand = Command(BrowseSfx, () => IsIdle);
@@ -194,8 +227,43 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		Steps.Add(new WizardStepDefinition { Step = WizardStep.SfxIndex, Number = "3", Title = "SFX index", Subtitle = "Validate templates" });
 		Steps.Add(new WizardStepDefinition { Step = WizardStep.Analyze, Number = "4", Title = "Analyze", Subtitle = "Find candidates" });
 		Steps.Add(new WizardStepDefinition { Step = WizardStep.Review, Number = "5", Title = "Review", Subtitle = "Confirm sync points" });
-		Steps.Add(new WizardStepDefinition { Step = WizardStep.Drawer, Number = "6", Title = "Clip drawer", Subtitle = "Build from ready clips" });
+		Steps.Add(new WizardStepDefinition { Step = WizardStep.Effects, Number = "6", Title = "Effects", Subtitle = "Choose treatments" });
+		Steps.Add(new WizardStepDefinition { Step = WizardStep.Drawer, Number = "7", Title = "Clip drawer", Subtitle = "Build from ready clips" });
 		UpdateStepState();
+	}
+
+	private void InitializeEffectSelections()
+	{
+		EffectSelections.Add(new EffectSelectionRow
+		{
+			Name = "Screen pumps",
+			Description = "A brief punch-in that boosts each kill and can carry nearby beats when no shot lands on them.",
+			Incorporation = "Applied at every placed kill. One or two eligible beats between consecutive shots may receive a lighter pump so the rhythm remains visible without forcing another cut.",
+			Availability = "AVAILABLE NOW",
+			CanEnable = true,
+			IsEnabled = true
+		});
+		EffectSelections.Add(new EffectSelectionRow
+		{
+			Name = "Flashes",
+			Description = "A short brightness accent for impacts, fast drums, and energetic transitions.",
+			Incorporation = "Planned for selected musical accents after a renderer and preset are available.",
+			Availability = "PLANNED · NEEDS RENDERER"
+		});
+		EffectSelections.Add(new EffectSelectionRow
+		{
+			Name = "Camera shake",
+			Description = "Controlled shake for high-impact moments; never intended as a constant treatment.",
+			Incorporation = "Planned for sparse high-energy accents when a compatible renderer or OFX preset is available.",
+			Availability = "PLANNED · NEEDS RENDERER"
+		});
+		EffectSelections.Add(new EffectSelectionRow
+		{
+			Name = "Editorial transitions",
+			Description = "Transitions and title reveals driven by montage structure rather than every beat.",
+			Incorporation = "Planned for section boundaries, introductions, cinematics, and closers.",
+			Availability = "PLANNED · NEEDS RENDERER"
+		});
 	}
 
 	private void NavigateToStep(object parameter)
@@ -206,7 +274,7 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 	private bool CanNavigateToStep(object parameter)
 	{
 		if (IsBusy || !(parameter is WizardStep step)) return false;
-		if (step == WizardStep.Sources || step == WizardStep.Drawer) return true;
+		if (step == WizardStep.Sources || step == WizardStep.Effects || step == WizardStep.Drawer) return true;
 		if (step == WizardStep.SongAnalysis) return ClipsFolderExists && SongExists && SfxRootExists;
 		if (step == WizardStep.SfxIndex || step == WizardStep.Analyze) return SfxRootExists;
 		return step != WizardStep.Review || _analysisBatch != null;
@@ -231,7 +299,8 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		}
 		else if (CurrentStep == WizardStep.SfxIndex) SetStep(WizardStep.Analyze);
 		else if (CurrentStep == WizardStep.Analyze) ((RelayCommand)AnalyzeCommand).Execute(null);
-		else if (CurrentStep == WizardStep.Review) SetStep(WizardStep.Drawer);
+		else if (CurrentStep == WizardStep.Review) SetStep(WizardStep.Effects);
+		else if (CurrentStep == WizardStep.Effects) SetStep(WizardStep.Drawer);
 	}
 
 	private bool CanGoNext()
@@ -253,7 +322,7 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 	private void UpdateStepState()
 	{
 		foreach (WizardStepDefinition step in Steps) step.IsCurrent = step.Step == CurrentStep;
-		OnPropertyChanged("IsSourcesStep"); OnPropertyChanged("IsSongAnalysisStep"); OnPropertyChanged("IsSfxStep"); OnPropertyChanged("IsAnalyzeStep"); OnPropertyChanged("IsReviewStep"); OnPropertyChanged("IsDrawerStep");
+		OnPropertyChanged("IsSourcesStep"); OnPropertyChanged("IsSongAnalysisStep"); OnPropertyChanged("IsSfxStep"); OnPropertyChanged("IsAnalyzeStep"); OnPropertyChanged("IsReviewStep"); OnPropertyChanged("IsEffectsStep"); OnPropertyChanged("IsDrawerStep");
 		OnPropertyChanged("Steps"); RefreshCommands();
 	}
 
@@ -265,7 +334,7 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		_reviewDrafts.Clear();
 		_completedReviewIndices.Clear();
 		_reviewPosition = 0;
-		SetStep(_analysisBatch.Items.Count == 0 ? WizardStep.Drawer : WizardStep.Review);
+		SetStep(_analysisBatch.Items.Count == 0 ? WizardStep.Effects : WizardStep.Review);
 	}
 
 	private async Task IndexSfxAsync(CancellationToken token)
@@ -427,7 +496,7 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 			_reviewDrafts.Remove(index);
 			_completedReviewIndices.Add(index);
 			int next = FindNextLiveClip(_reviewPosition + 1);
-			if (next < 0) { SetStep(WizardStep.Drawer); } else { _reviewPosition = next; RefreshMarkers(); }
+			if (next < 0) { SetStep(WizardStep.Effects); } else { _reviewPosition = next; RefreshMarkers(); }
 		}
 		catch (Exception exception) { Logger.LogError("[MarkCurrentClipReady] " + exception.Message, exception); Status = "Failed: " + exception.Message; }
 	}
@@ -516,7 +585,20 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		List<string> paths = DrawerRows.Where((ClipDrawerRow row) => row.IsSelected && row.IsReady).Select((ClipDrawerRow row) => row.FilePath).ToList();
 		List<Clip> clips = new ShotReviewWorkflow().HydrateFromLibrary(paths);
 		if (clips.Count == 0) throw new InvalidOperationException("Select at least one available ready clip.");
-		PreparedMontage prepared = await Task.Run(() => new MontagePreparationService().Prepare(clips, SongPath), token);
+		EffectSelectionOptions effectSelection = EffectSelection;
+		PreparedMontage prepared = await Task.Run(() => new MontagePreparationService().Prepare(clips, SongPath, effectSelection), token);
+		foreach (MontageSongPlanningDiagnostic diagnostic in prepared.PlanningDiagnostics ?? new List<MontageSongPlanningDiagnostic>())
+		{
+			Logger.Log("Montage planning [" + diagnostic.Severity + "/" + diagnostic.Code + "]: " + diagnostic.Message);
+		}
+		List<MontageSyncAssignment> assignments = prepared.SyncAssignments ?? new List<MontageSyncAssignment>();
+		Logger.Log("Montage plan ready before VEGAS mutation: " + prepared.Placements.Count + " clips, " + assignments.Count + " kill anchors, mode " + (prepared.SongPlan?.Mode.ToString() ?? "LegacyPayload") + ".");
+		foreach (MontageSyncAssignment assignment in assignments)
+		{
+			Logger.Log("  " + System.IO.Path.GetFileName(assignment.ClipPath) + " kill " + (assignment.KillIndex + 1) + " -> " + assignment.MusicEventId + " at " + assignment.TimelineTimeSeconds.ToString("0.000") + "s");
+		}
+		foreach (EffectTreatmentDiagnostic diagnostic in prepared.EffectTreatments?.Diagnostics ?? new List<EffectTreatmentDiagnostic>()) Logger.Log("Effect planning [" + diagnostic.Code + "]: " + diagnostic.Message);
+		Logger.Log("Effect treatment plan " + (prepared.EffectTreatments?.PresetId ?? "legacy") + "@" + (prepared.EffectTreatments?.PresetRevision ?? 0) + ": " + (prepared.EffectTreatments?.Actions.Count ?? 0) + " actions (automatic and manual).");
 		await _vegasCommands.ExecuteAsync(new BuildMontageCommand { Montage = prepared, SongPath = SongPath });
 	}
 

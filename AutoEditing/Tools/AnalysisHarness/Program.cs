@@ -24,9 +24,11 @@ namespace AnalysisHarness
         {
 			if (args.Length == 1 && args[0] == "--self-test-song-analysis")
 			{
-				SongAnalysisSelfTests.RunAll();
-				MontagePlannerSelfTests.RunAll();
-				return 0;
+				return RunSelfTests(includeSongAnalysis: true);
+			}
+			if (args.Length == 1 && args[0] == "--self-test-montage-planner")
+			{
+				return RunSelfTests(includeSongAnalysis: false);
 			}
             if (args.Length == 2 && args[0] == "--debug-tempo")
             {
@@ -169,5 +171,20 @@ namespace AnalysisHarness
 
             return 0;
         }
+
+		private static int RunSelfTests(bool includeSongAnalysis)
+		{
+			try
+			{
+				if (includeSongAnalysis) SongAnalysisSelfTests.RunAll();
+				MontagePlannerSelfTests.RunAll();
+				return 0;
+			}
+			catch (Exception exception)
+			{
+				Console.Error.WriteLine(exception);
+				return 1;
+			}
+		}
     }
 }

@@ -22,9 +22,9 @@ internal sealed class MontageOrchestrator
 		new MontageAudioBuilder().Build(vegas.Project, prepared.Placements, songPath, shotDetection.SfxRoot, sfxCatalog);
 		if (applyEffects)
 		{
-			ApplyEffects(videoEvents);
+			ApplyEffects(videoEvents, prepared);
 		}
-		timelineBuilder.AddMontageMarkers(vegas, prepared.Placements, prepared.Beats);
+		timelineBuilder.AddMontageMarkers(vegas, prepared);
 		Logger.Log("Montage created from reviewed markers; placed " + prepared.Placements.Count + " clips.");
 	}
 
@@ -67,14 +67,83 @@ internal sealed class MontageOrchestrator
 		return list2;
 	}
 
-	private static void ApplyEffects(Dictionary<ClipPlacement, VideoEvent> videoEvents)
+	private static void ApplyEffects(Dictionary<ClipPlacement, VideoEvent> videoEvents, PreparedMontage prepared)
 	{
 		EffectsApplier effectsApplier = new EffectsApplier();
 		foreach (KeyValuePair<ClipPlacement, VideoEvent> videoEvent in videoEvents)
 		{
 			effectsApplier.ApplyVelocityEnvelope(videoEvent.Value, videoEvent.Key.SpeedProfile);
-			effectsApplier.AddNameTag(videoEvent.Value, videoEvent.Key.Clip.PlayerName + " - " + videoEvent.Key.Clip.ClipType);
-			effectsApplier.ApplyColorCorrection(videoEvent.Value);
 		}
+		VegasEditorialEffectRenderer renderer = new VegasEditorialEffectRenderer();
+		List<EffectTreatmentAction> treatments = prepared.EffectTreatments?.Actions ?? new List<EffectTreatmentAction>();
+		int rendered = 0;
+		int noClip = 0;
+		int unsupportedOrRejected = 0;
+		foreach (EffectTreatmentAction treatment in treatments)
+		{
+			KeyValuePair<ClipPlacement, VideoEvent>? target = FindEffectTarget(videoEvents, treatment.TimeSeconds);
+			if (!target.HasValue)
+			{
+				noClip++;
+				Logger.Log("Effect " + treatment.Type + " at " + treatment.TimeSeconds.ToString("0.000") + "s has no placed clip and was preserved as a marker only.");
+				continue;
+			}
+			EditorialEffectRenderKind? kind = RenderKind(treatment.Type);
+			if (!kind.HasValue)
+			{
+				unsupportedOrRejected++;
+				Logger.Log("Effect " + treatment.Type + " at " + treatment.TimeSeconds.ToString("0.000") + "s has no renderer yet.");
+				continue;
+			}
+			double localSeconds = Math.Max(0, treatment.TimeSeconds - target.Value.Key.TimelineStartSeconds);
+			EditorialEffectRenderResult renderResult = renderer.Render(target.Value.Value, new EditorialEffectRenderAction(kind.Value, localSeconds, treatment.Intensity, treatment.DurationSeconds));
+			if (renderResult.Rendered) rendered++;
+			else unsupportedOrRejected++;
+			Logger.Log((renderResult.Rendered ? "Rendered " : "Skipped ") + treatment.Type + " at " + treatment.TimeSeconds.ToString("0.000") + "s: " + renderResult.Reason);
+		}
+		Logger.Log(
+			"Editorial effects summary: " + treatments.Count + " planned, " +
+			rendered + " rendered, " + noClip + " without a clip, " +
+			unsupportedOrRejected + " unsupported or rejected.");
+	}
+
+	private static KeyValuePair<ClipPlacement, VideoEvent>? FindEffectTarget(
+		Dictionary<ClipPlacement, VideoEvent> videoEvents,
+		double timelineSeconds)
+	{
+		const double epsilon = 0.0005;
+		List<KeyValuePair<ClipPlacement, VideoEvent>> ordered = videoEvents
+			.OrderBy(item => item.Key.TimelineStartSeconds)
+			.ThenBy(item => item.Key.TimelineEndSeconds)
+			.ToList();
+
+		// Timeline events are half-open. A treatment on a cut belongs to the
+		// incoming clip, where VEGAS can render both the peak and its recovery.
+		for (int i = 0; i < ordered.Count; i++)
+		{
+			ClipPlacement placement = ordered[i].Key;
+			bool startsHereOrEarlier = timelineSeconds + epsilon >= placement.TimelineStartSeconds;
+			bool beforeEnd = timelineSeconds < placement.TimelineEndSeconds - epsilon;
+			if (startsHereOrEarlier && beforeEnd) return ordered[i];
+		}
+
+		// Preserve a treatment at the absolute montage end on the outgoing clip.
+		if (ordered.Count > 0)
+		{
+			KeyValuePair<ClipPlacement, VideoEvent> last = ordered[ordered.Count - 1];
+			if (Math.Abs(timelineSeconds - last.Key.TimelineEndSeconds) <= epsilon)
+				return last;
+		}
+		return null;
+	}
+
+	private static EditorialEffectRenderKind? RenderKind(Core.Domain.Audio.SongAnalysis.EditorialUse use)
+	{
+		if (use == Core.Domain.Audio.SongAnalysis.EditorialUse.ScreenPump) return EditorialEffectRenderKind.ScreenPump;
+		if (use == Core.Domain.Audio.SongAnalysis.EditorialUse.Flash) return EditorialEffectRenderKind.WhiteFlash;
+		if (use == Core.Domain.Audio.SongAnalysis.EditorialUse.Shake) return EditorialEffectRenderKind.Shake;
+		if (use == Core.Domain.Audio.SongAnalysis.EditorialUse.CutOrTransition || use == Core.Domain.Audio.SongAnalysis.EditorialUse.CinematicTransition) return EditorialEffectRenderKind.Transition;
+		if (use == Core.Domain.Audio.SongAnalysis.EditorialUse.TitleReveal) return EditorialEffectRenderKind.TitleReveal;
+		return null;
 	}
 }
