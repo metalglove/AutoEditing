@@ -136,5 +136,6 @@ recipe as a preset/strategy, not as an unconditional invariant.
 6. A stable clip/family annotation rather than inferring sequences from path.
 
 The reproducible analysis is in
-`Tools/forensics-velocity-kills.js`; its detailed machine-readable output is
-`Tools/forensics-velocity-kills-output.json`.
+[`forensics-velocity-kills.js`](../../../../../Tools/Forensics/editor-1/project-01/forensics-velocity-kills.js);
+its detailed machine-readable output is
+[`velocity-kills-output.json`](../../../data/editor-1/project-01/velocity-kills-output.json).
