@@ -1,83 +1,90 @@
 {
     "schemaVersion":  "1.0",
-    "generatedUtc":  "2026-07-24T10:28:57Z",
+    "generatedUtc":  "2026-07-24T10:38:02Z",
     "hashAlgorithm":  "SHA-256",
     "hashScope":  "Included portable artifacts; this manifest and navigation documents are excluded from their own hash set.",
     "included":  [
                      {
                          "path":  "AutoEditing/docs/forensics/data/editor-1/project-01/adversarial-verification-report.md",
-                         "sizeBytes":  8453,
-                         "sha256":  "021cd5ec06543f4eecf1105fd564b5407ba8d659f791e7bfebfeafe645c7593e",
+                         "sizeBytes":  8569,
+                         "sha256":  "84c938f5502416000d3fd0822f902f27e34f537ffab00dac7140f5f4a4145651",
                          "role":  "evidence-report",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/docs/forensics/data/editor-1/project-01/beat-grid-fit.json",
-                         "sizeBytes":  400,
-                         "sha256":  "9494a70e0ced7379248674d9ed0033a5e733e0b872c2e4b1698ff1635afae73b",
+                         "sizeBytes":  411,
+                         "sha256":  "fdc2fafa7d0be04fbcd38dfee9a649e1d1a94563bd6738a3861109c8bcd801b5",
                          "role":  "compact-evidence-data",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/docs/forensics/data/editor-1/project-01/crossfade-fade-detail.json",
-                         "sizeBytes":  35873,
-                         "sha256":  "5837aeffb16f9549356ac4e9a611c4cb3cdf429aa16e09e42fa1cb59a1b7053d",
+                         "sizeBytes":  37242,
+                         "sha256":  "e58e940e48e7d81991fedb2ad3e9f7cf288d1ee91d6616366ea4005d5e93f06f",
                          "role":  "compact-evidence-data",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/docs/forensics/data/editor-1/project-01/full-corpus-preset-signatures.json",
-                         "sizeBytes":  85718,
-                         "sha256":  "97151c7c508e1f5d3139f6f4b04451bed811f010a5d657d5a9477e0175ed9087",
+                         "sizeBytes":  89831,
+                         "sha256":  "06317a0232ea08635e199ec70aa03008397d1819128891a926d6d36c8b18ac7c",
                          "role":  "compact-evidence-data",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/docs/forensics/data/editor-1/project-01/impact-ablation-metrics.json",
-                         "sizeBytes":  3343,
-                         "sha256":  "5a8a0b977621308d854e0cc518add1275d738b0bd1a051d6224e03096f08544a",
+                         "sizeBytes":  3478,
+                         "sha256":  "c9e15647e3716c74c1728d13ec71bcb688ee597b9fb347cbef2e4421aee48bda",
                          "role":  "compact-evidence-data",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/docs/forensics/data/editor-1/project-01/kill-alignment-corpus.json",
-                         "sizeBytes":  51855,
-                         "sha256":  "2858ff4002791c1aca079f84789bdc63fb290783d3a426af0adbebe0196af54d",
+                         "sizeBytes":  53746,
+                         "sha256":  "7307dbde743ad73e921f5389023dc927cb3273ef48816084e9de6910b91a425a",
                          "role":  "compact-evidence-data",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/docs/forensics/data/editor-1/project-01/marker-grid-analysis.json",
-                         "sizeBytes":  7807,
-                         "sha256":  "a217c8cd1dc9f35e15da7fabcfb804a9f78a0266eb8e0adde8aaa58f7c4510d6",
+                         "sizeBytes":  8326,
+                         "sha256":  "e3a5deb32280c0c436af9f08c45b8567fad91aa539d29a7d59a3e67378a1b18c",
                          "role":  "compact-evidence-data",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/docs/forensics/data/editor-1/project-01/ordinary-ablation-metrics.json",
-                         "sizeBytes":  492,
-                         "sha256":  "7998af21caafce71acc886a10399982b822bd275ccfbb55c6ec782561417fe46",
+                         "sizeBytes":  509,
+                         "sha256":  "974ac5f5bcf92f1f68a17b85c74509b829b965d13cab3456ba9b97a1cc09d5b2",
                          "role":  "compact-evidence-data",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/docs/forensics/data/editor-1/project-01/project-inspection-findings.json",
-                         "sizeBytes":  51323,
-                         "sha256":  "c63351b76e35f695c22fffa58cd4e5289f388336873974cc3d2e6fdb01f19230",
+                         "sizeBytes":  52513,
+                         "sha256":  "c8b8acadf0e9405423a28df99fc323badbbde7f0c430adc05de8fc06844072a7",
                          "role":  "compact-evidence-data",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/docs/forensics/data/editor-1/project-01/reconciled-final-findings.json",
-                         "sizeBytes":  20214,
-                         "sha256":  "e77d53880336944c1cd591668b3bbca79bd39b0761e0a8b491c792a13999e054",
+                         "sizeBytes":  20478,
+                         "sha256":  "48e9e1413be57354c68b5f69c29abd417032f3365d04f54241353cdb97059639",
                          "role":  "compact-evidence-data",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/docs/forensics/data/editor-1/project-01/retained-gameplay-audio-analysis.json",
-                         "sizeBytes":  6353,
-                         "sha256":  "f79bb89d0423ef0bdfcb39390f7d54aab278d9e863c1de5abe644279be80da4e",
+                         "sizeBytes":  6588,
+                         "sha256":  "adea408dd4a611eb7083c6a6e73347ab2e1c8dcce23f886bb9ecd71fe5d01108",
+                         "role":  "compact-evidence-data",
+                         "sanitizedEditorIdentity":  true
+                     },
+                     {
+                         "path":  "AutoEditing/docs/forensics/data/editor-1/project-01/velocity-kills-output.json",
+                         "sizeBytes":  111065,
+                         "sha256":  "7c200e6894f511071c0ff4a496010c7003bce7b337b891eadec8ef884493af28",
                          "role":  "compact-evidence-data",
                          "sanitizedEditorIdentity":  true
                      },
@@ -90,197 +97,204 @@
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-1/project-01/ablation-render.cs",
-                         "sizeBytes":  4688,
-                         "sha256":  "df71d91db85ee48c834696b7c084ef7b6ef546559a6717663e00725eab5ae391",
+                         "sizeBytes":  4810,
+                         "sha256":  "75f6a11f01dea5a32799bb03a2d7da6f39f33f557fb4bed51d8bb526f82cb109",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-1/project-01/capture-moments.cs",
-                         "sizeBytes":  2504,
-                         "sha256":  "2133573ecb4a861359c7bfe1b9bcdd2807db00bfd3da1166f7d73ba035070af3",
+                         "sizeBytes":  2564,
+                         "sha256":  "8eb4e82fc417888dbf6e5425925c2ad56caf8b9d73991bc4e4e2abb7e248aa53",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-1/project-01/dismiss-dialog.ps1",
-                         "sizeBytes":  2701,
-                         "sha256":  "8175fd86eab8a3082c060363daafe8b3d2101e9b42b1ab46f7bcfd3639d962e8",
+                         "sizeBytes":  2764,
+                         "sha256":  "29ba1006a0cdbad7c2b0a43b9c806bcf5310859f93893521498ed30f50291b47",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-1/project-01/find-wav-renderer.cs",
-                         "sizeBytes":  1188,
-                         "sha256":  "62ee3d95f16624ab97efc8746dae719afad06d27327196c78dc11bb5b5bc4e4e",
+                         "sizeBytes":  1222,
+                         "sha256":  "54fc18627a9b4142b4e89e22aac9aaa1803842c2aee5264ead3cb3c4d036b807",
+                         "role":  "reproduction-script",
+                         "sanitizedEditorIdentity":  true
+                     },
+                     {
+                         "path":  "AutoEditing/Tools/Forensics/editor-1/project-01/forensics-velocity-kills.js",
+                         "sizeBytes":  8459,
+                         "sha256":  "947f7ef9265faf17165c30ce7a5186cc6685b9065c6f93e25ab348bd32880a35",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-1/project-01/inspect-project-v1.cs",
-                         "sizeBytes":  43437,
-                         "sha256":  "98c28d866c8916edc3ce52191d99c2d0075c060460685214f2cc66dbf3682c65",
+                         "sizeBytes":  44514,
+                         "sha256":  "1a4589360cbc7d99535a13715c5ad0e5a081af872cafdee2f8d62e3628aa2d78",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-1/project-01/inspect-project-v2.cs",
-                         "sizeBytes":  43906,
-                         "sha256":  "76d5a2b0107790b2a18c0be04ccf9bdc53deacd161ee08a4e328ed64042ca4ff",
+                         "sizeBytes":  44951,
+                         "sha256":  "cd510249145e5a9d58ff4c94137de47402f1b57b56a452a763bb5c440fd9ddf9",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-1/project-01/inspect-project-v3.cs",
-                         "sizeBytes":  46297,
-                         "sha256":  "c05625675b62f8df8ca2ede8f0510339b6a49f8137d6dc8f547a8bab7da1e61d",
+                         "sizeBytes":  47393,
+                         "sha256":  "1340e18b13f4494f2696c5e3edda84f7e337760bcb951f492478f70f6b0b819f",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-1/project-01/make-relinked-copy.cs",
-                         "sizeBytes":  3577,
-                         "sha256":  "5f13e5a5c2b1364affa97b762a636c84ab043b2697812ccc33659355330d10b5",
+                         "sizeBytes":  3673,
+                         "sha256":  "c7b23172ae0c14bbe16659a1302fc5d939300d2673bd7b08b11668b714ff01bf",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-1/project-01/ordinary-ablation.cs",
-                         "sizeBytes":  3019,
-                         "sha256":  "35e37229cf051cddbe5279e18048ee36cd0ff6a43c7b35e86e8c54896971e9d6",
+                         "sizeBytes":  3098,
+                         "sha256":  "4fc2c6d07dc37ecae39a332138452c8dff2a71133c10362321956d057ceaf33c",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-1/project-01/reflect-api.cs",
-                         "sizeBytes":  7349,
-                         "sha256":  "21ef851e3772dd21e9d9636e7a191353dd7e2c5ae7c861fbedfe5825f7e39691",
+                         "sizeBytes":  7511,
+                         "sha256":  "8f733c3f5b0ae1ecff1851210d9a34e7fcfab381f97e8a46f0dde2c10f08886b",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-1/project-01/reflect-classic-fx.cs",
-                         "sizeBytes":  2512,
-                         "sha256":  "f86f8801121f7230fd86b4324c7c54d30c7a759551324a409e8ed0e64fe3fa39",
+                         "sizeBytes":  2561,
+                         "sha256":  "e5411621fc29caed7a93c0ef093c89b9f63dd4586479d6b0cc0f9dddf9d16982",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-1/project-01/reflect-ofx.cs",
-                         "sizeBytes":  2753,
-                         "sha256":  "403945dc28a05664f48216cfd90743dd64fff4ed54a18f3b3fc65321f227b810",
+                         "sizeBytes":  2816,
+                         "sha256":  "ee119f74a5f39d2049edf342ab5b6c6998fabfeb9d1eb1d8750ac3c22507b66a",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-1/project-01/render-song-solo.cs",
-                         "sizeBytes":  1776,
-                         "sha256":  "39fd40e843551b35ba611467cd47ba430f24e41381e4e020fed95f2c1fac04d6",
+                         "sizeBytes":  1824,
+                         "sha256":  "9e5d5033e1a099de1dca79dd20ebcd77c3b4da6d7b379d3fcb2da60d253e5e1a",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-1/project-01/run-autonomous.ps1",
-                         "sizeBytes":  3873,
-                         "sha256":  "2f9a1ab60bdf10c6969ae338d36be835a15be78cb3fa5bc1e5c2b4caff6d71bf",
+                         "sizeBytes":  3972,
+                         "sha256":  "c05e432595d833a80006e1af3e883d55f0c5190f470e2676ecb029c3fa309d7e",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-1/project-01/track-vs-event-ablation.cs",
-                         "sizeBytes":  3087,
-                         "sha256":  "ae2e86641d5780c6f81909dec46da9d963ae4076b6b32b2f5ebb1a58d5f85c26",
+                         "sizeBytes":  3172,
+                         "sha256":  "a8d073f3f17262b45286b9b78640680058d822b18cee40040f30aef041e1ccf9",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-2/project-01/audio-alignment.js",
-                         "sizeBytes":  2492,
-                         "sha256":  "60061eaa58f5104218e9936cb598d99baa7883e280ea18479600a8b889cf158d",
+                         "sizeBytes":  2545,
+                         "sha256":  "bb13d2764f8e56c3491240cf01fdd5ab4b94b2c70513d54b5da4ac8f6cedc400",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-2/project-01/capture-frames.cs",
-                         "sizeBytes":  1467,
-                         "sha256":  "2e0a2679c85f66e15b465a0a8abbc8600d4ad0144d318c0b320c7dbe30e59747",
+                         "sizeBytes":  1502,
+                         "sha256":  "fd56fcf6465dee61d2ef2fc0f67bbab33b209ae9401faa6f61dcbd7b990d1b8d",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-2/project-01/explore-fx-params.js",
-                         "sizeBytes":  3264,
-                         "sha256":  "1dade24e3d901225aa0af8b4407ac8f5f5e5766c3f646d22a07278c704b89820",
+                         "sizeBytes":  3328,
+                         "sha256":  "64742440a069eefa039646d2cadc628e514ea720bca1b97010030400685dad15",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-2/project-01/explore-structure.js",
-                         "sizeBytes":  1579,
-                         "sha256":  "23b17989f89b46496754a09c85d1d2a3703aa4fade42224cccbdaf863fdc2e1a",
+                         "sizeBytes":  1607,
+                         "sha256":  "b6620b4118117f40cd2bef367c1c00f065dd3102e135e5c6a820e41f5379bcd6",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-2/project-01/explore-track4.js",
-                         "sizeBytes":  1055,
-                         "sha256":  "5e183b4b4deefbbf8edab884e3a4acf07a3915500259d1ac9a5c3a48993106a9",
+                         "sizeBytes":  1080,
+                         "sha256":  "00eb575826551e2a41efe693d0099229b2c361e3984a697059e8c1c9c9784e39",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-2/project-01/extract-strings.js",
-                         "sizeBytes":  912,
-                         "sha256":  "6bcfee123acde0279e81516fac3c4ef7b90621fc91aa553fbe63062d006a07cc",
+                         "sizeBytes":  937,
+                         "sha256":  "26b86b21b7390fc5efab9b99e32c63bf041bae0344eee36df2bbbdaeaea6c43a",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-2/project-01/full-analysis.js",
-                         "sizeBytes":  3659,
-                         "sha256":  "ebe4ac12ff0717b7ea9046cb0f5913852a7e90f95a6b23f6e7ae75c98a1fa181",
+                         "sizeBytes":  3745,
+                         "sha256":  "35ac672b8129178deb37c5b5438d03d88a3a21b976317cf4a66b3ab713b5818f",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-2/project-01/inspect-e2p01-v1.cs",
-                         "sizeBytes":  43841,
-                         "sha256":  "51480335e43535033fd2122471fc3a42d2907dccbee4b44ee9f2cbe9a1bfeb10",
+                         "sizeBytes":  44907,
+                         "sha256":  "99fba54eba07bdb06bb8c0a7d6700e6ae59b1673dee90e7780a0210d0ba83a36",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-2/project-01/make-relinked-copy-e2p01.cs",
-                         "sizeBytes":  3730,
-                         "sha256":  "494a57f37af9cb63c1a265224ce29cab22578dd096de8d9f7cc702611bec6535",
+                         "sizeBytes":  3828,
+                         "sha256":  "432ceb35c21642abdde846efc97a2f039d59cba10806e896006a25b57ec10c14",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-2/project-01/reflect-mediapool.cs",
-                         "sizeBytes":  903,
-                         "sha256":  "ee1b786fd06e85e4b3a43dfb5d3324af2c4829d771994dced5055f7ed2f0d69a",
+                         "sizeBytes":  927,
+                         "sha256":  "fa86a228314f946169d01ef9ed7595e1f3a02ea3834f7088d588da5a6c0a998d",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-2/project-01/remove-big-avi.cs",
-                         "sizeBytes":  2523,
-                         "sha256":  "7f843604cdf75d75fbdcb45d2e0a973aa7ae9a2e15ff19bec36487b2164a3ebb",
+                         "sizeBytes":  2591,
+                         "sha256":  "0f959ed8907f63a4b69240a87b5edee9bdcfe8da8acf46f519b2baa29649196a",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-2/project-01/remove-problem-media.cs",
-                         "sizeBytes":  3990,
-                         "sha256":  "deb001e962dd0e2aa1c1626a78c35477d0d68b0b31b2780ad380fec28e7e8fac",
+                         "sizeBytes":  4087,
+                         "sha256":  "33dff0cf95d1264f3ddbec7ac58b38d6d7259fbddfeb7aaad3e8949281de3328",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      },
                      {
                          "path":  "AutoEditing/Tools/Forensics/editor-2/project-01/run-autonomous-v2.ps1",
-                         "sizeBytes":  5938,
-                         "sha256":  "b4efc5fc451ca4fff6b3d2370171278163f42ed05182f882d9cb77dc32be0f6c",
+                         "sizeBytes":  6077,
+                         "sha256":  "d5b4e92dc7fb9a7e025db6dfdbe4787d66fb36af1b25195002d9dfb5e4e98619",
                          "role":  "reproduction-script",
                          "sanitizedEditorIdentity":  true
                      }

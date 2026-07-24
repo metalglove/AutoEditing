@@ -51,6 +51,7 @@ Sanitized reproduction scripts are under
 | [project-profile.md](project-profile.md) | Identity, VEGAS version, duration/frame rate, track/event/media/marker counts, plugin availability, inspection-copy provenance |
 | [timeline-structure.md](timeline-structure.md) | Track organization, compositing hierarchy, section structure, cinematic/connective-clip pairing, marker relationships, negative findings |
 | [velocity-findings.md](velocity-findings.md) | Velocity-envelope families, plateau values, kill/impact relationships (or lack thereof), multi-kill escalation pattern |
+| [velocity-kill-timing-findings.md](velocity-kill-timing-findings.md) | Detailed marker, cut, replacement-gunshot, and velocity timing measurements from the portable forensic analysis |
 | [effects-and-presets.md](effects-and-presets.md) | Effect-chain families (A–E), full-corpus preset-signature clustering, render-confirmed ablation results, per-preset structured records |
 | [audio-treatment.md](audio-treatment.md) | Music/SFX placement and gain, replacement-weapon-SFX mechanism, retained-audio rule, whoosh transitions, marker/cut alignment |
 | [transitions-and-compositing.md](transitions-and-compositing.md) | Hard cuts vs. crossfades and their predictors, overlay compositing, Track Motion/Pan-Crop (both unused), missing-plugin dependency |

@@ -8,7 +8,8 @@ They are archived research tools, not production extension code.
 ## Layout
 
 - [`editor-1/project-01/`](editor-1/project-01/) contains inspector revisions,
-  relinking, reflection, capture, audio-render, and effect-ablation scripts.
+  relinking, reflection, capture, audio-render, effect-ablation, and exported
+  velocity/kill-timing analysis scripts.
 - [`editor-2/project-01/`](editor-2/project-01/) contains its inspector,
   structure/audio queries, frame capture, relinking, media-removal fixtures,
   and the second autonomous runner.
