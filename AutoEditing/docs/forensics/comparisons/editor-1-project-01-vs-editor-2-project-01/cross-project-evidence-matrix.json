@@ -1,0 +1,151 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Machine-readable cross-reference of every comparison point between Editor 1 / Project 01 and Editor 2 / Project 01, with source evidence IDs from each package's evidence-register.md.",
+  "comparisons": [
+    {
+      "topic": "automatic-crossfade-mechanism",
+      "classification": "SHARED_MECHANICALLY_AND_CONTEXTUALLY",
+      "editor1EvidenceIds": ["E1-P01-TRN-004"],
+      "editor2EvidenceIds": ["E2-P01-TRN-004"],
+      "confidence": "high"
+    },
+    {
+      "topic": "continuous-gapless-coverage",
+      "classification": "CONTRADICTED",
+      "editor1EvidenceIds": ["E1-P01-STR-013"],
+      "editor2EvidenceIds": ["E2-P01-STR-007"],
+      "confidence": "high"
+    },
+    {
+      "topic": "two-tier-ordinary-impact-effect-system",
+      "classification": "CONTRADICTED",
+      "editor1EvidenceIds": ["E1-P01-FX-002", "E1-P01-FX-007"],
+      "editor2EvidenceIds": ["E2-P01-FX-001"],
+      "confidence": "high"
+    },
+    {
+      "topic": "mo-blur-length-0.8-on-hit-effect",
+      "classification": "SHARED_TECHNIQUE_DIFFERENT_PARAMETERS",
+      "editor1EvidenceIds": ["E1-P01-FX-007"],
+      "editor2EvidenceIds": ["E2-P01-FX-002"],
+      "confidence": "medium",
+      "note": "Exact value match (0.8) on an otherwise-different-shaped effect chain"
+    },
+    {
+      "topic": "zoom-component-on-hit-effect",
+      "classification": "CONTRADICTED",
+      "editor1EvidenceIds": ["E1-P01-FX-007"],
+      "editor2EvidenceIds": ["E2-P01-FX-002"],
+      "confidence": "high"
+    },
+    {
+      "topic": "project-wide-persistent-texture-overlay",
+      "classification": "CONTRADICTED",
+      "editor1EvidenceIds": ["E1-P01-TRN-007"],
+      "editor2EvidenceIds": ["E2-P01-TRN-006", "E2-P01-TRN-007"],
+      "confidence": "high"
+    },
+    {
+      "topic": "track-level-ambient-flicker",
+      "classification": "SHARED_MECHANICALLY_AND_CONTEXTUALLY",
+      "editor1EvidenceIds": ["E1-P01-STR-005"],
+      "editor2EvidenceIds": ["E2-P01-FX-007"],
+      "confidence": "high"
+    },
+    {
+      "topic": "track-level-ambient-shake",
+      "classification": "EDITOR_1_SPECIFIC",
+      "editor1EvidenceIds": ["E1-P01-STR-005"],
+      "editor2EvidenceIds": ["E2-P01-FX-007"],
+      "confidence": "high"
+    },
+    {
+      "topic": "hit-impact-sfx-marker-and-cut-alignment",
+      "classification": "SHARED_MECHANICALLY_AND_CONTEXTUALLY",
+      "editor1EvidenceIds": ["E1-P01-TIM-002"],
+      "editor2EvidenceIds": ["E2-P01-AUD-008"],
+      "confidence": "high",
+      "note": "Strongest replicated finding in this comparison"
+    },
+    {
+      "topic": "single-source-excerpt-reuse-for-hit-sfx",
+      "classification": "SHARED_TECHNIQUE_DIFFERENT_PARAMETERS",
+      "editor1EvidenceIds": ["E1-P01-AUD-006", "E1-P01-AUD-012"],
+      "editor2EvidenceIds": ["E2-P01-AUD-007", "E2-P01-AUD-010"],
+      "confidence": "medium"
+    },
+    {
+      "topic": "no-ducking-mechanism",
+      "classification": "SHARED_AS_ABSENCE",
+      "editor1EvidenceIds": ["E1-P01-AUD-002"],
+      "editor2EvidenceIds": ["E2-P01-AUD-006"],
+      "confidence": "high"
+    },
+    {
+      "topic": "dedicated-whoosh-transition-sample",
+      "classification": "EDITOR_1_SPECIFIC",
+      "editor1EvidenceIds": ["E1-P01-AUD-010"],
+      "editor2EvidenceIds": ["E2-P01-AUD-009"],
+      "confidence": "high"
+    },
+    {
+      "topic": "fast-in-slow-out-music-fade-convention",
+      "classification": "SHARED_MECHANICALLY_AND_CONTEXTUALLY",
+      "editor1EvidenceIds": ["E1-P01-AUD-001"],
+      "editor2EvidenceIds": ["E2-P01-AUD-004"],
+      "confidence": "high"
+    },
+    {
+      "topic": "track-fader-attenuation-nonzero",
+      "classification": "CONTRADICTED",
+      "editor1EvidenceIds": ["E1-P01-AUD-001"],
+      "editor2EvidenceIds": ["E2-P01-AUD-005"],
+      "confidence": "high"
+    },
+    {
+      "topic": "missing-plugin-dependencies",
+      "classification": "PLUGIN_CAPABILITY_DEPENDENT",
+      "editor1EvidenceIds": ["E1-P01-LIM-003"],
+      "editor2EvidenceIds": ["E2-P01-FX-006"],
+      "confidence": "high"
+    },
+    {
+      "topic": "dominant-velocity-curve-shape",
+      "classification": "CONTRADICTED",
+      "editor1EvidenceIds": ["E1-P01-VEL-001"],
+      "editor2EvidenceIds": ["E2-P01-VEL-001", "E2-P01-VEL-002"],
+      "confidence": "high"
+    },
+    {
+      "topic": "velocity-plateau-value-0.5x",
+      "classification": "SHARED_TECHNIQUE_DIFFERENT_PARAMETERS",
+      "editor1EvidenceIds": ["E1-P01-VEL-003"],
+      "editor2EvidenceIds": ["E2-P01-VEL-003"],
+      "confidence": "low",
+      "note": "Editor 2 side is a single detailed sample, not a full-corpus statistical measurement"
+    },
+    {
+      "topic": "curated-vs-raw-connective-source-tiering",
+      "classification": "SHARED_TECHNIQUE_DIFFERENT_PARAMETERS",
+      "editor1EvidenceIds": ["E1-P01-STR-003", "E1-P01-FX-010"],
+      "editor2EvidenceIds": ["E2-P01-STR-003", "E2-P01-FX-005"],
+      "confidence": "medium"
+    },
+    {
+      "topic": "connective-footage-placement-rule",
+      "classification": "INSUFFICIENTLY_SUPPORTED",
+      "editor1EvidenceIds": ["E1-P01-STR-010", "E1-P01-TRN-006"],
+      "editor2EvidenceIds": [],
+      "confidence": "low",
+      "note": "Not tested for Editor 2 this pass (reduced scope)"
+    },
+    {
+      "topic": "escalation-hard-cut-rule",
+      "classification": "INSUFFICIENTLY_SUPPORTED",
+      "editor1EvidenceIds": ["E1-P01-TRN-002"],
+      "editor2EvidenceIds": [],
+      "confidence": "low",
+      "note": "Editor 2 has no comparable escalation-tier structure to test this against"
+    }
+  ]
+}

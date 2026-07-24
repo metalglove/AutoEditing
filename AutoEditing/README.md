@@ -103,6 +103,11 @@ present.
 The planner and mapping mathematics are VEGAS-free so they can be tested in the
 console harness.
 
+For the current end-to-end stage ownership, command boundary, failure behavior,
+and implemented-versus-planned effect rendering, see
+[docs/editing-pipeline.md](docs/editing-pipeline.md). The normative editing
+contract remains [docs/editing-rules.md](docs/editing-rules.md).
+
 ## Not complete or not yet fully verified
 
 - End-to-end timeline construction, take-offset behavior, velocity-envelope
@@ -285,6 +290,21 @@ VEGAS timeline behavior.
   command/query/event architecture and extension rules for agents and contributors.
 - [Review workspace UX](docs/review-workspace-ux.md) — region-first song-map,
   visual clip-drawer, navigation, selection, and activity-log interaction model.
+- [Reviewed-song montage planning](docs/reviewed-song-montage-planning.md) -
+  deterministic anchor allocation, capacity diagnostics, and legacy fallback.
+- [Editing and effects rulebook](docs/editing-rules.md) - normative clip-order,
+  synchronization, velocity, audio, effects, and safety behavior.
+- [Editing pipeline](docs/editing-pipeline.md) - end-to-end ownership and data
+  flow from analysis through planning, validation, and VEGAS rendering.
+- [Effect preset architecture](docs/effect-preset-architecture.md) - versioned
+  presets, inheritance, deterministic variation, capabilities, and fallbacks.
+- [Sniper montage effects research](docs/sniper-montage-effects-research.md) -
+  ranked native VEGAS, built-in/OFX, and open-source effect candidates.
+- [`beat_this_cpp` evaluation](docs/beat-this-cpp-benchmark.md) - three-song
+  agreement, performance, packaging, and Windows integration findings.
+- [Forensic editing research](docs/forensics/README.md) - anonymized
+  project-specific evidence, cross-editor comparisons, portable datasets,
+  reproduction tools, and the macOS/Windows review workflow.
 
 When documents disagree, use the semantic-montage MVP documents for product
 scope and verify implementation claims against the current code.

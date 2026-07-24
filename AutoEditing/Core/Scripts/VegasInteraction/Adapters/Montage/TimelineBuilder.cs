@@ -32,6 +32,7 @@ internal sealed class TimelineBuilder
 			catch (Exception ex)
 			{
 				Logger.LogError("Error placing clip " + placement.Clip.FilePath, ex);
+				throw;
 			}
 		}
 		vegas.UpdateUI();
@@ -101,10 +102,11 @@ internal sealed class TimelineBuilder
 		return val4;
 	}
 
-	public void AddMontageMarkers(Vegas vegas, List<ClipPlacement> placements, BeatGrid beats)
+	public void AddMontageMarkers(Vegas vegas, PreparedMontage prepared)
 	{
 		//IL_0291: Unknown result type (might be due to invalid IL or missing references)
 		//IL_029b: Expected O, but got Unknown
+		List<ClipPlacement> placements = prepared.Placements ?? new List<ClipPlacement>();
 		if (placements.Count == 0)
 		{
 			return;
@@ -112,9 +114,29 @@ internal sealed class TimelineBuilder
 		double start = placements.First().TimelineStartSeconds;
 		double end = placements.Last().TimelineEndSeconds;
 		Dictionary<long, string> labels = new Dictionary<long, string>();
-		foreach (double item in beats.BeatTimesSeconds.Where((double b) => b >= start && b <= end))
+		if (prepared.SongPlan != null)
 		{
-			labels[(long)Math.Round(item * 1000000.0)] = "AE|BEAT";
+			HashSet<string> assignedIds = new HashSet<string>((prepared.SyncAssignments ?? new List<MontageSyncAssignment>()).Select((MontageSyncAssignment item) => item.MusicEventId), StringComparer.Ordinal);
+			foreach (MontageSongPlanningEvent item in (prepared.SongPlan.Events ?? new List<MontageSongPlanningEvent>()).Where((MontageSongPlanningEvent item) => item.EffectiveTimeSeconds >= start && item.EffectiveTimeSeconds <= end && (assignedIds.Contains(item.Id) || item.IsEffectOnly)).OrderBy((MontageSongPlanningEvent item) => item.EffectiveTimeSeconds).ThenBy((MontageSongPlanningEvent item) => item.Id, StringComparer.Ordinal))
+			{
+				string role = assignedIds.Contains(item.Id) ? "SYNC" : "EFFECT";
+				long key = (long)Math.Round(item.EffectiveTimeSeconds * 1000000.0);
+				string label = "AE|" + role;
+				if (!labels.TryGetValue(key, out string existing)) labels[key] = label;
+				else if (!existing.Split('+').Contains(label)) labels[key] = existing + "+" + label;
+			}
+		}
+		else if (prepared.Beats != null)
+		{
+			foreach (double item in prepared.Beats.BeatTimesSeconds.Where((double b) => b >= start && b <= end)) labels[(long)Math.Round(item * 1000000.0)] = "AE|BEAT";
+		}
+		foreach (EffectTreatmentAction treatment in prepared.EffectTreatments?.Actions ?? new List<EffectTreatmentAction>())
+		{
+			if (treatment.TimeSeconds < start || treatment.TimeSeconds > end) continue;
+			long key = (long)Math.Round(treatment.TimeSeconds * 1000000.0);
+			string label = "AE|EFFECT:" + treatment.Type;
+			if (!labels.TryGetValue(key, out string existing)) labels[key] = label;
+			else if (!existing.Split('+').Contains(label)) labels[key] = existing + "+" + label;
 		}
 		foreach (ClipPlacement placement in placements)
 		{
@@ -122,7 +144,7 @@ internal sealed class TimelineBuilder
 			{
 				long key = (long)Math.Round(timelineShotEvent.TimelineTimeSeconds * 1000000.0);
 				long num = (from k in labels.Keys
-					where labels[k].Contains("AE|BEAT") && Math.Abs(k - key) <= 2000
+					where (labels[k].Contains("AE|BEAT") || labels[k].Contains("AE|SYNC")) && Math.Abs(k - key) <= 2000
 					orderby Math.Abs(k - key)
 					select k).FirstOrDefault();
 				if (num != 0L || labels.ContainsKey(0L))

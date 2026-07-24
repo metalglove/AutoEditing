@@ -12,6 +12,8 @@ public class MontagePlanner
 
 	private const double PreferredMinimumCruiseSpeed = 1.2;
 
+	private const double NormalPlaybackMinimumSpeed = 1.0;
+
 	private const double MinimumPostKillFastSourceSeconds = 0.005;
 
 	private const double MaximumPostKillFastSourceSeconds = 0.03;
@@ -53,10 +55,309 @@ public class MontagePlanner
 
 	public List<ClipPlacement> PlanMontage(List<Core.Domain.Clip.Clip> clips, BeatGrid beats, double songDurationSeconds)
 	{
-		if (beats == null || beats.BeatIntervalSeconds <= 0.0)
+		MontageSongPlanningInput input = new BeatGridPlanningInputAdapter().Create(beats, songDurationSeconds);
+		MontagePlanningResult result = PlanMontage(clips, input);
+		if (!result.IsFeasible)
 		{
-			throw new ArgumentException("A valid beat grid is required.");
+			throw new InvalidOperationException(result.Diagnostics.FirstOrDefault()?.Message ?? "No bounded sequential beat assignment exists for the reviewed kills.");
 		}
+		return result.Placements;
+	}
+
+	public MontagePlanningResult PlanMontage(List<Core.Domain.Clip.Clip> clips, MontageSongPlanningInput song)
+	{
+		List<List<Core.Domain.Clip.Clip>> orders = CandidateClipOrders(clips ?? new List<Core.Domain.Clip.Clip>());
+		MontagePlanningResult best = null;
+		double bestScore = double.PositiveInfinity;
+		MontagePlanningResult firstFailure = null;
+		foreach (List<Core.Domain.Clip.Clip> order in orders)
+		{
+			MontagePlanningResult candidate = PlanOrderedMontage(order, song);
+			if (!candidate.IsFeasible)
+			{
+				if (firstFailure == null) firstFailure = candidate;
+				continue;
+			}
+			double score = PlanQuality(candidate, song);
+			if (best == null || score < bestScore - 0.000001)
+			{
+				best = candidate;
+				bestScore = score;
+			}
+		}
+		return best ?? firstFailure ?? Fail(new MontagePlanningResult(), "no-clip-order", "No clip order is available for montage planning.");
+	}
+
+	private MontagePlanningResult PlanOrderedMontage(List<Core.Domain.Clip.Clip> orderedClips, MontageSongPlanningInput song)
+	{
+		MontagePlanningResult result = new MontagePlanningResult();
+		if (song == null)
+		{
+			return Fail(result, "invalid-song-plan", "A reviewed song planning input is required.");
+		}
+		result.Diagnostics.AddRange(song.Diagnostics ?? new List<MontageSongPlanningDiagnostic>());
+		if (song.HasErrors) return result;
+		List<KillDemand> demands = CreateDemands(orderedClips, result);
+		if (result.Diagnostics.Any((MontageSongPlanningDiagnostic item) => item.Severity == MontageSongPlanningDiagnosticSeverity.Error)) return result;
+		if (demands.Count == 0) return Fail(result, "no-reviewed-kills", "No reviewed kills are available for montage planning.");
+		List<MontageSongPlanningEvent> targets = (song.Events ?? new List<MontageSongPlanningEvent>())
+			.Where((MontageSongPlanningEvent item) => item != null && item.IsGameplayAnchor && !item.IsIntentionallyUnused)
+			.Where((MontageSongPlanningEvent item) => song.Regions == null || song.Regions.Count == 0 || song.Regions.Any((MontageSongPlanningRegion region) => region.Id == item.ContainingRegionId && region.Type != Core.Domain.Audio.SongAnalysis.MusicRegionType.Unused))
+			.OrderBy((MontageSongPlanningEvent item) => item.EffectiveTimeSeconds)
+			.ThenBy((MontageSongPlanningEvent item) => item.Id, StringComparer.Ordinal)
+			.ToList();
+		double planningInterval = EstimateInterval(targets);
+		if (targets.Count < demands.Count)
+			return Fail(result, "insufficient-gameplay-anchors", demands.Count + " reviewed kills require anchors, but only " + targets.Count + " eligible gameplay anchors are available after editorial and region filtering.");
+		int chronologicalCapacity = targets.Select((MontageSongPlanningEvent item) => Math.Round(item.EffectiveTimeSeconds, 6)).Distinct().Count();
+		if (chronologicalCapacity < demands.Count)
+			return Fail(result, "insufficient-distinct-anchor-times", demands.Count + " reviewed kills require chronological anchors, but only " + chronologicalCapacity + " distinct eligible anchor times are available.");
+		int[] selected = Allocate(demands, targets, song, planningInterval);
+		if (selected == null)
+			return Fail(result, "velocity-allocation-infeasible", "No complete sequential assignment satisfies the reviewed regions, song boundary, and configured velocity bounds.");
+		try
+		{
+			double montageStart = InitialCursor(song, targets[selected[0]]);
+			BuildPlacements(orderedClips, demands, targets, selected, song.SongDurationSeconds, planningInterval, montageStart, result);
+			result.IsFeasible = true;
+			return result;
+		}
+		catch (InvalidOperationException exception)
+		{
+			return Fail(result, "velocity-profile-verification-failed", exception.Message);
+		}
+	}
+
+	private static List<List<Core.Domain.Clip.Clip>> CandidateClipOrders(List<Core.Domain.Clip.Clip> clips)
+	{
+		List<Core.Domain.Clip.Clip> openers = clips.Where((Core.Domain.Clip.Clip clip) => clip.IsOpener).OrderBy((Core.Domain.Clip.Clip clip) => clip.FilePath, StringComparer.OrdinalIgnoreCase).ToList();
+		List<Core.Domain.Clip.Clip> closers = clips.Where((Core.Domain.Clip.Clip clip) => clip.IsCloser).OrderBy((Core.Domain.Clip.Clip clip) => clip.FilePath, StringComparer.OrdinalIgnoreCase).ToList();
+		List<Core.Domain.Clip.Clip> ordinary = clips.Where((Core.Domain.Clip.Clip clip) => !clip.IsOpener && !clip.IsCloser).ToList();
+		List<IEnumerable<Core.Domain.Clip.Clip>> variants = new List<IEnumerable<Core.Domain.Clip.Clip>>
+		{
+			ordinary.OrderByDescending((Core.Domain.Clip.Clip clip) => clip.ConfirmedKills.Count).ThenByDescending(NaturalKillSpan).ThenBy((Core.Domain.Clip.Clip clip) => clip.FilePath, StringComparer.OrdinalIgnoreCase),
+			ordinary.OrderBy(FirstKillLead).ThenBy(NaturalKillSpan).ThenBy((Core.Domain.Clip.Clip clip) => clip.FilePath, StringComparer.OrdinalIgnoreCase),
+			ordinary.OrderByDescending(FirstKillLead).ThenByDescending(NaturalKillSpan).ThenBy((Core.Domain.Clip.Clip clip) => clip.FilePath, StringComparer.OrdinalIgnoreCase)
+		};
+		List<List<Core.Domain.Clip.Clip>> orders = new List<List<Core.Domain.Clip.Clip>>();
+		HashSet<string> signatures = new HashSet<string>(StringComparer.Ordinal);
+		foreach (IEnumerable<Core.Domain.Clip.Clip> variant in variants)
+		{
+			List<Core.Domain.Clip.Clip> order = openers.Concat(variant).Concat(closers).ToList();
+			string signature = string.Join("\n", order.Select((Core.Domain.Clip.Clip clip) => clip.FilePath ?? string.Empty));
+			if (signatures.Add(signature)) orders.Add(order);
+		}
+		return orders.Count > 0 ? orders : new List<List<Core.Domain.Clip.Clip>> { new List<Core.Domain.Clip.Clip>() };
+	}
+
+	private static double FirstKillLead(Core.Domain.Clip.Clip clip)
+	{
+		return clip.ConfirmedKills.Count == 0 ? double.MaxValue : clip.ConfirmedKills.Min((ShotEvent kill) => kill.SourceConfirmationTimeSeconds);
+	}
+
+	private static double NaturalKillSpan(Core.Domain.Clip.Clip clip)
+	{
+		List<ShotEvent> kills = clip.ConfirmedKills.OrderBy((ShotEvent kill) => kill.SourceConfirmationTimeSeconds).ToList();
+		return kills.Count < 2 ? 0.0 : kills[kills.Count - 1].SourceConfirmationTimeSeconds - kills[0].SourceConfirmationTimeSeconds;
+	}
+
+	private static double PlanQuality(MontagePlanningResult result, MontageSongPlanningInput song)
+	{
+		Dictionary<string, MontageSongPlanningEvent> events = (song?.Events ?? new List<MontageSongPlanningEvent>()).Where((MontageSongPlanningEvent item) => item != null && item.Id != null).GroupBy((MontageSongPlanningEvent item) => item.Id).ToDictionary((IGrouping<string, MontageSongPlanningEvent> group) => group.Key, (IGrouping<string, MontageSongPlanningEvent> group) => group.First(), StringComparer.Ordinal);
+		double score = 0.0;
+		foreach (MontageSyncAssignment assignment in result.Assignments)
+		{
+			if (!events.TryGetValue(assignment.MusicEventId, out MontageSongPlanningEvent target)) continue;
+			if (target.IsSuggestedGameplayAnchor) score += 100000.0;
+			score -= target.Priority * 1000.0 + (target.Intensity ?? 0.0);
+		}
+		foreach (ClipPlacement placement in result.Placements)
+		{
+			foreach (SpeedProfilePoint point in placement.SpeedProfile.Points.Where((SpeedProfilePoint point) => point.Speed >= NormalPlaybackMinimumSpeed)) score += Math.Abs(Math.Log(point.Speed));
+		}
+		return score;
+	}
+
+	private static MontagePlanningResult Fail(MontagePlanningResult result, string code, string message)
+	{
+		result.IsFeasible = false;
+		result.Diagnostics.Add(new MontageSongPlanningDiagnostic { Code = code, Severity = MontageSongPlanningDiagnosticSeverity.Error, Message = message });
+		return result;
+	}
+
+	private sealed class KillDemand
+	{
+		public Core.Domain.Clip.Clip Clip;
+		public ShotEvent Kill;
+		public int ClipIndex;
+		public int KillIndex;
+		public double SourceStart;
+		public double SourceEnd;
+		public bool FirstInClip;
+		public bool LastInClip;
+	}
+
+	private List<KillDemand> CreateDemands(List<Core.Domain.Clip.Clip> clips, MontagePlanningResult result)
+	{
+		List<KillDemand> demands = new List<KillDemand>();
+		for (int clipIndex = 0; clipIndex < clips.Count; clipIndex++)
+		{
+			Core.Domain.Clip.Clip clip = clips[clipIndex];
+			List<ShotEvent> kills = clip.ConfirmedKills.OrderBy((ShotEvent item) => item.SourceConfirmationTimeSeconds).ToList();
+			if (kills.Count == 0)
+			{
+				Fail(result, "clip-without-reviewed-kill", "Clip has no reviewed Hit/Headshot markers: " + clip.FilePath);
+				continue;
+			}
+			double sourceStart = Math.Max(0.0, kills[0].SourceConfirmationTimeSeconds - _preRoll);
+			double sourceEnd = Math.Min(clip.DurationSeconds, kills[kills.Count - 1].SourceConfirmationTimeSeconds + _postRoll);
+			if (sourceEnd <= sourceStart)
+			{
+				Fail(result, "invalid-clip-window", "Invalid marker/pre-roll/post-roll range: " + clip.FilePath);
+				continue;
+			}
+			for (int killIndex = 0; killIndex < kills.Count; killIndex++)
+				demands.Add(new KillDemand { Clip = clip, Kill = kills[killIndex], ClipIndex = clipIndex, KillIndex = killIndex, SourceStart = sourceStart, SourceEnd = sourceEnd, FirstInClip = killIndex == 0, LastInClip = killIndex == kills.Count - 1 });
+		}
+		return demands;
+	}
+
+	private int[] Allocate(List<KillDemand> demands, List<MontageSongPlanningEvent> targets, MontageSongPlanningInput song, double interval)
+	{
+		if (demands.Count == 0) return new int[0];
+		double[,] costs = new double[demands.Count, targets.Count];
+		int[,] previous = new int[demands.Count, targets.Count];
+		for (int d = 0; d < demands.Count; d++) for (int t = 0; t < targets.Count; t++) { costs[d, t] = double.PositiveInfinity; previous[d, t] = -1; }
+		for (int t = 0; t < targets.Count; t++)
+		{
+			double initialCursor = InitialCursor(song, targets[t]);
+			if (!TransitionFeasible(null, demands[0], initialCursor, targets[t].EffectiveTimeSeconds, interval) || !RegionFeasible(song, null, demands[0], null, targets[t], initialCursor, interval)) continue;
+			costs[0, t] = TargetCost(targets[t]) + TransitionCost(null, demands[0], initialCursor, targets[t].EffectiveTimeSeconds);
+		}
+		for (int d = 1; d < demands.Count; d++)
+		{
+			for (int t = d; t < targets.Count; t++)
+			{
+				for (int p = d - 1; p < t; p++)
+				{
+					if (double.IsPositiveInfinity(costs[d - 1, p])) continue;
+					double cursor = CursorAfter(demands[d - 1], targets[p].EffectiveTimeSeconds, interval);
+					if (!TransitionFeasible(demands[d - 1], demands[d], cursor, targets[t].EffectiveTimeSeconds, interval) || !RegionFeasible(song, demands[d - 1], demands[d], targets[p], targets[t], cursor, interval)) continue;
+					double cost = costs[d - 1, p] + TargetCost(targets[t]) + TransitionCost(demands[d - 1], demands[d], cursor, targets[t].EffectiveTimeSeconds);
+					if (cost < costs[d, t] - 1E-09 || (Math.Abs(cost - costs[d, t]) <= 1E-09 && p < previous[d, t])) { costs[d, t] = cost; previous[d, t] = p; }
+				}
+			}
+		}
+		int last = -1;
+		double best = double.PositiveInfinity;
+		for (int t = demands.Count - 1; t < targets.Count; t++)
+		{
+			if (double.IsPositiveInfinity(costs[demands.Count - 1, t])) continue;
+			double end = CursorAfter(demands[demands.Count - 1], targets[t].EffectiveTimeSeconds, interval);
+			if (end > song.SongDurationSeconds + 0.002) continue;
+			if (costs[demands.Count - 1, t] < best - 1E-09) { best = costs[demands.Count - 1, t]; last = t; }
+		}
+		if (last < 0) return null;
+		int[] selected = new int[demands.Count];
+		for (int d = demands.Count - 1; d >= 0; d--) { selected[d] = last; last = previous[d, last]; }
+		return selected;
+	}
+
+	private static double InitialCursor(MontageSongPlanningInput song, MontageSongPlanningEvent target)
+	{
+		if (song.Mode == MontageSongPlanningMode.LegacyBeatGrid) return song.Events.Where((MontageSongPlanningEvent item) => item.IsGameplayAnchor).Min((MontageSongPlanningEvent item) => item.EffectiveTimeSeconds);
+		MontageSongPlanningRegion region = (song.Regions ?? new List<MontageSongPlanningRegion>()).FirstOrDefault((MontageSongPlanningRegion item) => item.Id == target.ContainingRegionId);
+		return region?.StartSeconds ?? 0.0;
+	}
+
+	private bool RegionFeasible(MontageSongPlanningInput song, KillDemand previousDemand, KillDemand currentDemand, MontageSongPlanningEvent previousTarget, MontageSongPlanningEvent currentTarget, double cursor, double interval)
+	{
+		if (song.Mode == MontageSongPlanningMode.LegacyBeatGrid || song.Regions == null || song.Regions.Count == 0) return true;
+		MontageSongPlanningRegion region = song.Regions.FirstOrDefault((MontageSongPlanningRegion item) => item.Id == currentTarget.ContainingRegionId && item.Type != Core.Domain.Audio.SongAnalysis.MusicRegionType.Unused);
+		if (region == null || cursor < region.StartSeconds - 0.002) return false;
+		if (!currentDemand.FirstInClip && previousTarget?.ContainingRegionId != currentTarget.ContainingRegionId) return false;
+		if (currentDemand.LastInClip && CursorAfter(currentDemand, currentTarget.EffectiveTimeSeconds, interval) > region.EndSeconds + 0.002) return false;
+		return true;
+	}
+
+	private double CursorAfter(KillDemand demand, double targetTime, double interval)
+	{
+		if (!demand.LastInClip) return targetTime;
+		double tail = demand.SourceEnd - demand.Kill.SourceConfirmationTimeSeconds;
+		return targetTime + PostKillTargetDuration(tail, interval, demand.Kill.SourceConfirmationTimeSeconds);
+	}
+
+	private bool TransitionFeasible(KillDemand previous, KillDemand current, double cursor, double target, double interval)
+	{
+		double sourceDistance = current.FirstInClip ? current.Kill.SourceConfirmationTimeSeconds - current.SourceStart : current.Kill.SourceConfirmationTimeSeconds - previous.Kill.SourceConfirmationTimeSeconds;
+		double duration = target - cursor;
+		if (duration <= 0.0) return false;
+		double delay, ramp, hold;
+		GetPostKillShape(sourceDistance, !current.FirstInClip, current.FirstInClip ? current.SourceStart : previous.Kill.SourceConfirmationTimeSeconds, out delay, out ramp, out hold);
+		double longest = SegmentDuration(sourceDistance, delay, ramp, hold, !current.FirstInClip, MinimumAllowedCruiseSpeed);
+		double shortest = SegmentDuration(sourceDistance, delay, ramp, hold, !current.FirstInClip, _maxVelocity);
+		return duration <= longest + 0.002 && duration >= shortest - 0.002;
+	}
+
+	private static double TargetCost(MontageSongPlanningEvent target) => (target.IsSuggestedGameplayAnchor ? 100000.0 : 0.0) - target.Priority * 1000.0 - (target.Intensity ?? 0.0);
+
+	private double TransitionCost(KillDemand previous, KillDemand demand, double cursor, double target)
+	{
+		double sourceStart = demand.FirstInClip ? demand.SourceStart : previous.Kill.SourceConfirmationTimeSeconds;
+		double sourceDistance = demand.Kill.SourceConfirmationTimeSeconds - sourceStart;
+		double duration = target - cursor;
+		double delay, ramp, hold;
+		GetPostKillShape(sourceDistance, !demand.FirstInClip, sourceStart, out delay, out ramp, out hold);
+		double preferredLongest = SegmentDuration(sourceDistance, delay, ramp, hold, !demand.FirstInClip, MinimumCruiseSpeed);
+		double belowPreferredCruisePenalty = duration > preferredLongest + 0.002 ? 100.0 : 0.0;
+		return belowPreferredCruisePenalty + Math.Abs(Math.Log(Math.Max(1E-09, sourceDistance / Math.Max(1E-09, duration))));
+	}
+
+	private void BuildPlacements(List<Core.Domain.Clip.Clip> clips, List<KillDemand> demands, List<MontageSongPlanningEvent> targets, int[] selected, double songEnd, double interval, double montageStart, MontagePlanningResult result)
+	{
+		int demandIndex = 0;
+		double timelineStart = montageStart;
+		foreach (Core.Domain.Clip.Clip clip in clips)
+		{
+			List<KillDemand> clipDemands = demands.Where((KillDemand item) => item.Clip == clip).ToList();
+			List<double> assigned = new List<double>();
+			foreach (KillDemand demand in clipDemands)
+			{
+				MontageSongPlanningEvent target = targets[selected[demandIndex]];
+				assigned.Add(target.EffectiveTimeSeconds);
+				result.Assignments.Add(new MontageSyncAssignment { ClipPath = clip.FilePath, KillIndex = demand.KillIndex, SourceConfirmationTimeSeconds = demand.Kill.SourceConfirmationTimeSeconds, MusicEventId = target.Id, TimelineTimeSeconds = target.EffectiveTimeSeconds });
+				demandIndex++;
+			}
+			double sourceStart = clipDemands[0].SourceStart;
+			double sourceEnd = clipDemands[0].SourceEnd;
+			List<SpeedProfilePoint> points = new List<SpeedProfilePoint>();
+			AddSegment(points, sourceStart, clipDemands[0].Kill.SourceConfirmationTimeSeconds, assigned[0] - timelineStart, false);
+			for (int index = 1; index < clipDemands.Count; index++) AddSegment(points, clipDemands[index - 1].Kill.SourceConfirmationTimeSeconds, clipDemands[index].Kill.SourceConfirmationTimeSeconds, assigned[index] - assigned[index - 1], true);
+			double tailSource = sourceEnd - clipDemands[clipDemands.Count - 1].Kill.SourceConfirmationTimeSeconds;
+			AddSegment(points, clipDemands[clipDemands.Count - 1].Kill.SourceConfirmationTimeSeconds, sourceEnd, PostKillTargetDuration(tailSource, interval, clipDemands[clipDemands.Count - 1].Kill.SourceConfirmationTimeSeconds), true);
+			SpeedProfile profile = new SpeedProfile(Coalesce(points));
+			ClipPlacement placement = new ClipPlacement { Clip = clip, TimelineStartSeconds = timelineStart, SourceOffsetSeconds = sourceStart, LengthSeconds = profile.TimelineDurationSeconds, SpeedProfile = profile, AssignedBeatTimesSeconds = assigned };
+			if (placement.TimelineEndSeconds > songEnd + 0.002) throw new InvalidOperationException("Complete reviewed kill sequence does not fit in the song: " + clip.FilePath);
+			Verify(placement, clipDemands.Select((KillDemand item) => item.Kill).ToList());
+			result.Placements.Add(placement);
+			timelineStart = placement.TimelineEndSeconds;
+		}
+	}
+
+	private static double EstimateInterval(IEnumerable<MontageSongPlanningEvent> events)
+	{
+		List<double> times = (events ?? Enumerable.Empty<MontageSongPlanningEvent>())
+			.Where((MontageSongPlanningEvent item) => item != null)
+			.Select((MontageSongPlanningEvent item) => item.EffectiveTimeSeconds)
+			.OrderBy((double item) => item)
+			.ToList();
+		List<double> gaps = times.Zip(times.Skip(1), (double left, double right) => right - left).Where((double gap) => gap > 0.01).OrderBy((double gap) => gap).ToList();
+		return gaps.Count == 0 ? 0.5 : gaps[gaps.Count / 2];
+	}
+
+	/* Legacy greedy allocator retained privately for binary/source archaeology; new calls use the global allocator above. */
+	private List<ClipPlacement> PlanMontageGreedy(List<Core.Domain.Clip.Clip> clips, BeatGrid beats, double songDurationSeconds)
+	{
 		List<ClipPlacement> list = new List<ClipPlacement>();
 		double num = Math.Max(0.0, beats.FirstBeatOffsetSeconds);
 		foreach (Core.Domain.Clip.Clip item in OrderClips(clips))
@@ -134,7 +435,7 @@ public class MontagePlanner
 					double hold;
 					GetPostKillShape(num3, postKillTreatment, num2, out delay, out ramp, out hold);
 					double preferredLongestDuration = SegmentDuration(num3, delay, ramp, hold, postKillTreatment, MinimumCruiseSpeed);
-					double boundedLongestDuration = SegmentDuration(num3, delay, ramp, hold, postKillTreatment, _minVelocity);
+					double boundedLongestDuration = SegmentDuration(num3, delay, ramp, hold, postKillTreatment, MinimumAllowedCruiseSpeed);
 					double num11 = SegmentDuration(num3, delay, ramp, hold, postKillTreatment, _maxVelocity);
 					if (!(num9 > boundedLongestDuration + 0.002) && !(num9 < num11 - 0.002))
 					{
@@ -238,7 +539,7 @@ public class MontagePlanner
 		double num2 = func(_maxVelocity);
 		if (duration > num + 0.002)
 		{
-			minimumCruise = _minVelocity;
+			minimumCruise = MinimumAllowedCruiseSpeed;
 			num = func(minimumCruise);
 		}
 		if (duration > num + 0.002 || duration < num2 - 0.002)
@@ -268,13 +569,12 @@ public class MontagePlanner
 		double ramp;
 		double hold;
 		GetPostKillShape(sourceDuration, enabled: true, anchorSourceTime, out delay, out ramp, out hold);
-		double slowest = SegmentDuration(sourceDuration, delay, ramp, hold, postKillTreatment: true, MinimumCruiseSpeed);
-		double fastest = SegmentDuration(sourceDuration, delay, ramp, hold, postKillTreatment: true, _maxVelocity);
-		double naturalTarget = Math.Max(sourceDuration, beatInterval * 0.75);
-		return Math.Max(fastest, Math.Min(slowest, naturalTarget));
+		return SegmentDuration(sourceDuration, delay, ramp, hold, postKillTreatment: true, MinimumAllowedCruiseSpeed);
 	}
 
 	private double MinimumCruiseSpeed => Math.Min(_maxVelocity, Math.Max(_minVelocity, PreferredMinimumCruiseSpeed));
+
+	private double MinimumAllowedCruiseSpeed => Math.Min(_maxVelocity, Math.Max(_minVelocity, NormalPlaybackMinimumSpeed));
 
 	private static void AddPoint(List<SpeedProfilePoint> points, double source, double speed)
 	{

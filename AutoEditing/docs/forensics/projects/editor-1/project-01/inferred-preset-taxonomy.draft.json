@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "0.1-draft",
+  "status": "forensic-hypothesis",
+  "sourceInspectorVersion": "1.0",
+  "alignmentToleranceSeconds": 0.033367,
+  "warning": "Structural families only. OFX keyframe values and missing plugin placeholders were unavailable.",
+  "families": [
+    {
+      "id": "observed.standard-impact-segment",
+      "sampleSize": 223,
+      "confidence": "high-structure-medium-purpose",
+      "effectChain": ["S_Shake", "S_BlurMoCurves", "Bump Map", "S_Glow"],
+      "animatedParameters": [
+        "S_Shake.Amplitude",
+        "S_BlurMoCurves.Z Dist",
+        "Bump Map.Intensity",
+        "S_Glow.Brightness"
+      ],
+      "contextEvidence": {
+        "markerAlignedEitherEdge": 212,
+        "replacementAudioAlignedStart": 95,
+        "hasVelocityEnvelope": 222
+      },
+      "candidateSelection": "Default for prepared gameplay segments on selected rhythmic boundaries.",
+      "unresolvedVariants": ["kill-impact", "intermediate-beat", "recovery"]
+    },
+    {
+      "id": "observed.terminal-distortion-accent",
+      "sampleSize": 26,
+      "confidence": "high",
+      "effectChain": ["S_Shake", "S_Shake", "S_Flicker", "S_DistortRGB"],
+      "animatedParameters": [
+        "S_Shake[0].Amplitude",
+        "S_Shake[0].Z Dist",
+        "S_Shake[1].Amplitude",
+        "S_Flicker.Amplitude",
+        "S_DistortRGB.Amount"
+      ],
+      "contextEvidence": {
+        "markerAlignedStart": 25,
+        "replacementAudioAlignedStart": 25,
+        "endsContiguousSourceRun": 19
+      },
+      "candidateSelection": "Escalation for confirmed final kills or terminal accents, not every kill."
+    },
+    {
+      "id": "observed.clean-source-bridge",
+      "sampleSize": 24,
+      "confidence": "high-structure-medium-purpose",
+      "effectChain": [],
+      "contextEvidence": {
+        "singleEventSourceRun": 20,
+        "replacementAudioAlignedStart": 1,
+        "hasVelocityEnvelope": 24
+      },
+      "candidateSelection": "Suppress impact effects on one-off connective sources unless explicitly assigned."
+    },
+    {
+      "id": "observed.intro-flicker",
+      "sampleSize": 2,
+      "confidence": "medium",
+      "effectChain": ["S_Flicker"],
+      "animatedParameters": ["S_Flicker.Amplitude"],
+      "candidateSelection": "Specialized long-form opening treatment."
+    },
+    {
+      "id": "observed.monochrome-impact-exception",
+      "sampleSize": 1,
+      "confidence": "low",
+      "effectChain": ["S_Shake", "S_BlurMoCurves", "Bump Map", "S_Glow", "Black and White"],
+      "candidateSelection": "Manual accent only; insufficient evidence for automation."
+    }
+  ],
+  "velocityFamilies": [
+    {
+      "id": "velocity.closed-impact-ramp",
+      "sampleSize": 147,
+      "shape": ["fast", "slow", "slow", "fast"],
+      "candidateSelection": "Default continued-sequence retime."
+    },
+    {
+      "id": "velocity.terminal-slow-exit",
+      "minimumObservedSampleSize": 54,
+      "shapes": [
+        ["fast", "slow", "slow"],
+        ["fast", "slow", "slow", "slow"]
+      ],
+      "candidateSelection": "Terminal segment or cut-owned recovery."
+    }
+  ],
+  "boundaryTreatment": {
+    "curve": "Smooth",
+    "commonDurationsSeconds": [0.016683, 0.033367, 0.05005],
+    "selection": "Independent from visual effect family."
+  },
+  "_movedFrom": "AutoEditing/docs/forensics/inferred-preset-taxonomy.draft.json",
+  "_seeAlso": [
+    "AutoEditing/docs/forensics/projects/editor-1/project-01/effects-and-presets.md",
+    "AutoEditing/docs/forensics/projects/editor-1/project-01/evidence-register.md"
+  ]
+}

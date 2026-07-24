@@ -8,7 +8,8 @@ internal sealed class BuildMontageCommandHandler : VegasCommandHandler<BuildMont
 	public override string CommandType => "BuildMontage";
 	protected override void Execute(Vegas vegas, BuildMontageCommand command)
 	{
-		if (command.Montage == null) throw new InvalidOperationException("Montage build request is empty.");
+		if (command == null) throw new InvalidOperationException("Montage build request is empty.");
+		PreparedMontageValidator.ValidateAndNormalize(command.Montage, command.SongPath);
 		ShotReviewWorkflow.CleanupGenerated(vegas);
 		new MontageOrchestrator().BuildPreparedMontage(vegas, command.Montage, command.SongPath, applyEffects: true);
 	}

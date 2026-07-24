@@ -1,0 +1,264 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Final reconciliation of every headline conclusion produced across the full forensic investigation (original 4-phase analysis, Codex-relayed follow-up priorities, and the adversarial verification pass), labeled by outcome. Cross-referenced against Codex's independent reports in AutoEditing/docs/forensics/.",
+  "labelDefinitions": {
+    "Confirmed": "Re-tested or re-derived by an independent method this pass and held up unchanged.",
+    "ConfirmedNarrowerScope": "The core claim is correct but the originally-stated scope/universality was too broad; a corrected, narrower version is now stated.",
+    "Revised": "The mechanism or interpretation changed materially based on new evidence, though the underlying observation wasn't simply wrong.",
+    "Falsified": "Directly contradicted by controlled re-testing; the original claim is retracted.",
+    "StillUnresolved": "Genuinely not determined either way — flagged as an open gap, not guessed at."
+  },
+  "sections": {
+    "observedReferenceProjectFacts": [
+      {
+        "id": "no-pan-crop",
+        "claim": "No Track-1 event carries Pan/Crop (VideoMotion) keyframe animation anywhere in the project (all 276 events have exactly 1 static keyframe).",
+        "status": "Confirmed",
+        "evidence": "project-inspection-v3.json full-corpus scan; unchanged across all inspector versions."
+      },
+      {
+        "id": "impact-mechanism",
+        "claim": "The 'impact' visual signature is driven by two stacked S_Shake instances with Motion Blur explicitly forced true (Mo Blur Length 0.8 and 2.0), not primarily by Z-Distance/zoom.",
+        "status": "Confirmed",
+        "evidence": "effect-ablation-results.md Part 1 — direct ablation with rendered-frame pixel metrics; Motion Blur toggle isolated as the dominant blur driver (edge-energy ratio 1.96x-2.32x when both Motion Blur or both Shakes are disabled vs 1.0x baseline)."
+      },
+      {
+        "id": "distortRGB-role",
+        "claim": "S_DistortRGB is the dominant chromatic-separation driver; secondary/embellishment relative to the Motion Blur hit.",
+        "status": "Confirmed",
+        "evidence": "effect-ablation-results.md: isolating DistortRGB raises R-G separation above baseline (25.82 vs 19.83); removing it lowers separation ~20% but blur signature substantially survives (1.18x edge energy)."
+      },
+      {
+        "id": "ordinary-recipe-imperceptible",
+        "claim": "The 224-event 'ordinary' recipe (small BlurMoCurves/Glow dip) reads as a plain hard cut with no visible effect.",
+        "status": "Revised",
+        "evidence": "effect-ablation-results.md Part 7 addendum: controlled on/off ablation on t1_e3 shows a real, measurable 28% edge-energy loss and +2.59 mean-luma lift, visibly softening fine HUD text. Correct for casual/normal-speed perception; incorrect if 'imperceptible' is read literally/objectively. Narrowed, not retracted."
+      },
+      {
+        "id": "multi-kill-clustering-absent",
+        "claim": "There is no clustering pattern among the 25 impact events; they read as evenly-spaced highlight beats, not multi-kill bursts.",
+        "status": "Falsified",
+        "evidence": "Wrong unit of analysis (checked impact-to-impact spacing only). Full-corpus same-source-run grouping (46 runs, 24 multi-event) found 18/24 (75%) follow a 'long ordinary run -> impact at/near the last event' escalation pattern. Independently found by Codex via a different method (representative-moments-validation.md) and replicated/generalized here. See inferred-editing-strategies.md Section 7 (correction recorded in place)."
+      },
+      {
+        "id": "byte-identical-presets",
+        "claim": "Both the 224-event ordinary cluster and the 25-event impact cluster are single byte-identical presets with zero variation.",
+        "status": "ConfirmedNarrowerScope",
+        "evidence": "full-corpus-preset-signatures.json: SHA1 signature hashing across all 276 events found 7 distinct signatures, not 2 — two ordinary-family duration-variants (187 'compact' + 36 'long'), a no-effects group (24), the canonical impact signature (24), two impact near-duplicates (1 each), and the 1-off Black & White accent. Each named recipe is still one reusable template, applied at more than one fixed duration — narrower than the original 'byte-identical' claim, not contradicted in spirit."
+      },
+      {
+        "id": "weapon-sfx-normalize-false",
+        "claim": "All 125 weapon-library SFX events have normalize=false.",
+        "status": "Falsified",
+        "evidence": "Corrected earlier in session (pre-dating the formal adversarial pass but included here for completeness): 118/125 ARE normalized (normalizeGain ~2.331 = +7.35dB); the original claim generalized from one non-representative sampled event. Fixed in audio-treatment-recipes.md."
+      },
+      {
+        "id": "fade-gain-is-curve-value",
+        "claim": "Fade.Gain represents a fade-curve-specific value.",
+        "status": "Revised",
+        "evidence": "Confirmed to be a static per-event output trim, identical on fadeIn/fadeOut for every event (125/125 weapon-SFX, 276/276 Track-1), correlating exactly with normalize/normalizeGain state — not a time-varying fade-curve parameter."
+      },
+      {
+        "id": "crossfade-41-percent",
+        "claim": "41% of Track-1 event boundaries overlap (crossfade) — stated as a single, general figure.",
+        "status": "ConfirmedNarrowerScope",
+        "evidence": "crossfade-predictor-analysis.md decomposes this: 100% of source-change boundaries overlap (n=45, median 83.4ms); ~30-35% of same-source ordinary-run boundaries overlap (n=230, median 33.4ms); ordinary->impact escalation points are ALWAYS a hard cut (0/21, zero exceptions). The 41% blended figure is real but was previously unexplained; it is not one mechanism."
+      },
+      {
+        "id": "crossfade-mechanism",
+        "claim": "Crossfades are the result of deliberately authored transition curves.",
+        "status": "Revised",
+        "evidence": "crossfade-predictor-analysis.md Finding 5: 114/114 overlaps are Smooth/Smooth curve, 112/114 symmetric fade lengths exactly matching the overlap duration — the signature of VEGAS's automatic crossfade generation from dragging clips into alignment, not hand-authored transition design."
+      },
+      {
+        "id": "track-vs-event-fx-interaction",
+        "claim": "(New this pass) Event-level effects dominate/mask track-level ambient effects on strong (impact) events; track-level effects are proportionally more visible on weak (ordinary) events.",
+        "status": "Confirmed",
+        "evidence": "track-vs-event-ablation.cs, 8-frame render ablation across 2x2 combinations on 2 events, PNG-metric comparison."
+      },
+      {
+        "id": "musical-tempo-and-marker-grid",
+        "claim": "(New this pass) Song tempo is ~115-120 BPM; markers sit on a half-time (every-2nd-beat) grid, not per-beat or per-bar.",
+        "status": "Confirmed",
+        "evidence": "musical-alignment-analysis.md: independent audio-onset detection on the rendered song-solo WAV (115 BPM, 134/794 IOI votes) converges with marker-grid ratio analysis (116 BPM best fit, k=2 dominant at 75% of intervals) — two structurally independent methods agreeing."
+      },
+      {
+        "id": "global-rigid-tempo-grid",
+        "claim": "(New this pass, tested and rejected) A single fixed-phase, fixed-BPM grid can be extrapolated across the whole 240s song.",
+        "status": "Falsified",
+        "evidence": "musical-alignment-analysis.md Finding 3: local residual is small (71ms, 13.6% of a beat) but global-phase-fit residual balloons to 229ms; windowed local-BPM estimates show real interval-level jitter (96-150 BPM range within a stable ~113-122 BPM windowed mean). Real implication for automation: fixed-grid beat extrapolation will drift over a multi-minute montage."
+      },
+      {
+        "id": "kill-marker-alignment",
+        "claim": "Kill (gun) events land almost exactly on a timeline marker.",
+        "status": "Confirmed",
+        "evidence": "Extended from n=25 to the full n=125 corpus in kill-alignment-corpus.json: 122/125 (97.6%) within 30ms, median delta 0ms. 3 known counterexamples cross-validated against Codex's independent findings exactly (t2_e103/104/105)."
+      },
+      {
+        "id": "retained-audio-18-events",
+        "claim": "18 Track-2 events retain original gameplay audio instead of library SFX, treated as a loosely-understood minority category.",
+        "status": "ConfirmedNarrowerScope",
+        "evidence": "audio-mix-verification.md: precisely characterized — all 18 pair 1:1 (0ms delta, same source file) with 'none'-family Track-1 video events. Further split found: 18/24 'none'-family video events are raw DVR captures (all get paired native audio); the other 6/24 are curated bridge-style clips (Opener/Quad/Closer folders) and get NO paired audio. Deterministic rule, not a loose minority."
+      },
+      {
+        "id": "ducking-mechanism",
+        "claim": "(Gap closed this pass) Whether the song is deliberately ducked under gunfire via automation.",
+        "status": "Confirmed",
+        "evidence": "audio-mix-verification.md Finding 3: zero envelopes at track level (all 5 tracks) confirmed this pass, extending the already-confirmed zero bus/master-level envelopes. No ducking mechanism exists anywhere in the project; any perceived duck is psychoacoustic masking only."
+      },
+      {
+        "id": "cinematic-bridge-pairing",
+        "claim": "(New this pass) Raw/connective footage clips are placed and treated according to a specific structural rule relative to kill highlights.",
+        "status": "Confirmed",
+        "evidence": "cinematic-pairing-analysis.md: 15/22 (68%) sit between an impact-treated clip and the next ordinary-family setup clip; 100% crossfade in and out (opposite of the ordinary->impact hard-cut rule); 86% preceded by a whoosh 1.85-3.49s ahead; 91% stay within the same montage section, not used for cross-section transitions."
+      },
+      {
+        "id": "missing-plugin-transition-classification",
+        "claim": "Vector Blur Dissolve (missing plugin) is used as a transition; other 3 missing plugins' location unknown.",
+        "status": "StillUnresolved",
+        "evidence": "missing-capabilities.md §1a: structurally re-searched all Track/Event effect entries — zero matches anywhere. Not present in any exported Effects collection. Consistent with (not contradicting) the original transition classification by elimination, but the inspector never exports VEGAS's Transition object in any version (v1-v3), so this remains unconfirmed rather than proven."
+      },
+      {
+        "id": "color-finishing-mechanism",
+        "claim": "(New this pass) Classification of every color/finishing technique into source-prep/per-event/track-level/section-level/final-output categories.",
+        "status": "Confirmed",
+        "evidence": "inferred-editing-strategies.md §12a: project uses Float32Bit pixel format; Track-0 Screen-blend film-damage overlay (compositeLevel=1, ~211s single event) visually reconfirmed via representative frame; no section-level or final-output-processing effects found anywhere."
+      },
+      {
+        "id": "ofx-keyframe-time-domain",
+        "claim": "OFXKeyframe.Time's reference frame (event-relative vs timeline-absolute) is confirmed.",
+        "status": "StillUnresolved",
+        "evidence": "ofx-time-domain-verification.md: Part 3 fixture testing was not attempted this pass (substantial new engineering, deprioritized below the 6 explicitly flagged priorities). Interpretation remains inferred (event-relative), not proven."
+      },
+      {
+        "id": "gpu-vs-cpu-render",
+        "claim": "Whether GPU vs CPU rendering produces meaningfully different pixels for this project's effect chain.",
+        "status": "StillUnresolved",
+        "evidence": "Not tested — would require two renders under different acceleration settings. Not attempted this pass."
+      }
+    ],
+    "inferredEditorStrategy": [
+      {
+        "id": "copy-paste-trim-workflow",
+        "claim": "The editor built one template event per recipe and copy-pasted its effect chain onto subsequent cuts, trimming each independently rather than re-timing keyframes.",
+        "status": "ConfirmedNarrowerScope",
+        "note": "Still the best explanation, now understood as producing 2 duration-variants of the ordinary template rather than one exact copy everywhere — consistent with copy-paste across a session where the 'source placeholder' length changed at some point, or two separate template-creation events."
+      },
+      {
+        "id": "escalation-editing-grammar",
+        "claim": "(New) Within a continuous same-source run, the editor's grammar is: long/plain buildup, hard-cut escalation into the impact hit, soft-crossfade exit into the next scene, with raw/connective inserts placed after big hits as breathing beats.",
+        "status": "Confirmed",
+        "note": "Synthesizes the source-run finding, the crossfade-predictor hard-cut rule, and the cinematic-pairing sequencing rule into one coherent picture of the editor's actual cutting grammar."
+      },
+      {
+        "id": "beat-placement-by-feel",
+        "claim": "(New) Markers/beat placement was likely done by ear/tap rather than a computed metronome grid.",
+        "status": "ConfirmedNarrowerScope",
+        "note": "Inferred from the local-vs-global tempo residual mismatch (musical-alignment-analysis.md Finding 3) — plausible explanation, not directly observed (no editing-session recording exists to confirm intent)."
+      }
+    ],
+    "externalCommunityPractice": [
+      {
+        "id": "shake-motionblur-vs-documented-range",
+        "claim": "This project's Mo Blur Length values (0.8, 2.0) exceed Boris FX's own documented 'realistic' range (0.5 fields / 1.0 frames).",
+        "status": "Confirmed",
+        "source": "external-practice-comparison.md §1 (borisfx.com)"
+      },
+      {
+        "id": "impact-keyframe-timing-convention",
+        "claim": "Community convention clusters impact-hit keyframes within 0.1-0.5s; this project's ~0.25-0.37s decay window matches.",
+        "status": "Confirmed",
+        "source": "external-practice-comparison.md §1"
+      },
+      {
+        "id": "gunshot-beat-sync-convention",
+        "claim": "General montage-editing advice to sync gunshots to music beats matches this project's much more rigorously verified 97.6%-within-30ms alignment.",
+        "status": "Confirmed",
+        "source": "external-practice-comparison.md §2"
+      },
+      {
+        "id": "single-sample-pitch-reverb-variation",
+        "claim": "Pitch-shift + reverb on a single reused sample is documented sound-design practice for avoiding the 'machine gun' repetition problem.",
+        "status": "Confirmed",
+        "source": "external-practice-comparison.md §3 (tbirdsound.com, KVR Audio)"
+      }
+    ],
+    "proposedAutoEditingBehavior": [
+      {
+        "id": "reproduce-hard-cut-on-escalation",
+        "recommendation": "Structural rule worth adopting now: never crossfade the transition from a setup/ordinary treatment into an impact/kill treatment within a continuous shot — always hard cut.",
+        "confidenceToGeneralize": "shouldChangeNow",
+        "rationale": "100% consistent across 21 confirmed instances in this reference project, and the mechanism (avoiding a dissolve softening the punch) is a general cinematic principle, not project-specific quirk."
+      },
+      {
+        "id": "reproduce-connective-footage-placement-rule",
+        "recommendation": "If AutoEditing supports inserting connective/breathing footage between highlights, place it after an impact-treated clip, before the next clip's setup, within the same section, preceded by a whoosh ~2-3.5s ahead, crossfaded (not hard-cut) on both sides.",
+        "confidenceToGeneralize": "remainExperimental",
+        "rationale": "Well-evidenced in this one reference project (cinematic-pairing-analysis.md) but not cross-checked against a second reference project — could be this editor's personal style rather than a genre convention."
+      },
+      {
+        "id": "do-not-infer-ducking-feature",
+        "recommendation": "Do not implement an inferred 'ducking' feature based on this project — it doesn't use one.",
+        "confidenceToGeneralize": "shouldNotBeGeneralized",
+        "rationale": "Zero envelopes exist anywhere in this project (audio-mix-verification.md). Ducking would be a new AutoEditing capability, not something reproduced from this reference."
+      },
+      {
+        "id": "avoid-fixed-global-beat-grid-extrapolation",
+        "recommendation": "Any beat-grid-based automatic cut-placement feature must track local tempo/marker positions, not extrapolate a single fixed BPM+phase across a multi-minute timeline.",
+        "confidenceToGeneralize": "shouldChangeNow",
+        "rationale": "Directly evidenced by this project's own marker data (musical-alignment-analysis.md Finding 3) — a real, demonstrated failure mode, not speculation."
+      },
+      {
+        "id": "model-ordinary-recipe-as-real-not-noop",
+        "recommendation": "Treat the 'ordinary' cut recipe (small Glow/BlurMoCurves pulse) as a genuine low-intensity visual treatment to reproduce on the majority of cuts, not skip as imperceptible.",
+        "confidenceToGeneralize": "shouldChangeNow",
+        "rationale": "Directly measured, real (effect-ablation-results.md Part 7 addendum) — previously at risk of being dropped from an implementation because an earlier pass called it invisible."
+      },
+      {
+        "id": "weapon-sfx-single-sample-pitch-reverb",
+        "recommendation": "Adopt the single-source-sample + per-event pitch-shift + reverb mechanism for gunshot SFX variety.",
+        "confidenceToGeneralize": "shouldChangeNow",
+        "rationale": "Confirmed as both this project's actual mechanism and independently-documented general sound-design best practice (external-practice-comparison.md §3) — rare double confirmation."
+      },
+      {
+        "id": "reproduce-missing-plugin-effects",
+        "recommendation": "Do not attempt to reproduce Red Giant Stylize Glitch / Boris FX Vector Blur Dissolve / Damaged TV effects.",
+        "confidenceToGeneralize": "requiresUnavailablePlugins",
+        "rationale": "These plugins are not installed on the analysis machine and their visual result was never verifiable; used only 1-3 times each (rare accents), not core recipe elements."
+      },
+      {
+        "id": "generalize-cinematic-pairing-and-escalation-grammar",
+        "recommendation": "Treat the full escalation/cutting grammar (long buildup -> hard-cut impact -> connective breath -> next buildup) as a candidate default montage-editing template.",
+        "confidenceToGeneralize": "requiresMoreReferenceProjects",
+        "rationale": "Internally consistent and well-evidenced within this single project; whether it generalizes across editors/genres has not been tested against any second reference project."
+      }
+    ]
+  },
+  "closingSummary": {
+    "shouldChangeNow": [
+      "reproduce-hard-cut-on-escalation",
+      "avoid-fixed-global-beat-grid-extrapolation",
+      "model-ordinary-recipe-as-real-not-noop",
+      "weapon-sfx-single-sample-pitch-reverb"
+    ],
+    "shouldRemainExperimental": [
+      "reproduce-connective-footage-placement-rule"
+    ],
+    "requiresUnavailablePlugins": [
+      "reproduce-missing-plugin-effects"
+    ],
+    "requiresMoreReferenceProjects": [
+      "generalize-cinematic-pairing-and-escalation-grammar",
+      "beat-placement-by-feel (as a universal editor-behavior claim)"
+    ],
+    "shouldNotBeGeneralized": [
+      "do-not-infer-ducking-feature",
+      "the exact Mo Blur Length values (0.8/2.0) as universal constants — confirmed as this project's deliberate stylized choice, not a documented 'correct' value"
+    ],
+    "stillOpenNotAttempted": [
+      "ofx-keyframe-time-domain (Part 3 fixture testing)",
+      "gpu-vs-cpu-render",
+      "missing-plugin-transition-classification (Transition-object export never built)"
+    ]
+  }
+}

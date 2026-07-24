@@ -1,0 +1,12 @@
+{
+  "bpm": 116,
+  "beatLenSec": 0.5172413793103449,
+  "markerGridSpacingSec": 1.0344827586206897,
+  "phaseOffsetSec": 0.0015411420547051247,
+  "markerResidualMeanMs": 228.66122345649123,
+  "gunEventsHalfTimeResidualMeanMs": 227.70478671368352,
+  "gunEventsHalfTimeWithin60ms": 19,
+  "gunEventsFullBeatResidualMeanMs": 122.15631015598728,
+  "gunEventsFullBeatWithin60ms": 31,
+  "totalGunEvents": 125
+}

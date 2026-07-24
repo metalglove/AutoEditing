@@ -10,6 +10,7 @@ public enum WizardStep
 	SfxIndex,
 	Analyze,
 	Review,
+	Effects,
 	Drawer
 }
 
