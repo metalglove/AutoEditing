@@ -229,28 +229,26 @@ returns a `PreparedMontage` containing:
 - `PlanningDiagnostics`: planner information, warnings, and errors; and
 - `EffectTreatments`: actions plus suppression diagnostics.
 
-`ShotReviewViewModel.BuildFromLibraryAsync` prepares this object on a worker
-thread and logs the plan before sending `BuildMontageCommand` through
-`VegasCommandClient`. `BuildMontageCommandHandler` runs on the VEGAS command
-side. This command is the mutation boundary: domain planning must not depend on
-live VEGAS objects.
+`ShotReviewViewModel.BuildFromLibraryAsync` sends an `EditPlanningRequest` to
+the `AutomaticEditPlanner` on a worker thread. The returned versioned
+`EditPlanDocument` contains the `PreparedMontage`; the view model logs that plan
+before sending `BuildMontageCommand` through `VegasCommandClient`.
+`BuildMontageCommandHandler` runs on the VEGAS command side. This command is the
+mutation boundary: domain planning must not depend on live VEGAS objects.
 
 ## 8. Validation and failure behavior
 
-Before timeline construction, `PreparedMontageValidator.ValidateAndNormalize`:
+Before timeline construction:
 
-- requires a non-null request and an existing, decodable song;
-- normalizes nullable collections for compatibility;
-- requires at least one placement;
-- requires every source clip to exist;
-- requires a speed profile with at least two points;
-- rejects non-finite, non-positive, negative, or overlapping placements; and
-- validates the configured SFX catalog for every used gun.
+- `PreparedMontageStructuralValidator` performs portable DTO, numeric,
+  placement, source-bound, and speed-profile checks; then
+- `PreparedMontageResourcePreflight` verifies the song and clips, decodes the
+  song, and validates the configured SFX catalog for every used gun.
 
-Planning and validation failures are exceptions and stop the build before the
-orchestrator starts mutation. During mutation, missing media/streams and VEGAS
-API failures also surface as build failures. Timeline placement logs the
-specific clip before rethrowing.
+Both gates run before generated-track cleanup. Planning and validation failures
+are exceptions and stop the build before the orchestrator starts mutation.
+During mutation, missing media/streams and VEGAS API failures also surface as
+build failures. Timeline placement logs the specific clip before rethrowing.
 
 Editorial rendering is deliberately softer: no target clip, unsupported
 capability, conflicting pan/crop state, or a rejected VEGAS effect is logged
@@ -321,8 +319,9 @@ and final placement count. `Logger` is the shared logging owner.
 | Planning-input selection/adaptation | `MontageSongPlanningInputProvider`, `SongAnalysisPlanningInputAdapter`, `BeatGridPlanningInputAdapter` |
 | Ordering, allocation, retiming | `MontagePlanner` |
 | Automatic effect policy | `AutomaticEffectTreatmentPreset`, `AutomaticEffectTreatmentPlanner` |
-| Domain-side preparation | `MontagePreparationService`, `PreparedMontage` |
-| Command boundary and validation | `BuildMontageCommandHandler`, `PreparedMontageValidator` |
+| Shared plan contract | `EditPlanningRequest`, `EditPlanDocument`, `PreparedMontage` |
+| Automatic preparation | `AutomaticEditPlanner`, `MontagePreparationService` |
+| Command boundary and validation | `BuildMontageCommandHandler`, `PreparedMontageStructuralValidator`, `PreparedMontageResourcePreflight` |
 | Video event creation | `TimelineBuilder` |
 | Velocity rendering | `EffectsApplier` |
 | Editorial effect rendering | `VegasEditorialEffectRenderer` |

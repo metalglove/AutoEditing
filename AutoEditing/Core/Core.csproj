@@ -14,18 +14,27 @@
     <LangVersion>latest</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <BuildInParallel>false</BuildInParallel>
+    <RestoreBuildInParallel>false</RestoreBuildInParallel>
   </PropertyGroup>
 
-  <!-- The WPF view is loaded at runtime with XamlReader.Load from this embedded
-       resource; ShotReviewView.cs looks it up by this exact LogicalName. -->
+  <!-- Preserve the deployed logical resource name while organizing the source
+       beneath Presentation/Review. ShotReviewView loads this exact name. -->
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\ShotReviewWindow.xaml" LogicalName="Core.Scripts.ShotReviewWindow.xaml" />
+    <EmbeddedResource Include="Presentation\Review\ShotReviewWindow.xaml" LogicalName="Core.Scripts.ShotReviewWindow.xaml" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NAudio.Core" Version="2.2.1" />
-    <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Host\**\*.cs" />
+    <Compile Include="Presentation\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\AutoEditing.Domain.csproj" />
+    <ProjectReference Include="..\AutomaticEditor\AutoEditing.AutomaticEditor.csproj" />
+    <ProjectReference Include="..\Vegas\AutoEditing.Vegas.csproj" />
   </ItemGroup>
 
   <!-- VEGAS host assembly is provided by VEGAS at runtime; do not copy it locally. -->

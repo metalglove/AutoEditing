@@ -28,7 +28,16 @@ if (-not (Test-Path $destination)) {
 
 # Runtime assemblies (extension + its dependencies) and the shared config.
 # appsettings.local.json is intentionally NOT copied so machine-local overrides survive.
-$required = @("Core.dll", "NAudio.Core.dll", "NAudio.Wasapi.dll", "Newtonsoft.Json.dll", "appsettings.json")
+$required = @(
+    "Core.dll",
+    "AutoEditing.Domain.dll",
+    "AutoEditing.AutomaticEditor.dll",
+    "AutoEditing.Vegas.dll",
+    "NAudio.Core.dll",
+    "NAudio.Wasapi.dll",
+    "Newtonsoft.Json.dll",
+    "appsettings.json"
+)
 
 foreach ($file in $required) {
     $src = Join-Path $sourceDir $file

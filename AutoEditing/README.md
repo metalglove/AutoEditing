@@ -3,12 +3,11 @@
 AutoEditing is a work-in-progress VEGAS Pro 20 extension for building Call of
 Duty sniper montages from reviewed gameplay sync points.
 
-The project currently combines local audio analysis, a docked shot-review
-workflow, reusable clip metadata, beat-aware montage planning, and native VEGAS
-timeline generation. Its longer-term direction is a guided semantic montage
-assistant: the editor verifies meaningful gameplay events, aligns them with
-music events, and lets the tool perform the repetitive timeline and retiming
-work.
+The solution separates local analysis and planning from its docked shot-review
+host and native VEGAS timeline renderer. Its longer-term direction is a guided
+semantic montage assistant: the editor verifies meaningful gameplay events,
+aligns them with music events, and lets either the deterministic planner or a
+future LLM planner perform the repetitive editorial planning.
 
 > Status: active prototype. The analysis and planning layers can be exercised
 > outside VEGAS. Timeline and velocity behavior still require continued smoke
@@ -127,20 +126,26 @@ contract remains [docs/editing-rules.md](docs/editing-rules.md).
   enhancement, advanced transitions, grading, and render automation are
   deferred.
 
-## Repository layout
+## Architecture and repository layout
 
 ```text
 AutoEditing.sln
-Core/
-  Domain/
-    Audio/       audio loading, beat detection, SFX templates, shot review
-    Clip/        parsing, validation, reusable sync library
-    Editing/     planning, speed mapping, timeline generation, effects adapter
-    Logging/     application logging
-  Scripts/       VEGAS extension entry point, dock host, WPF view and view model
-  appsettings.json
+Domain/                   shared netstandard2.0 models, analysis, and contracts
+  Audio/                  audio decoding and deterministic analysis
+  Clip/                   clip models, parsing, and persistence
+  Configuration/          settings and user preferences
+  Editing/                portable edit-plan models and speed profiles
+  Planning/               planner exchange and structural validation
+AutomaticEditor/          deterministic netstandard2.0 planning policies
+  Planning/
+Vegas/                    shared net48 VEGAS integration and rendering
+  Interaction/            commands, queries, adapters, and host infrastructure
+Core/                     thin net48 VEGAS extension
+  Host/                   entry point and custom-command module
+  Presentation/           WPF review UI, models, and UI infrastructure
+LlmEditor/                provider-neutral net8.0 planner skeleton
 Tools/
-  AnalysisHarness/  VEGAS-free console runner and detector diagnostics
+  AnalysisHarness/        VEGAS-free diagnostics and deterministic checks
 docs/
   ROADMAP.md
   song-analysis-model.md
@@ -155,11 +160,15 @@ docs/
 - .NET Framework 4.8 developer tooling
 - Visual Studio 2019/2022, or the .NET/MSBuild tooling needed to build `net48`
 
-`Core.csproj` references:
+The host and shared libraries reference:
 
 - `ScriptPortal.Vegas.dll` from the VEGAS Pro 20 installation;
 - NAudio Core and Wasapi 2.2.1;
 - Newtonsoft.Json 13.0.3.
+
+Only `Core` bootstrap code and `AutoEditing.Vegas` reference
+`ScriptPortal.Vegas`. Domain, deterministic planning, and LLM planning remain
+host-independent.
 
 Audio analysis is Windows-only because it uses Windows Media Foundation through
 NAudio.
@@ -171,6 +180,8 @@ Run commands from this directory (`AutoEditing/`):
 ```powershell
 dotnet build Core/Core.csproj --configuration Debug
 dotnet build Tools/AnalysisHarness/AnalysisHarness.csproj --configuration Debug
+dotnet build LlmEditor/AutoEditing.LlmEditor.csproj --configuration Debug
+dotnet run --project LlmEditor/AutoEditing.LlmEditor.csproj -- --self-test
 ```
 
 Building `Core` invokes `.vscode/deploy-extension.ps1`, which copies the extension
@@ -296,6 +307,8 @@ VEGAS timeline behavior.
   synchronization, velocity, audio, effects, and safety behavior.
 - [Editing pipeline](docs/editing-pipeline.md) - end-to-end ownership and data
   flow from analysis through planning, validation, and VEGAS rendering.
+- [Local multimodal model recommendations](docs/local-multimodal-models.md) -
+  quality-first local model candidates, serving design, and evaluation gates.
 - [Effect preset architecture](docs/effect-preset-architecture.md) - versioned
   presets, inheritance, deterministic variation, capabilities, and fallbacks.
 - [Sniper montage effects research](docs/sniper-montage-effects-research.md) -

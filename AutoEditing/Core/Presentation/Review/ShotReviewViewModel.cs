@@ -18,6 +18,7 @@ using Core.Domain.Audio;
 using Core.Domain.Audio.SongAnalysis;
 using Core.Domain.Clip;
 using Core.Domain.Editing;
+using Core.Domain.Planning;
 using Core.Domain.Logging;
 using Microsoft.Win32;
 
@@ -586,7 +587,17 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		List<Clip> clips = new ShotReviewWorkflow().HydrateFromLibrary(paths);
 		if (clips.Count == 0) throw new InvalidOperationException("Select at least one available ready clip.");
 		EffectSelectionOptions effectSelection = EffectSelection;
-		PreparedMontage prepared = await Task.Run(() => new MontagePreparationService().Prepare(clips, SongPath, effectSelection), token);
+		EditPlanningRequest planningRequest = new EditPlanningRequest
+		{
+			RequestId = Guid.NewGuid().ToString("N"),
+			Clips = clips,
+			SongPath = SongPath,
+			EffectOptions = effectSelection
+		};
+		EditPlanDocument planDocument = await Task.Run(
+			() => new AutomaticEditPlanner().CreatePlanAsync(planningRequest, token).GetAwaiter().GetResult(),
+			token);
+		PreparedMontage prepared = planDocument.Montage;
 		foreach (MontageSongPlanningDiagnostic diagnostic in prepared.PlanningDiagnostics ?? new List<MontageSongPlanningDiagnostic>())
 		{
 			Logger.Log("Montage planning [" + diagnostic.Severity + "/" + diagnostic.Code + "]: " + diagnostic.Message);
