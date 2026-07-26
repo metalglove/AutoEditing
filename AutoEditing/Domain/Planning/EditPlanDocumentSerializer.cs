@@ -32,6 +32,12 @@ public static class EditPlanDocumentSerializer
 		return JsonConvert.SerializeObject(document, Formatting.Indented, Settings);
 	}
 
+	public static string SerializeRequest(EditPlanningRequest request)
+	{
+		EditPlanningRequestValidator.ValidateAndNormalize(request);
+		return JsonConvert.SerializeObject(request, Formatting.Indented, Settings);
+	}
+
 	public static EditPlanningRequest ReadRequest(string path)
 	{
 		return DeserializeRequest(File.ReadAllText(path, Encoding.UTF8));

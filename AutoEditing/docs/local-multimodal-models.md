@@ -128,6 +128,19 @@ Native model audio may later add semantic evidence such as:
 It must not replace deterministic timing analysis. This keeps musical
 synchronization reproducible and testable.
 
+## Iterative evaluation
+
+Model evaluation must measure revision quality, not only first-pass plan
+quality. For every benchmark case, retain the candidate plan, deterministic
+timeline report, timestamped preview frames or contact sheets, critic feedback,
+and every revised plan. Score both the final result and whether successive
+iterations measurably improve the failed criteria.
+
+The portable inference path uses text plus sampled images. Native video input
+can be evaluated as a model-specific challenger after the image-based loop is
+reliable. Rendering and objective checks remain external tools; the model
+receives their evidence and proposes another complete, versioned plan.
+
 ## Quality-first planning passes
 
 Generate an edit through explicit passes:

@@ -26,7 +26,8 @@ internal static class VegasScriptCommandExecutor
 	public static TResult Execute<TResult>(Vegas vegas, IVegasRequest command)
 	{
 		if (command == null) throw new ArgumentNullException("command");
-		string location = Assembly.GetExecutingAssembly().Location;
+		string directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+		string bootstrapPath = Path.Combine(directory, "AutoEditing.Extension.dll");
 		string requestPath = GetRequestPath();
 		CommandEnvelope envelope = new CommandEnvelope
 		{
@@ -39,18 +40,18 @@ internal static class VegasScriptCommandExecutor
 		bool completed = false;
 		try
 		{
-			vegas.RunScriptFile(location);
+			vegas.RunScriptFile(bootstrapPath);
 			CommandEnvelope response = Read(requestPath);
 			if (response.RequestId != envelope.RequestId)
-			{
 				throw new InvalidOperationException("VEGAS command response did not match the active request.");
-			}
 			if (response.Status != "Completed")
-			{
-				throw new InvalidOperationException("VEGAS command failed. " + (response.Error ?? "No completion status was returned."));
-			}
+				throw new InvalidOperationException(
+					"VEGAS command failed. " +
+					(response.Error ?? "No completion status was returned."));
 			completed = true;
-			return string.IsNullOrEmpty(response.ResultJson) ? default(TResult) : JsonConvert.DeserializeObject<TResult>(response.ResultJson);
+			return string.IsNullOrEmpty(response.ResultJson)
+				? default(TResult)
+				: JsonConvert.DeserializeObject<TResult>(response.ResultJson);
 		}
 		catch (Exception invocationException)
 		{
@@ -58,7 +59,10 @@ internal static class VegasScriptCommandExecutor
 			string detail = failedResponse != null && failedResponse.RequestId == envelope.RequestId
 				? failedResponse.Error
 				: null;
-			throw new InvalidOperationException("VEGAS command " + command.CommandType + " failed. " + (detail ?? "The nested script returned no detailed error."), invocationException);
+			throw new InvalidOperationException(
+				"VEGAS command " + command.CommandType + " failed. " +
+				(detail ?? "The nested script returned no detailed error."),
+				invocationException);
 		}
 		finally
 		{
@@ -94,12 +98,15 @@ internal static class VegasScriptCommandExecutor
 
 	private static string GetRequestPath()
 	{
-		return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "AutoEditing.vegas-command.json");
+		return Path.Combine(
+			Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+			"AutoEditing.vegas-command.json");
 	}
 
 	private static CommandEnvelope Read(string path)
 	{
-		return JsonConvert.DeserializeObject<CommandEnvelope>(File.ReadAllText(path)) ?? throw new InvalidOperationException("Could not read the VEGAS command envelope.");
+		return JsonConvert.DeserializeObject<CommandEnvelope>(File.ReadAllText(path)) ??
+			throw new InvalidOperationException("Could not read the VEGAS command envelope.");
 	}
 
 	private static CommandEnvelope TryRead(string path)

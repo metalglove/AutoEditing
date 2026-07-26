@@ -198,7 +198,7 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		BuildMontageCommand = AsyncCommand("Building montage", BuildFromLibraryAsync, () => IsIdle && SongExists);
 		CancelCommand = Command(Cancel, () => IsBusy);
 		ClearLogCommand = Command(ClearLog, () => IsIdle && LogText.Length > 0);
-		NextStepCommand = Command(NextStep, CanGoNext);
+		NextStepCommand = Command(async delegate { await NextStepAsync(); }, CanGoNext);
 		PreviousStepCommand = Command(() => SetStep((WizardStep)Math.Max(0, (int)CurrentStep - 1)), () => IsIdle && CurrentStep != WizardStep.Sources);
 		PreviousClipCommand = Command(() => ChangeClip(-1), () => IsIdle && _reviewPosition > 0);
 		NextClipCommand = Command(() => ChangeClip(1), () => IsIdle && _analysisBatch != null && _reviewPosition + 1 < _analysisBatch.Items.Count);
@@ -286,7 +286,7 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		return Command(async delegate { await RunBusyAsync(title, action); }, canExecute);
 	}
 
-	private void NextStep()
+	private async Task NextStepAsync()
 	{
 		if (CurrentStep == WizardStep.Sources)
 		{
@@ -295,8 +295,12 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		}
 		else if (CurrentStep == WizardStep.SongAnalysis)
 		{
-			SetStep(WizardStep.SfxIndex);
-			if (SfxRootExists) ((RelayCommand)ValidateSfxCommand).Execute(null);
+			await RunBusyAsync("Committing song review", async token =>
+			{
+				await CommitSongReviewAsync(token);
+				SetStep(WizardStep.SfxIndex);
+			});
+			if (CurrentStep == WizardStep.SfxIndex && SfxRootExists) ((RelayCommand)ValidateSfxCommand).Execute(null);
 		}
 		else if (CurrentStep == WizardStep.SfxIndex) SetStep(WizardStep.Analyze);
 		else if (CurrentStep == WizardStep.Analyze) ((RelayCommand)AnalyzeCommand).Execute(null);

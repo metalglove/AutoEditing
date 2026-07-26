@@ -50,6 +50,16 @@ within 2 ms of its assigned musical time.
 velocity and region constraints permit them. Otherwise-unassigned, non-rejected
 events supplement capacity as automatic suggestions.
 
+**MUSIC-REVIEW-004 — Commit regions before montage planning.** A detected
+song analysis whose regions are still proposed is not a reviewed song map and
+must not be used to allocate montage sync points. The editor must review the
+`AE|MUSIC_REGION` regions and commit the song review first. Advancing from the
+song-map wizard step with **Next** performs that commit atomically before the
+wizard changes step; the explicit commit button performs the same operation. This state is
+reported once as an actionable validation error; it must not produce one
+missing-region error for every detected musical event. Proposed musical events
+may supplement sync capacity only after at least one reviewed region exists.
+
 Suggested priority, highest first:
 
 1. drop;

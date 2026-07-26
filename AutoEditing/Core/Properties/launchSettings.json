@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "VEGAS Pro 20 (Deploy)": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files\\VEGAS\\VEGAS Pro 20.0\\vegas200.exe",
+      "workingDirectory": "C:\\Program Files\\VEGAS\\VEGAS Pro 20.0",
+      "nativeDebugging": false
+    }
+  }
+}

@@ -11,9 +11,7 @@ public class EntryPoint
 	{
 		ConfigurationManager.ReloadConfiguration();
 		if (VegasScriptCommandExecutor.TryExecutePending(vegas))
-		{
 			return;
-		}
 		try
 		{
 			vegas.InvokeCommand("View", "AutoEditingShotReview");

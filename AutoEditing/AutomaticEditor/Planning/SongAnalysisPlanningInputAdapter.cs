@@ -37,6 +37,19 @@ public sealed class SongAnalysisPlanningInputAdapter
 			});
 		}
 
+		bool hasUncommittedRegionProposal = input.Regions.Count == 0 &&
+			(analysis.Regions ?? new List<MusicRegion>()).Any((MusicRegion item) =>
+				item != null && item.ReviewState == MusicAnalysisReviewState.Proposed);
+		if (hasUncommittedRegionProposal)
+		{
+			input.Diagnostics.Add(new MontageSongPlanningDiagnostic
+			{
+				Code = "song-review-not-committed",
+				Severity = MontageSongPlanningDiagnosticSeverity.Error,
+				Message = "The song analysis has not been committed. Review the AE|MUSIC_REGION regions in VEGAS, then click Commit song review before building the montage."
+			});
+		}
+
 		foreach (MusicEvent musicEvent in (analysis.Events ?? new List<MusicEvent>())
 			.Where((MusicEvent item) => item != null && item.ReviewState != MusicAnalysisReviewState.Rejected)
 			.OrderBy((MusicEvent item) => item.TimeSeconds)
@@ -129,7 +142,7 @@ public sealed class SongAnalysisPlanningInputAdapter
 				: MontageSongPlanningDiagnosticSeverity.Warning,
 				"The editorial timing offset moves this event outside its reviewed region.", planningEvent, sourceRegion);
 		}
-		else if (sourceRegion == null)
+		else if (sourceRegion == null && input.Regions.Count > 0)
 		{
 			AddDiagnostic(input, "event-without-region", MontageSongPlanningDiagnosticSeverity.Warning,
 				"The reviewed event is not contained by a reviewed song region.", planningEvent, null);

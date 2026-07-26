@@ -47,6 +47,7 @@ namespace AnalysisHarness
 			TestEditorialClassificationAndCapacity();
 			TestTimingOffsetAndDeterminism();
 			TestUnassignedMapUsesSuggestedAnchors();
+			TestUncommittedSongReviewFailsClearly();
 			TestLockedAndRegionBehavior();
 			TestClipOrderUsesRolesAndTimingInsteadOfSequence();
 			TestMontageCrossesContiguousRegionBoundaries();
@@ -226,6 +227,30 @@ namespace AnalysisHarness
 				input.Events.Add(Event("anchor-" + ordinal++, time, MontageSongEventClassification.GameplayAnchor, region.Id));
 			}
 			return input;
+		}
+
+		private static void TestUncommittedSongReviewFailsClearly()
+		{
+			SongAnalysis analysis = new SongAnalysis
+			{
+				Song = new SongIdentity { ContentFingerprint = "uncommitted-song", DurationSeconds = 10.0 },
+				Regions = new List<MusicRegion>
+				{
+					new MusicRegion { Id = "proposed-region", StartSeconds = 0.0, EndSeconds = 10.0, Type = MusicRegionType.Action, ReviewState = MusicAnalysisReviewState.Proposed }
+				},
+				Events = new List<MusicEvent>
+				{
+					new MusicEvent { Id = "proposed-beat-1", TimeSeconds = 1.0, Type = MusicEventType.Beat, ReviewState = MusicAnalysisReviewState.Proposed },
+					new MusicEvent { Id = "proposed-beat-2", TimeSeconds = 2.0, Type = MusicEventType.Beat, ReviewState = MusicAnalysisReviewState.Proposed }
+				}
+			};
+
+			MontageSongPlanningInput input = new SongAnalysisPlanningInputAdapter().Create(analysis);
+			Assert(input.HasErrors, "An uncommitted song-region proposal was accepted for montage planning.");
+			Assert(input.Diagnostics.Count((MontageSongPlanningDiagnostic item) => item.Code == "song-review-not-committed") == 1,
+				"An uncommitted song review did not produce exactly one actionable diagnostic.");
+			Assert(!input.Diagnostics.Any((MontageSongPlanningDiagnostic item) => item.Code == "event-without-region"),
+				"An uncommitted song review emitted one missing-region warning per proposed event.");
 		}
 
 		private static MontageSongPlanningInput CreateReviewedInput()

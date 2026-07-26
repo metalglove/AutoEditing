@@ -328,3 +328,26 @@ and final placement count. `Logger` is the shared logging owner.
 | Audio generation | `MontageAudioBuilder` |
 | End-to-end VEGAS mutation | `MontageOrchestrator` |
 | Markers and operational diagnostics | `TimelineBuilder`, `Logger` |
+
+## LLM iteration boundary
+
+The LLM editor is designed as an iterative planner, not a one-shot timeline
+generator. A candidate plan crosses the same validated file/DTO boundary on
+every iteration. A separate reviewer materializes the candidate in disposable
+editor state, performs deterministic timeline checks, renders selected preview
+windows, and returns structured critique plus visual evidence. The planner then
+returns a complete replacement plan. Only an accepted, revalidated plan can
+advance to an explicitly approved production import.
+
+The .NET 8 LLM process owns orchestration and model communication. The VEGAS
+adapter owns project mutation and rendering. Neither references the other
+directly; the shared domain contains only versioned requests, plans, and
+validation rules.
+
+An edit-workbench UI observes immutable iteration snapshots rather than calling
+the model or VEGAS directly. It presents candidate timeline versions, plan
+diffs, preview evidence, structured decision summaries, confidence, and
+validation findings. User steering is captured as explicit constraints and
+becomes a visible input to the next revision. This makes an editing session
+replayable and auditable without storing or exposing hidden model
+chain-of-thought.

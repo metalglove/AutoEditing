@@ -10,7 +10,7 @@ using ScriptPortal.Vegas;
 
 namespace Core.Scripts;
 
-public sealed class AutoEditingCommandModule : ICustomCommandModule
+internal sealed class AutoEditingCommandModule : ICustomCommandModule
 {
 	private sealed class AutoEditingDockControl : DockableControl
 	{
@@ -66,14 +66,31 @@ public sealed class AutoEditingCommandModule : ICustomCommandModule
 
 	private readonly Queue<Action> _hostActions = new Queue<Action>();
 
+	public AutoEditingCommandModule()
+	{
+		ExtensionLoadDiagnostics.Write(
+			"AutoEditingCommandModule constructed from " + typeof(AutoEditingCommandModule).Assembly.Location);
+	}
+
 	public void InitializeModule(Vegas vegas)
 	{
-		_vegas = vegas;
-		ConfigurationManager.ReloadConfiguration();
+		ExtensionLoadDiagnostics.Write("InitializeModule started.");
+		try
+		{
+			_vegas = vegas;
+			ConfigurationManager.ReloadConfiguration();
+			ExtensionLoadDiagnostics.Write("InitializeModule completed.");
+		}
+		catch (Exception exception)
+		{
+			ExtensionLoadDiagnostics.Write("InitializeModule failed: " + exception);
+			throw;
+		}
 	}
 
 	public ICollection GetCustomCommands()
 	{
+		ExtensionLoadDiagnostics.Write("GetCustomCommands started.");
 		_viewCommand.DisplayName = "AutoEditing Shot Review";
 		_viewCommand.MenuItemName = "AutoEditing Shot Review";
 		_viewCommand.CanAddToKeybindings = true;
@@ -85,6 +102,7 @@ public sealed class AutoEditingCommandModule : ICustomCommandModule
 		_hostCommand.CanAddToKeybindings = false;
 		_hostCommand.CanAddToToolbar = false;
 		_hostCommand.Invoked += HandleHostAction;
+		ExtensionLoadDiagnostics.Write("GetCustomCommands returned View and host commands.");
 		return new CustomCommand[2] { _viewCommand, _hostCommand };
 	}
 

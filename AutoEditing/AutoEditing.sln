@@ -13,36 +13,57 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoEditing.Vegas", "Vegas\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoEditing.LlmEditor", "LlmEditor\AutoEditing.LlmEditor.csproj", "{CD8C3A21-BDF7-4CDF-90CB-8E87720152DE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoEditing.ExtensionBootstrap", "ExtensionBootstrap\AutoEditing.ExtensionBootstrap.csproj", "{82E58193-BD58-4D81-BB2E-065431B1CF50}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalysisHarness", "Tools\AnalysisHarness\AnalysisHarness.csproj", "{D29EA23D-EAB8-49F9-A173-A329186F766A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Deploy|Any CPU = Deploy|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{977E058F-BB49-4CC1-B930-C7EE41D82638}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{977E058F-BB49-4CC1-B930-C7EE41D82638}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{977E058F-BB49-4CC1-B930-C7EE41D82638}.Deploy|Any CPU.ActiveCfg = Deploy|Any CPU
+		{977E058F-BB49-4CC1-B930-C7EE41D82638}.Deploy|Any CPU.Build.0 = Deploy|Any CPU
 		{977E058F-BB49-4CC1-B930-C7EE41D82638}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{977E058F-BB49-4CC1-B930-C7EE41D82638}.Release|Any CPU.Build.0 = Release|Any CPU
 		{10F14BD1-A845-4FA3-B01F-4CFDD0D5365D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{10F14BD1-A845-4FA3-B01F-4CFDD0D5365D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10F14BD1-A845-4FA3-B01F-4CFDD0D5365D}.Deploy|Any CPU.ActiveCfg = Deploy|Any CPU
+		{10F14BD1-A845-4FA3-B01F-4CFDD0D5365D}.Deploy|Any CPU.Build.0 = Deploy|Any CPU
 		{10F14BD1-A845-4FA3-B01F-4CFDD0D5365D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10F14BD1-A845-4FA3-B01F-4CFDD0D5365D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A42FA9A2-4798-459A-90E4-D73F6C8498C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A42FA9A2-4798-459A-90E4-D73F6C8498C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A42FA9A2-4798-459A-90E4-D73F6C8498C7}.Deploy|Any CPU.ActiveCfg = Deploy|Any CPU
+		{A42FA9A2-4798-459A-90E4-D73F6C8498C7}.Deploy|Any CPU.Build.0 = Deploy|Any CPU
 		{A42FA9A2-4798-459A-90E4-D73F6C8498C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A42FA9A2-4798-459A-90E4-D73F6C8498C7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B8153293-32A6-4EA2-924D-86BE109870EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B8153293-32A6-4EA2-924D-86BE109870EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8153293-32A6-4EA2-924D-86BE109870EA}.Deploy|Any CPU.ActiveCfg = Deploy|Any CPU
+		{B8153293-32A6-4EA2-924D-86BE109870EA}.Deploy|Any CPU.Build.0 = Deploy|Any CPU
 		{B8153293-32A6-4EA2-924D-86BE109870EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8153293-32A6-4EA2-924D-86BE109870EA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CD8C3A21-BDF7-4CDF-90CB-8E87720152DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CD8C3A21-BDF7-4CDF-90CB-8E87720152DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD8C3A21-BDF7-4CDF-90CB-8E87720152DE}.Deploy|Any CPU.ActiveCfg = Deploy|Any CPU
+		{CD8C3A21-BDF7-4CDF-90CB-8E87720152DE}.Deploy|Any CPU.Build.0 = Deploy|Any CPU
 		{CD8C3A21-BDF7-4CDF-90CB-8E87720152DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD8C3A21-BDF7-4CDF-90CB-8E87720152DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82E58193-BD58-4D81-BB2E-065431B1CF50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82E58193-BD58-4D81-BB2E-065431B1CF50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82E58193-BD58-4D81-BB2E-065431B1CF50}.Deploy|Any CPU.ActiveCfg = Deploy|Any CPU
+		{82E58193-BD58-4D81-BB2E-065431B1CF50}.Deploy|Any CPU.Build.0 = Deploy|Any CPU
+		{82E58193-BD58-4D81-BB2E-065431B1CF50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82E58193-BD58-4D81-BB2E-065431B1CF50}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D29EA23D-EAB8-49F9-A173-A329186F766A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D29EA23D-EAB8-49F9-A173-A329186F766A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D29EA23D-EAB8-49F9-A173-A329186F766A}.Deploy|Any CPU.ActiveCfg = Deploy|Any CPU
+		{D29EA23D-EAB8-49F9-A173-A329186F766A}.Deploy|Any CPU.Build.0 = Deploy|Any CPU
 		{D29EA23D-EAB8-49F9-A173-A329186F766A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D29EA23D-EAB8-49F9-A173-A329186F766A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection

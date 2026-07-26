@@ -166,9 +166,15 @@ The host and shared libraries reference:
 - NAudio Core and Wasapi 2.2.1;
 - Newtonsoft.Json 13.0.3.
 
-Only `Core` bootstrap code and `AutoEditing.Vegas` reference
+Only `AutoEditing.ExtensionBootstrap`, the Core host, and `AutoEditing.Vegas` reference
 `ScriptPortal.Vegas`. Domain, deterministic planning, and LLM planning remain
 host-independent.
+
+`AutoEditing.ExtensionBootstrap` is the public VEGAS application-extension
+module. It has no project-library dependencies, registers a sibling-assembly
+resolver, and delegates to the internal command module in `Core.dll`. This is
+required because VEGAS inspects extension types before probing adjacent
+dependency DLLs.
 
 Audio analysis is Windows-only because it uses Windows Media Foundation through
 NAudio.
@@ -178,18 +184,57 @@ NAudio.
 Run commands from this directory (`AutoEditing/`):
 
 ```powershell
-dotnet build Core/Core.csproj --configuration Debug
-dotnet build Tools/AnalysisHarness/AnalysisHarness.csproj --configuration Debug
-dotnet build LlmEditor/AutoEditing.LlmEditor.csproj --configuration Debug
+.\build.ps1 -Configuration Debug
 dotnet run --project LlmEditor/AutoEditing.LlmEditor.csproj -- --self-test
 ```
 
-Building `Core` invokes `.vscode/deploy-extension.ps1`, which copies the extension
+The build entry point intentionally limits MSBuild to one worker. With the
+currently installed .NET 10 SDK, parallel solution builds can fail silently
+while evaluating the shared SDK-style project references. Individual projects
+are safe to build directly when only one component is needed.
+
+Pass `-Deploy` when the successful solution build should also install the VEGAS
+extension:
+
+```powershell
+.\build.ps1 -Configuration Debug -Deploy
+```
+
+In Visual Studio, select `Deploy` from the solution configuration dropdown and
+build the solution. This uses separate `bin\Deploy` outputs and installs the
+extension after Core compiles. Debug and Release builds only compile.
+
+For build, deploy, and launch:
+
+1. right-click `Core` in Solution Explorer and choose **Set as Startup Project**;
+2. select `VEGAS Pro 20 (Deploy)` in the launch-profile dropdown;
+3. select the `Deploy` solution configuration; and
+4. choose **Debug → Start Without Debugging** or press **Ctrl+F5**.
+
+The launch profile is defined in `Core/Properties/launchSettings.json` and
+launches the installed VEGAS Pro 20 host with its installation directory as the
+working directory. Visual Studio stores the startup-project and selected-profile
+choices in per-user solution state, so they may need to be selected once after
+cloning or reopening the solution.
+
+Do not use **Start Debugging** (`F5`) for this host configuration. Visual
+Studio's managed-debugger attachment causes VEGAS Pro 20 to terminate during
+startup on the current development machine. `Ctrl+F5` still performs the Deploy
+build and launches the newly installed extension. Debugger attachment should be
+treated as a separate compatibility investigation rather than part of the
+normal deployment workflow.
+
+Deployment invokes `.vscode/deploy-extension.ps1`, which copies the extension
 and runtime dependencies to:
 
 ```text
-Documents\Vegas Application Extensions
+%PROGRAMDATA%\Vegas Pro\Application Extensions
 ```
+
+The deployment script migrates an existing `appsettings.local.json` from the
+former Documents-based deployment on first use and never overwrites the
+destination's machine-local override. The current Windows user needs Modify
+permission on this directory for non-administrator Visual Studio deployment.
 
 Close VEGAS before building so its loaded assemblies do not block deployment.
 Restart VEGAS after deployment, then open:

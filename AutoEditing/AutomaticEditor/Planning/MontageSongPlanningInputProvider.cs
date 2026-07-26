@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using Core.Domain.Audio;
 using Core.Domain.Audio.SongAnalysis;
 
@@ -35,7 +36,11 @@ public sealed class MontageSongPlanningInputProvider
 		MontageSongPlanningInput input = new SongAnalysisPlanningInputAdapter().Create(analysis);
 		if (input.HasErrors)
 		{
-			throw new InvalidDataException("The reviewed song map contains planning errors: " + string.Join(" ", input.Diagnostics.ConvertAll((MontageSongPlanningDiagnostic item) => item.Message)));
+			throw new InvalidDataException("The reviewed song map contains planning errors: " +
+				string.Join(" ", input.Diagnostics
+					.Where((MontageSongPlanningDiagnostic item) => item.Severity == MontageSongPlanningDiagnosticSeverity.Error)
+					.Select((MontageSongPlanningDiagnostic item) => item.Message)
+					.Distinct(StringComparer.Ordinal)));
 		}
 		reviewedAnalysis = analysis;
 		return input;

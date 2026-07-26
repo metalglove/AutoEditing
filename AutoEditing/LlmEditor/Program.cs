@@ -1,4 +1,6 @@
 using Core.Domain.Planning;
+using AutoEditing.LlmEditor.Inference;
+using AutoEditing.LlmEditor.Planning;
 using Newtonsoft.Json;
 
 namespace AutoEditing.LlmEditor;
@@ -20,26 +22,21 @@ internal static class Program
 			PrintUsage();
 			return UsageOrValidationFailure;
 		}
-		if (!string.Equals(args[6], "fake", StringComparison.Ordinal))
-		{
-			Console.Error.WriteLine("Unknown planner '" + args[6] + "'. This skeleton supports only 'fake'.");
-			return UsageOrValidationFailure;
-		}
-
 		try
 		{
 			EditPlanningRequest request = EditPlanDocumentSerializer.ReadRequest(args[2]);
-			IEditPlanner planner = new FakeLlmEditPlanner();
+			IEditPlanner planner = CreatePlanner(args[6]);
 			EditPlanDocument document = await planner.CreatePlanAsync(request, CancellationToken.None);
 			if (!string.Equals(document.RequestId, request.RequestId, StringComparison.Ordinal))
 				throw new InvalidOperationException("The edit plan request ID does not match its planning request.");
 			EditPlanDocumentSerializer.WritePlanNew(args[4], document);
-			Console.WriteLine("Wrote deterministic skeleton plan: " + Path.GetFullPath(args[4]));
+			Console.WriteLine("Wrote validated edit plan: " + Path.GetFullPath(args[4]));
 			return Success;
 		}
 		catch (Exception exception) when (
 			exception is JsonException ||
 			exception is IOException ||
+			exception is InvalidDataException ||
 			exception is InvalidOperationException ||
 			exception is ArgumentException ||
 			exception is NotSupportedException)
@@ -54,9 +51,25 @@ internal static class Program
 		}
 	}
 
+	private static IEditPlanner CreatePlanner(string planner)
+	{
+		if (string.Equals(planner, "fake", StringComparison.Ordinal))
+			return new FakeLlmEditPlanner();
+		if (string.Equals(planner, "local", StringComparison.Ordinal))
+		{
+			OpenAiCompatibleOptions options = OpenAiCompatibleOptions.FromEnvironment();
+			return new LlmEditPlanner(
+				new OpenAiCompatibleTextGenerationClient(new HttpClient(), options));
+		}
+
+		throw new ArgumentException(
+			"Unknown planner '" + planner + "'. Expected 'fake' or 'local'.");
+	}
+
 	private static void PrintUsage()
 	{
 		Console.Error.WriteLine(
-			"Usage: AutoEditing.LlmEditor plan --request <request.json> --output <plan.json> --planner fake");
+			"Usage: AutoEditing.LlmEditor plan --request <request.json> --output <plan.json> " +
+			"--planner <fake|local>");
 	}
 }

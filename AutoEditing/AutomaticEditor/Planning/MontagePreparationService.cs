@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Core.Domain;
 using Core.Domain.Audio;
 using Core.Domain.Clip;
@@ -27,8 +28,12 @@ public sealed class MontagePreparationService
 		{
 			/* Only the error diagnostics explain the failure; informational lines such as the automatic
 			   anchor-suggestion count otherwise read as the cause. */
-			List<MontageSongPlanningDiagnostic> failures = result.Diagnostics.FindAll((MontageSongPlanningDiagnostic item) => item.Severity == MontageSongPlanningDiagnosticSeverity.Error);
-			throw new System.InvalidOperationException("The reviewed song map cannot be planned: " + string.Join(" ", failures.ConvertAll((MontageSongPlanningDiagnostic item) => item.Message)));
+			throw new System.InvalidOperationException("The reviewed song map cannot be planned: " +
+				string.Join(" ", result.Diagnostics
+					.Where((MontageSongPlanningDiagnostic item) => item.Severity == MontageSongPlanningDiagnosticSeverity.Error)
+					.Select((MontageSongPlanningDiagnostic item) => item.Message)
+					.Distinct(System.StringComparer.Ordinal)
+					.ToList()));
 		}
 		EffectTreatmentPlan effectTreatments = reviewedAnalysis == null
 			? new EffectTreatmentPlan()

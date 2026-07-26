@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <!-- Keep project configuration discovery aligned with AutoEditing.sln so
+         Visual Studio exposes Deploy for every SDK-style project. -->
+    <Configurations>Debug;Release;Deploy</Configurations>
+  </PropertyGroup>
+
+  <!-- Deploy retains debug symbols for diagnostics, but VEGAS should normally
+       be launched with Ctrl+F5 because managed-debugger attachment destabilizes
+       the current VEGAS Pro 20 host. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Deploy'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>portable</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+  </PropertyGroup>
+</Project>
