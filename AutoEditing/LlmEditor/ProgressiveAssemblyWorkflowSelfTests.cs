@@ -190,7 +190,7 @@ internal static class ProgressiveAssemblyWorkflowSelfTests
 				request,
 				Clone(sketch),
 				CancellationToken.None)
-			.GetAwaiter().GetResult();
+			.AwaitWith(driver);
 
 		string checkpointRoot = Path.Combine(
 			publisher.SessionRoot, "assembly", "checkpoints", "0001");
@@ -274,7 +274,7 @@ internal static class ProgressiveAssemblyWorkflowSelfTests
 		EditPlanDocument result = new AssemblyCoordinator(
 				planner, automation, publisher, "progressive-run", previews)
 			.RunProgressiveAsync(request, sketch, CancellationToken.None)
-			.GetAwaiter().GetResult();
+			.AwaitWith(driver);
 
 		Assert(planner.CreateSketchCalls == 0,
 			"The coordinator regenerated a persisted sketch instead of executing it.");
@@ -390,7 +390,7 @@ internal static class ProgressiveAssemblyWorkflowSelfTests
 				request,
 				sketch,
 				CancellationToken.None)
-			.GetAwaiter().GetResult();
+			.AwaitWith(driver);
 
 		Assert(
 			result.Montage.Placements.Count == 2 &&
@@ -447,7 +447,7 @@ internal static class ProgressiveAssemblyWorkflowSelfTests
 						request,
 						sketch,
 						CancellationToken.None)
-					.GetAwaiter().GetResult(),
+					.AwaitWith(firstAction),
 				"injected materialization interruption",
 				"The revision interruption was not injected after its proposal was saved.");
 		}
@@ -492,7 +492,7 @@ internal static class ProgressiveAssemblyWorkflowSelfTests
 			.ResumeProgressiveAsync(
 				inspection.ResumePlan!,
 				CancellationToken.None)
-			.GetAwaiter().GetResult();
+			.AwaitWith(remainingActions);
 
 		Assert(planner.RevisionContexts.Count == 1,
 			"Recovery duplicated the LLM revision call after its proposal was durable.");
@@ -545,7 +545,7 @@ internal static class ProgressiveAssemblyWorkflowSelfTests
 				request,
 				Clone(sketch),
 				CancellationToken.None)
-			.GetAwaiter().GetResult();
+			.AwaitWith(driver);
 
 		AssemblySessionState completed =
 			new AssemblyActionStore(publisher.SessionRoot).ReadState()
@@ -621,7 +621,7 @@ internal static class ProgressiveAssemblyWorkflowSelfTests
 						request,
 						sketch,
 						CancellationToken.None)
-					.GetAwaiter().GetResult(),
+					.AwaitWith(firstAction),
 				"injected materialization interruption",
 				"The reset interruption was not injected after cleanup.");
 		}
@@ -659,7 +659,7 @@ internal static class ProgressiveAssemblyWorkflowSelfTests
 			.ResumeProgressiveAsync(
 				inspection.ResumePlan!,
 				CancellationToken.None)
-			.GetAwaiter().GetResult();
+			.AwaitWith(remainingActions);
 
 		string resetScope = "reset-" + pending.Action.ActionId;
 		string[] resetKeys = automation.MaterializeCalls
@@ -1093,6 +1093,9 @@ internal static class ProgressiveAssemblyWorkflowSelfTests
 		}
 	}
 
+	private static T AwaitWith<T>(this Task<T> coordinator, ProgressiveActionDriver driver) =>
+		driver.Await(coordinator);
+
 	private sealed record ScriptedProgressiveAction(
 		int Checkpoint,
 		AssemblyActionKind Kind,
@@ -1100,7 +1103,14 @@ internal static class ProgressiveAssemblyWorkflowSelfTests
 
 	private sealed class ProgressiveActionDriver : IDisposable
 	{
+		// A passing coordinator run finishes in well under a second; this only
+		// bounds how long a lost action can stall the suite.
+		private static readonly TimeSpan CoordinatorTimeout = TimeSpan.FromSeconds(60);
+		private const int MaximumResubmissions = 3;
+
 		private readonly CancellationTokenSource cancellation = new();
+		private readonly string sessionRoot;
+		private readonly LinkedList<ScriptedProgressiveAction> scripted;
 		private readonly Task task;
 		public List<AssemblyActionKind> SubmittedActionKinds { get; } = new();
 
@@ -1109,26 +1119,28 @@ internal static class ProgressiveAssemblyWorkflowSelfTests
 			string sessionId,
 			IEnumerable<ScriptedProgressiveAction> actions)
 		{
+			this.sessionRoot = sessionRoot;
+			scripted = new LinkedList<ScriptedProgressiveAction>(actions);
 			long initialStateRevision = -1;
 			string statePath = Path.Combine(
 				sessionRoot, "assembly", "state.json");
 			if (File.Exists(statePath))
 			{
-				try
-				{
-					initialStateRevision =
-						ContractSerializer.Deserialize<AssemblySessionState>(
-							File.ReadAllText(statePath)).StateRevision;
-				}
-				catch (IOException) { }
+				initialStateRevision = ReadStateWithRetry(statePath)?.StateRevision ?? -1;
 			}
 			task = DriveAsync(
 				sessionRoot,
 				sessionId,
-				new Queue<ScriptedProgressiveAction>(actions),
+				scripted,
 				initialStateRevision,
 				cancellation.Token,
 				SubmittedActionKinds);
+		}
+
+		public T Await<T>(Task<T> coordinator)
+		{
+			WaitForCoordinator(coordinator);
+			return coordinator.GetAwaiter().GetResult();
 		}
 
 		public void Dispose()
@@ -1139,34 +1151,135 @@ internal static class ProgressiveAssemblyWorkflowSelfTests
 			cancellation.Dispose();
 		}
 
+		// The coordinator polls for actions forever, so a driver that faulted or
+		// lost an action would otherwise hang the whole self-test run.
+		private void WaitForCoordinator(Task coordinator)
+		{
+			System.Diagnostics.Stopwatch elapsed =
+				System.Diagnostics.Stopwatch.StartNew();
+			while (!coordinator.IsCompleted)
+			{
+				if (task.IsFaulted)
+					throw new InvalidOperationException(
+						"The scripted progressive reviewer failed, so the coordinator " +
+						"would wait forever for its next action. " + Describe(),
+						task.Exception!.GetBaseException());
+				if (elapsed.Elapsed > CoordinatorTimeout)
+					throw new TimeoutException(
+						"The progressive coordinator did not finish within " +
+						CoordinatorTimeout.TotalSeconds + " seconds. " + Describe());
+				Task.WhenAny(coordinator, task, Task.Delay(50)).Wait();
+			}
+		}
+
+		private string Describe()
+		{
+			string assembly = Path.Combine(sessionRoot, "assembly");
+			string statePath = Path.Combine(assembly, "state.json");
+			AssemblySessionState? state =
+				File.Exists(statePath) ? ReadStateWithRetry(statePath) : null;
+			string dispositions = Path.Combine(assembly, "action-dispositions");
+			string[] recorded = Directory.Exists(dispositions)
+				? Directory.EnumerateFiles(dispositions, "*.json")
+					.Select(path => Path.GetFileName(path))
+					.OrderBy(name => name, StringComparer.Ordinal)
+					.ToArray()
+				: Array.Empty<string>();
+			lock (scripted)
+			{
+				return "Driver=" + task.Status +
+					", state=" + (state == null
+						? "missing"
+						: state.Phase + "@" + state.Checkpoint +
+							" revision " + state.StateRevision) +
+					", submitted=[" + string.Join(",", SubmittedActionKinds) + "]" +
+					", unsent=[" + string.Join(",", scripted.Select(item =>
+						item.Checkpoint + ":" + item.Kind)) + "]" +
+					", dispositions=[" + string.Join(",", recorded) + "].";
+			}
+		}
+
+		// The coordinator replaces state.json atomically, but on Windows a read that
+		// overlaps the replacement can still see access denied or a vanished file.
+		private static AssemblySessionState? ReadStateWithRetry(string statePath)
+		{
+			for (int attempt = 1; ; attempt++)
+			{
+				try
+				{
+					return ContractSerializer.Deserialize<AssemblySessionState>(
+						File.ReadAllText(statePath));
+				}
+				catch (Exception exception) when (
+					attempt < 20 && IsTransientStateReadFailure(exception))
+				{
+					Thread.Sleep(10);
+				}
+				catch (Exception exception) when (IsTransientStateReadFailure(exception))
+				{
+					return null;
+				}
+			}
+		}
+
+		private static bool IsTransientStateReadFailure(Exception exception) =>
+			exception is IOException or UnauthorizedAccessException or
+				Newtonsoft.Json.JsonException;
+
 		private static async Task DriveAsync(
 			string sessionRoot,
 			string sessionId,
-			Queue<ScriptedProgressiveAction> scripted,
+			LinkedList<ScriptedProgressiveAction> scripted,
 			long initialStateRevision,
 			CancellationToken cancellationToken,
 			List<AssemblyActionKind> submittedActionKinds)
 		{
 			string statePath = Path.Combine(sessionRoot, "assembly", "state.json");
 			string actionDirectory = Path.Combine(sessionRoot, "assembly", "actions");
+			string dispositionDirectory = Path.Combine(
+				sessionRoot, "assembly", "action-dispositions");
 			long lastHandledRevision = -1;
-			while (scripted.Count > 0)
+			(string ActionFile, ScriptedProgressiveAction Scripted)? inFlight = null;
+			Dictionary<ScriptedProgressiveAction, int> resubmissions =
+				new(ReferenceEqualityComparer.Instance);
+			while (scripted.Count > 0 || inFlight != null)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				if (File.Exists(statePath))
+				if (inFlight is { } submitted && Directory.Exists(dispositionDirectory))
 				{
-					AssemblySessionState state;
-					try
+					string? disposition = Directory
+						.EnumerateFiles(dispositionDirectory, submitted.ActionFile + ".*.json")
+						.Select(Path.GetFileName)
+						.FirstOrDefault();
+					if (disposition != null)
 					{
-						state = ContractSerializer.Deserialize<AssemblySessionState>(
-							File.ReadAllText(statePath));
+						inFlight = null;
+						if (disposition.Contains(".quarantined.", StringComparison.Ordinal))
+						{
+							// A human would click again after a rejected action; do the
+							// same so one lost race does not strand the coordinator.
+							resubmissions.TryGetValue(submitted.Scripted, out int count);
+							if (count >= MaximumResubmissions)
+								throw new InvalidOperationException(
+									"The coordinator repeatedly quarantined scripted action " +
+									submitted.Scripted.Kind + ": " + disposition);
+							resubmissions[submitted.Scripted] = count + 1;
+							lock (scripted) scripted.AddFirst(submitted.Scripted);
+							lastHandledRevision = -1;
+						}
 					}
-					catch (IOException)
+				}
+				// Wait for the coordinator to consume or quarantine each action before
+				// sending the next, so a resubmission can never overtake later actions.
+				if (inFlight == null && scripted.Count > 0 && File.Exists(statePath))
+				{
+					AssemblySessionState? state = ReadStateWithRetry(statePath);
+					if (state == null)
 					{
 						await Task.Delay(10, cancellationToken);
 						continue;
 					}
-					ScriptedProgressiveAction next = scripted.Peek();
+					ScriptedProgressiveAction next = scripted.First!.Value;
 					string executionRoot = Path.Combine(
 						sessionRoot,
 						"assembly",
@@ -1191,7 +1304,7 @@ internal static class ProgressiveAssemblyWorkflowSelfTests
 						state.StateRevision != lastHandledRevision)
 					{
 						lastHandledRevision = state.StateRevision;
-						scripted.Dequeue();
+						lock (scripted) scripted.RemoveFirst();
 						Directory.CreateDirectory(actionDirectory);
 						AssemblyAction action = new()
 						{
@@ -1209,10 +1322,16 @@ internal static class ProgressiveAssemblyWorkflowSelfTests
 									: AssemblySteeringScope.CurrentClip,
 							CreatedUtc = DateTimeOffset.UtcNow
 						};
-						submittedActionKinds.Add(action.Kind);
+						lock (scripted) submittedActionKinds.Add(action.Kind);
+						// Publish the action atomically: the coordinator quarantines a
+						// half-written *.json it happens to read as malformed.
+						string actionFile = action.ActionId + ".json";
+						string temporaryPath = Path.Combine(
+							actionDirectory, "." + actionFile + ".tmp");
 						File.WriteAllText(
-							Path.Combine(actionDirectory, action.ActionId + ".json"),
-							ContractSerializer.Serialize(action));
+							temporaryPath, ContractSerializer.Serialize(action));
+						File.Move(temporaryPath, Path.Combine(actionDirectory, actionFile));
+						inFlight = (actionFile, next);
 					}
 				}
 				await Task.Delay(10, cancellationToken);
