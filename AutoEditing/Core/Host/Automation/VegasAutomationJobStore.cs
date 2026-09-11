@@ -88,8 +88,10 @@ namespace Core.Host.Automation
 				return null;
 			try
 			{
-				return ContractSerializer.Deserialize<VegasJobResponse>(
+				VegasJobResponse response = ContractSerializer.Deserialize<VegasJobResponse>(
 					File.ReadAllText(path, Encoding.UTF8));
+				// Earlier builds also journaled failures; those must not block a retry.
+				return response?.Status == VegasJobStatus.Completed ? response : null;
 			}
 			catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is Newtonsoft.Json.JsonException)
 			{
@@ -107,8 +109,10 @@ namespace Core.Host.Automation
 			string responsePath = ResponsePath(response.JobId);
 			// The single-file journal entry is the authoritative completed-operation
 			// record. Write it first so a crash cannot cause the operation to repeat.
+			// Only a completed operation is journaled: failed, cancelled and expired
+			// attempts must stay retryable under the same idempotency key.
 			string idempotencyPath = IdempotencyPath(claim.Envelope.IdempotencyKey);
-			if (!File.Exists(idempotencyPath))
+			if (response.Status == VegasJobStatus.Completed && !File.Exists(idempotencyPath))
 				WriteAtomic(idempotencyPath, ContractSerializer.Serialize(response));
 			WriteAtomic(responsePath, ContractSerializer.Serialize(response));
 			DeleteClaim(claim);

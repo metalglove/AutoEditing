@@ -63,6 +63,7 @@ namespace Core.Host.Automation
 				Assert(File.Exists(Path.Combine(configuration.RequestsDirectory, staleClaim.RequestName)),
 					"The stale claim was not returned to requests.");
 
+				await VerifyFailedAttemptsStayRetryableAsync(root, clock);
 				await VerifyTypedRequestBridgeAsync(clock);
 				await VerifySessionPumpProcessesOnlyOneJobAsync(root, clock);
 				VerifyProjectIdentity();
@@ -73,6 +74,50 @@ namespace Core.Host.Automation
 					Directory.Delete(root, true);
 			}
 		}
+
+		private static async Task VerifyFailedAttemptsStayRetryableAsync(string testRoot, FakeClock clock)
+		{
+			VegasAutomationConfiguration configuration =
+				new VegasAutomationConfiguration(Path.Combine(testRoot, "retry-session"), TimeSpan.FromMinutes(5));
+			VegasAutomationJobStore store = new VegasAutomationJobStore(configuration, clock);
+			store.EnsureDirectories();
+			int executions = 0;
+			VegasAutomationDispatcher dispatcher = new VegasAutomationDispatcher(
+				store,
+				(envelope, cancellationToken) =>
+				{
+					executions++;
+					if (executions == 1)
+						throw new InvalidOperationException("Transient VEGAS failure.");
+					return Task.FromResult(new VegasJobResponse
+					{
+						Status = VegasJobStatus.Completed,
+						Result = new JObject { ["attempt"] = executions }
+					});
+				},
+				clock);
+
+			WriteRequest(configuration, "0001-retry-1.json", CreateEnvelope("retry-1", "retried-operation", clock.UtcNow));
+			Assert(await dispatcher.TryProcessNextAsync(CancellationToken.None), "The failing attempt was not processed.");
+			Assert(ReadResponse(configuration, "retry-1").Status == VegasJobStatus.Failed,
+				"The failing attempt did not report failure.");
+			Assert(store.FindCompletedByIdempotencyKey("retried-operation") == null,
+				"A failed attempt was journaled as the idempotent result.");
+
+			WriteRequest(configuration, "0002-retry-2.json", CreateEnvelope("retry-2", "retried-operation", clock.UtcNow));
+			Assert(await dispatcher.TryProcessNextAsync(CancellationToken.None), "The retry was not processed.");
+			Assert(executions == 2, "A retry after a failed attempt replayed the failure instead of running.");
+			Assert(ReadResponse(configuration, "retry-2").Status == VegasJobStatus.Completed,
+				"The retry after a failed attempt did not complete.");
+
+			WriteRequest(configuration, "0003-retry-3.json", CreateEnvelope("retry-3", "retried-operation", clock.UtcNow));
+			Assert(await dispatcher.TryProcessNextAsync(CancellationToken.None), "The duplicate was not processed.");
+			Assert(executions == 2, "A completed operation re-executed after it was journaled.");
+		}
+
+		private static VegasJobResponse ReadResponse(VegasAutomationConfiguration configuration, string jobId) =>
+			ContractSerializer.Deserialize<VegasJobResponse>(
+				File.ReadAllText(Path.Combine(configuration.ResponsesDirectory, jobId + ".response.json")));
 
 		private static void VerifyProjectIdentity()
 		{

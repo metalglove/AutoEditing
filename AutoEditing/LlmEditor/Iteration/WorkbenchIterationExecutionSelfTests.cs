@@ -42,6 +42,27 @@ internal static class WorkbenchIterationExecutionSelfTests
 			File.ReadAllText(Path.Combine(publisher.SessionRoot, "manifest.json")));
 		Assert(manifest.State == EditSessionState.Accepted && manifest.CurrentIteration == 1,
 			"Accepted session state was not persisted.");
+
+		// Re-running the same iteration must reach VEGAS again for snapshot and cleanup;
+		// only the plan-bound preflight and materialize keys stay stable.
+		WorkbenchSessionPublisher retryPublisher = WorkbenchSessionPublisher.Create(sessions, "execution-retry");
+		retryPublisher.TransitionTo(EditSessionState.Planning, "test");
+		new WorkbenchIterationExecutionService(
+			new FakePlanner(plan),
+			new AcceptingReviewer(),
+			automation,
+			new FakePreview(),
+			retryPublisher,
+			iteration => new CandidateWorkspaceId
+			{
+				SessionId = "execution-test", Iteration = iteration, Nonce = "test"
+			}).RunAsync(request, plan, 2, CancellationToken.None).GetAwaiter().GetResult();
+		Assert(automation.KeysFor(VegasOperations.GetCandidateSnapshot).Distinct().Count() == 2,
+			"A re-run iteration reused the snapshot idempotency key and would replay a stale timeline.");
+		Assert(automation.KeysFor(VegasOperations.CleanupCandidate).Distinct().Count() == 2,
+			"A re-run iteration reused the cleanup idempotency key and would leave candidate tracks behind.");
+		Assert(automation.KeysFor(VegasOperations.MaterializeCandidate).Distinct().Count() == 1,
+			"Materialization lost its stable idempotency key.");
 	}
 
 	private static void Assert(bool condition, string message)
@@ -52,12 +73,19 @@ internal static class WorkbenchIterationExecutionSelfTests
 	private sealed class FakeAutomation : IVegasAutomationClient
 	{
 		public List<string> Operations { get; } = new();
+		private readonly List<string> keys = new();
+
+		public IEnumerable<string> KeysFor(string operation) =>
+			Operations.Select((item, index) => (item, index))
+				.Where(entry => entry.item == operation)
+				.Select(entry => keys[entry.index]);
 
 		public Task<TResult> ExecuteAsync<TRequest, TResult>(
 			string operation, TRequest request, string idempotencyKey,
 			TimeSpan? timeout = null, CancellationToken cancellationToken = default)
 		{
 			Operations.Add(operation);
+			keys.Add(idempotencyKey);
 			object result = operation switch
 			{
 				VegasOperations.PreflightCandidate => new PreflightCandidateResult { IsReady = true },

@@ -95,7 +95,9 @@ internal sealed class WorkbenchIterationExecutionService
 						await automation.ExecuteAsync<GetCandidateSnapshotRequest, CandidateTimelineSnapshot>(
 							VegasOperations.GetCandidateSnapshot,
 							new GetCandidateSnapshotRequest { Workspace = workspace },
-							$"iteration-{iteration:D4}-snapshot",
+							// Snapshots and cleanup must reach VEGAS every time; a replayed
+							// result would describe or remove a candidate that no longer exists.
+							$"iteration-{iteration:D4}-snapshot-{Guid.NewGuid():N}",
 							cancellationToken: cancellationToken);
 					if (created.CreatedEventCount == 0 || timeline.Tracks.Count == 0)
 						throw new InvalidOperationException("VEGAS returned an empty candidate after materialization.");
@@ -174,7 +176,7 @@ internal sealed class WorkbenchIterationExecutionService
 			await automation.ExecuteAsync<CleanupCandidateRequest, CleanupCandidateResult>(
 				VegasOperations.CleanupCandidate,
 				new CleanupCandidateRequest { Workspace = workspace },
-				$"iteration-{iteration:D4}-cleanup");
+				$"iteration-{iteration:D4}-cleanup-{Guid.NewGuid():N}");
 		}
 		catch
 		{

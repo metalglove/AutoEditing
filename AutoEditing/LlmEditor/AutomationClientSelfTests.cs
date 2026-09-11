@@ -92,6 +92,46 @@ internal static class AutomationClientSelfTests
 			cancellation.Cancel();
 			await AssertThrowsAsync<OperationCanceledException>(async () => await cancelled,
 				"Cancellation did not stop response polling.");
+
+			// A failed attempt is retried as a fresh request instead of replaying the failure.
+			Task<TestResult> failing = client.ExecuteAsync<TestRequest, TestResult>(
+				VegasOperations.GetCandidateSnapshot,
+				new TestRequest { Value = 15 },
+				"retry-after-failure");
+			VegasJobEnvelope failedAttempt = await WaitForEnvelope(root, expectedCount: 5);
+			WriteFailure(root, failedAttempt, VegasJobStatus.Failed);
+			await AssertThrowsAsync<VegasAutomationException>(async () => await failing,
+				"A failed VEGAS response was not surfaced.");
+			Task<TestResult> retried = client.ExecuteAsync<TestRequest, TestResult>(
+				VegasOperations.GetCandidateSnapshot,
+				new TestRequest { Value = 15 },
+				"retry-after-failure");
+			VegasJobEnvelope retryAttempt = await WaitForNewerAttempt(root, failedAttempt);
+			Assert(retryAttempt.JobId == failedAttempt.JobId && retryAttempt.DeadlineUtc > failedAttempt.DeadlineUtc,
+				"A retry after a failed attempt did not publish a fresh attempt.");
+			WriteResponse(root, retryAttempt, new TestResult { Value = 16 });
+			Assert((await retried).Value == 16, "A retry after a failed attempt replayed the failure.");
+
+			// A request that timed out before VEGAS ran it is re-published with a new deadline.
+			Task<TestResult> unanswered = client.ExecuteAsync<TestRequest, TestResult>(
+				VegasOperations.GetCandidateSnapshot,
+				new TestRequest { Value = 17 },
+				"retry-after-expiry",
+				timeout: TimeSpan.FromMilliseconds(100));
+			await AssertThrowsAsync<TimeoutException>(async () => await unanswered,
+				"An unanswered request did not time out.");
+			VegasJobEnvelope expiredAttempt = await WaitForEnvelope(root, expectedCount: 6);
+			Task<TestResult> resubmitted = client.ExecuteAsync<TestRequest, TestResult>(
+				VegasOperations.GetCandidateSnapshot,
+				new TestRequest { Value = 17 },
+				"retry-after-expiry");
+			VegasJobEnvelope freshAttempt = await WaitForNewerAttempt(root, expiredAttempt);
+			VegasJobEnvelope spooled = ContractSerializer.Deserialize<VegasJobEnvelope>(
+				File.ReadAllText(Path.Combine(root, "ipc", "requests", freshAttempt.JobId + ".json")));
+			Assert(freshAttempt.DeadlineUtc > expiredAttempt.DeadlineUtc && spooled.DeadlineUtc == freshAttempt.DeadlineUtc,
+				"An expired request was re-spooled with its stale deadline.");
+			WriteResponse(root, freshAttempt, new TestResult { Value = 18 });
+			Assert((await resubmitted).Value == 18, "A retry after an expired request did not complete.");
 		}
 		finally
 		{
@@ -116,6 +156,47 @@ internal static class AutomationClientSelfTests
 			await Task.Delay(10);
 		}
 		throw new TimeoutException("Automation request was not published.");
+	}
+
+	private static async Task<VegasJobEnvelope> WaitForNewerAttempt(string root, VegasJobEnvelope previous)
+	{
+		string path = Path.Combine(root, "submissions", previous.JobId + ".json");
+		for (int attempt = 0; attempt < 100; attempt++)
+		{
+			try
+			{
+				VegasJobEnvelope current = ContractSerializer.Deserialize<VegasJobEnvelope>(File.ReadAllText(path));
+				if (current.Sequence > previous.Sequence) return current;
+			}
+			catch (IOException)
+			{
+				// The submission is being replaced atomically; read it again.
+			}
+			await Task.Delay(10);
+		}
+		throw new TimeoutException("The retry was not published as a fresh attempt.");
+	}
+
+	private static void WriteFailure(string root, VegasJobEnvelope envelope, VegasJobStatus status)
+	{
+		VegasJobResponse response = new()
+		{
+			SessionId = envelope.SessionId,
+			JobId = envelope.JobId,
+			Status = status,
+			StartedUtc = DateTimeOffset.UtcNow,
+			CompletedUtc = DateTimeOffset.UtcNow,
+			Error = new AutomationError
+			{
+				Code = "dispatch-failed",
+				Stage = "dispatch",
+				Message = "Fixture failure.",
+				IsTransient = true
+			}
+		};
+		new AtomicFileWriter().WriteText(
+			Path.Combine(root, "ipc", "responses", envelope.JobId + ".response.json"),
+			ContractSerializer.Serialize(response));
 	}
 
 	private static void WriteResponse(

@@ -83,11 +83,18 @@ internal sealed class FileVegasAutomationClient : IVegasAutomationClient
 			if (existing != null)
 			{
 				ValidateIdempotentReuse(existing, operation, payload, idempotencyKey);
-				if (!File.Exists(paths.Request(jobId)) &&
-					!File.Exists(paths.RunningJob(jobId)) &&
-					!File.Exists(paths.Response(jobId)))
-					writer.WriteText(paths.Request(jobId), ContractSerializer.Serialize(existing));
-				return existing;
+				if (!RequiresNewAttempt(existing, jobId))
+				{
+					if (!File.Exists(paths.Request(jobId)) &&
+						!File.Exists(paths.RunningJob(jobId)) &&
+						!File.Exists(paths.Response(jobId)))
+						writer.WriteText(paths.Request(jobId), ContractSerializer.Serialize(existing));
+					return existing;
+				}
+				// The previous attempt failed or expired before running. Publish a fresh
+				// attempt under the same job id so the retry gets a new deadline instead
+				// of replaying the old failure.
+				File.Delete(paths.Response(jobId));
 			}
 
 			DateTimeOffset created = DateTimeOffset.UtcNow;
@@ -178,6 +185,20 @@ internal sealed class FileVegasAutomationClient : IVegasAutomationClient
 			return ContractSerializer.Deserialize<VegasJobEnvelope>(File.ReadAllText(path));
 		}
 		return null;
+	}
+
+	private bool RequiresNewAttempt(VegasJobEnvelope existing, string jobId)
+	{
+		string responsePath = paths.Response(jobId);
+		if (File.Exists(responsePath))
+		{
+			VegasJobResponse response = ContractSerializer.Deserialize<VegasJobResponse>(
+				File.ReadAllText(responsePath));
+			return IsTerminal(response.Status) && response.Status != VegasJobStatus.Completed;
+		}
+		if (File.Exists(paths.RunningJob(jobId))) return false;
+		// A request still waiting (or lost) past its deadline can only expire.
+		return existing.DeadlineUtc <= DateTimeOffset.UtcNow;
 	}
 
 	private long FindNextSequence()
