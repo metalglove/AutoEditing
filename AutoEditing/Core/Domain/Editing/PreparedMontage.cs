@@ -10,6 +10,7 @@ public sealed class PreparedMontage
 	public MontageSongPlanningInput SongPlan { get; set; }
 	public List<MontageSyncAssignment> SyncAssignments { get; set; } = new List<MontageSyncAssignment>();
 	public List<MontageSongPlanningDiagnostic> PlanningDiagnostics { get; set; } = new List<MontageSongPlanningDiagnostic>();
+	public List<MontageTimelineGap> TimelineGaps { get; set; } = new List<MontageTimelineGap>();
 	public EffectSelectionOptions EffectOptions { get; set; } = new EffectSelectionOptions();
 	public EffectTreatmentPlan EffectTreatments { get; set; } = new EffectTreatmentPlan();
 }

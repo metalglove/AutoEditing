@@ -591,6 +591,10 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		{
 			Logger.Log("Montage planning [" + diagnostic.Severity + "/" + diagnostic.Code + "]: " + diagnostic.Message);
 		}
+		foreach (MontageTimelineGap gap in prepared.TimelineGaps ?? new List<MontageTimelineGap>())
+		{
+			Logger.Log("Montage slot open for a cinematic or b-roll clip: " + gap.StartSeconds.ToString("0.000") + "s to " + gap.EndSeconds.ToString("0.000") + "s (" + gap.DurationSeconds.ToString("0.000") + "s).");
+		}
 		List<MontageSyncAssignment> assignments = prepared.SyncAssignments ?? new List<MontageSyncAssignment>();
 		Logger.Log("Montage plan ready before VEGAS mutation: " + prepared.Placements.Count + " clips, " + assignments.Count + " kill anchors, mode " + (prepared.SongPlan?.Mode.ToString() ?? "LegacyPayload") + ".");
 		foreach (MontageSyncAssignment assignment in assignments)

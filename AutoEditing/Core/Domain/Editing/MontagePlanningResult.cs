@@ -11,6 +11,25 @@ public sealed class MontagePlanningResult
 	public List<MontageSyncAssignment> Assignments { get; set; } = new List<MontageSyncAssignment>();
 
 	public List<MontageSongPlanningDiagnostic> Diagnostics { get; set; } = new List<MontageSongPlanningDiagnostic>();
+
+	/* Montage spans no gameplay clip covers, left where a reviewed region the montage must skip (an
+	   Unused region, or a hole between reviewed regions) is wider than the preceding clip's remaining
+	   footage. They are deliberate editorial slots, not failures: a cinematic, title, or b-roll clip
+	   belongs here (EDIT-VEL-004). */
+	public List<MontageTimelineGap> TimelineGaps { get; set; } = new List<MontageTimelineGap>();
+}
+
+public sealed class MontageTimelineGap
+{
+	public double StartSeconds { get; set; }
+
+	public double EndSeconds { get; set; }
+
+	public string PrecedingRegionId { get; set; }
+
+	public string FollowingRegionId { get; set; }
+
+	public double DurationSeconds => EndSeconds - StartSeconds;
 }
 
 public sealed class MontageSyncAssignment

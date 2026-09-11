@@ -25,7 +25,10 @@ public sealed class MontagePreparationService
 		MontagePlanningResult result = planner.PlanMontage(reviewedClips, songPlan);
 		if (!result.IsFeasible)
 		{
-			throw new System.InvalidOperationException("Montage capacity is insufficient for the reviewed song map: " + string.Join(" ", result.Diagnostics.ConvertAll((MontageSongPlanningDiagnostic item) => item.Message)));
+			/* Only the error diagnostics explain the failure; informational lines such as the automatic
+			   anchor-suggestion count otherwise read as the cause. */
+			List<MontageSongPlanningDiagnostic> failures = result.Diagnostics.FindAll((MontageSongPlanningDiagnostic item) => item.Severity == MontageSongPlanningDiagnosticSeverity.Error);
+			throw new System.InvalidOperationException("The reviewed song map cannot be planned: " + string.Join(" ", failures.ConvertAll((MontageSongPlanningDiagnostic item) => item.Message)));
 		}
 		EffectTreatmentPlan effectTreatments = reviewedAnalysis == null
 			? new EffectTreatmentPlan()
@@ -43,6 +46,7 @@ public sealed class MontagePreparationService
 			SongPlan = songPlan,
 			SyncAssignments = result.Assignments,
 			PlanningDiagnostics = result.Diagnostics,
+			TimelineGaps = result.TimelineGaps,
 			EffectOptions = effectOptions,
 			EffectTreatments = effectTreatments
 		};

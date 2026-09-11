@@ -15,6 +15,7 @@ namespace AnalysisHarness
     /// prints everything the pipeline decided. Usage:
     ///
     ///   AnalysisHarness.exe [clipsFolder] [songPath]
+    ///   AnalysisHarness.exe --plan-montage [clipsFolder] [songPath]
     ///
     /// Defaults to the test clips folder when no arguments are given.
     /// </summary>
@@ -44,6 +45,10 @@ namespace AnalysisHarness
 			{
 				DebugCommands.DebugSong(args[1], args[2]);
 				return 0;
+			}
+			if ((args.Length == 2 || args.Length == 3) && args[0] == "--plan-montage")
+			{
+				return DebugCommands.DebugReviewedMontage(args[1], args.Length == 3 ? args[2] : null);
 			}
             if (args.Length == 2 && args[0] == "--debug-shots")
             {

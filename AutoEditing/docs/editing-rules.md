@@ -71,11 +71,32 @@ fit inside the reviewed region containing its selected anchors; the kill marker
 alone being inside the region is insufficient. Timing offsets are applied before
 allocation and cannot silently move locked decisions outside valid bounds.
 
+Because the montage playhead advances clip by clip, a clip boundary — and only a
+clip boundary — may move the playhead forward to the start of the next reviewed
+region it uses. Kills inside one clip share one continuous media event and
+therefore one region. Without that forward move no clip could ever enter a later
+region: the preceding clip would have to end within 2 ms of the boundary.
+
 ### EDIT-SYNC-004 — Not every beat must receive gameplay
 
 **Implemented in planning.** Unused musical events are normal. Effect-only
 events remain in the prepared plan and do not consume kills. The generated
 timeline shows assigned sync and effect markers instead of every detected beat.
+
+### EDIT-SYNC-005 — Region crossings extend the previous clip instead of cutting to black
+
+**Implemented.** When the playhead moves forward into the next region, the
+preceding clip covers the skipped span by playing its unused source footage after
+the post-roll at cruise speed. Only that trailing segment grows, so no reviewed
+kill moves and the montage stays gapless across contiguous regions. The extension
+stops at the preceding clip's own region end and at the end of its footage.
+
+Whatever the extension cannot cover stays uncovered — typically the width of an
+`Unused` region the montage skips. That span is reported as a planning diagnostic
+and carried on the plan as an editorial slot with its start, end, and the regions
+on either side. It is an opportunity, not a defect: a cinematic, title, or b-roll
+clip belongs there (see EDIT-VEL-004). Automatic gameplay planning never fills
+it.
 
 ## Velocity and retiming
 
