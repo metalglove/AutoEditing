@@ -1,7 +1,9 @@
 # Local multimodal model recommendations
 
-This document records the quality-first local-model strategy for the future
-LLM-driven editor. It is an evaluation plan, not implemented editing behavior.
+This document records the quality-first local-model strategy used by the
+LLM-driven editor. Model selection remains an evaluation plan; the production
+workbench already uses a llama.cpp OpenAI-compatible backend for semantic
+assembly sketches, one-clip decisions, revision, and evidence-backed review.
 
 Target hardware:
 
@@ -164,23 +166,27 @@ rules.
 ## Serving approach
 
 Start with Linux, current NVIDIA drivers/CUDA, and
-[vLLM](https://docs.vllm.ai/en/latest/) using its OpenAI-compatible API and
-schema-constrained output.
+[llama.cpp `llama-server`](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md)
+using its OpenAI-compatible chat-completions API. Multimodal models require a
+compatible GGUF model and multimodal projector (`mmproj`).
 
-- Use an available AWQ or GPTQ/Marlin quantization after confirming support for
-  the GPUs and exact model version.
+- Evaluate supported GGUF quantizations, beginning with `Q4_K_M`, and compare a
+  higher-quality quantization if memory permits.
 - Use JSON-schema constrained decoding, temperature zero for repeatability, and
   deserialize into the versioned planning contracts.
 - Treat syntactically valid JSON as untrusted until domain validation passes.
 - Pin the model, quantization, serving engine, prompts, frame-selection policy,
   and schemas in every benchmark result.
-- Compare tensor parallelism across both cards with CPU offload where useful.
-  Speed is secondary, but unstable execution and lossy context truncation are
-  not acceptable.
-
-SGLang is the secondary serving candidate. llama.cpp or Ollama may be useful for
-GGUF experiments, especially with smaller models, but the production evaluation
-should favor a server with reliable multimodal batching and constrained output.
+- Compare llama.cpp `layer` and `row` multi-GPU split modes and record the
+  `--tensor-split` used for both 16 GB cards. Use `--fit`/CPU offload only when
+  it preserves the required context and visual evidence budget. Speed is
+  secondary, but unstable execution and lossy context truncation are not
+  acceptable.
+- Probe `/health` before a session and record `/props` data such as the model
+  path, chat template, supported modalities, and server generation settings.
+- Keep llama.cpp's built-in filesystem tools disabled. The editor supplies
+  evidence through typed requests; the model receives no direct filesystem or
+  VEGAS access.
 
 ## Benchmark
 
@@ -228,11 +234,12 @@ Do not yet commit the application to:
 - one permanent model or provider;
 - native audio reasoning;
 - a particular quantization format;
-- tensor parallelism versus CPU offload;
+- llama.cpp split mode, GPU allocation, and CPU offload;
 - automated plan approval;
 - direct model-generated VEGAS commands; or
 - fine-tuning.
 
-The current `skeleton.fake` planner remains the only implemented LLM-editor
-provider. Local-model work begins with a reproducible evaluation adapter, not by
-placing model calls inside VEGAS.
+The deterministic `skeleton.fake` planner remains a contract-test fixture.
+The live provider is the out-of-process llama.cpp client used by
+`AutoEditing.LlmEditor`; model calls remain outside VEGAS, and only validated
+typed decisions cross the automation boundary.
