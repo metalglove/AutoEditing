@@ -1,4 +1,6 @@
 using Core.Domain.Planning;
+using AutoEditing.Iteration.Contracts.Evidence;
+using AutoEditing.Iteration.Contracts.Iterations;
 
 namespace AutoEditing.LlmEditor.Iteration;
 
@@ -14,4 +16,10 @@ internal sealed class EditIterationSnapshot
 
 	public IReadOnlyList<EditDecisionRecord> Decisions { get; init; } =
 		Array.Empty<EditDecisionRecord>();
+
+	public IReadOnlyList<EditReviewFinding> Findings { get; init; } =
+		Array.Empty<EditReviewFinding>();
+
+	public IReadOnlyList<EditEvidenceReference> Evidence { get; init; } =
+		Array.Empty<EditEvidenceReference>();
 }

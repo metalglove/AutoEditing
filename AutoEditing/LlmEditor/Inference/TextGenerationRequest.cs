@@ -12,4 +12,12 @@ internal sealed class TextGenerationRequest
 	public double Temperature { get; init; }
 
 	public int MaxOutputTokens { get; init; } = 8192;
+
+	public string? JsonSchemaName { get; init; }
+
+	public string? JsonSchema { get; init; }
+
+	public Action<string>? OnTextDelta { get; init; }
+
+	public Action<string>? OnReasoningDelta { get; init; }
 }
