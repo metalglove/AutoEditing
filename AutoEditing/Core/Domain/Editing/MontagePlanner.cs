@@ -118,7 +118,7 @@ public class MontagePlanner
 		try
 		{
 			double montageStart = InitialCursor(song, targets[selected[0]]);
-			BuildPlacements(orderedClips, demands, targets, selected, song.SongDurationSeconds, planningInterval, montageStart, result);
+			BuildPlacements(orderedClips, demands, targets, selected, song, planningInterval, montageStart, result);
 			result.IsFeasible = true;
 			return result;
 		}
@@ -231,8 +231,10 @@ public class MontagePlanner
 		for (int t = 0; t < targets.Count; t++)
 		{
 			double initialCursor = InitialCursor(song, targets[t]);
-			if (!TransitionFeasible(null, demands[0], initialCursor, targets[t].EffectiveTimeSeconds, interval) || !RegionFeasible(song, null, demands[0], null, targets[t], initialCursor, interval)) continue;
-			costs[0, t] = TargetCost(targets[t]) + TransitionCost(null, demands[0], initialCursor, targets[t].EffectiveTimeSeconds);
+			if (!RegionFeasible(song, null, demands[0], null, targets[t], initialCursor, interval)) continue;
+			double openingCursor = EffectiveCursor(song, demands[0], targets[t], initialCursor);
+			if (!TransitionFeasible(null, demands[0], openingCursor, targets[t].EffectiveTimeSeconds, interval)) continue;
+			costs[0, t] = TargetCost(targets[t]) + TransitionCost(null, demands[0], openingCursor, targets[t].EffectiveTimeSeconds);
 		}
 		for (int d = 1; d < demands.Count; d++)
 		{
@@ -242,8 +244,11 @@ public class MontagePlanner
 				{
 					if (double.IsPositiveInfinity(costs[d - 1, p])) continue;
 					double cursor = CursorAfter(demands[d - 1], targets[p].EffectiveTimeSeconds, interval);
-					if (!TransitionFeasible(demands[d - 1], demands[d], cursor, targets[t].EffectiveTimeSeconds, interval) || !RegionFeasible(song, demands[d - 1], demands[d], targets[p], targets[t], cursor, interval)) continue;
-					double cost = costs[d - 1, p] + TargetCost(targets[t]) + TransitionCost(demands[d - 1], demands[d], cursor, targets[t].EffectiveTimeSeconds);
+					if (!RegionFeasible(song, demands[d - 1], demands[d], targets[p], targets[t], cursor, interval)) continue;
+					double advancedCursor = EffectiveCursor(song, demands[d], targets[t], cursor);
+					if (!TransitionFeasible(demands[d - 1], demands[d], advancedCursor, targets[t].EffectiveTimeSeconds, interval)) continue;
+					double cost = costs[d - 1, p] + TargetCost(targets[t]) + TransitionCost(demands[d - 1], demands[d], advancedCursor, targets[t].EffectiveTimeSeconds)
+						+ RegionAdvanceCost(song, demands[d - 1], targets[p], advancedCursor - cursor, interval);
 					if (cost < costs[d, t] - 1E-09 || (Math.Abs(cost - costs[d, t]) <= 1E-09 && p < previous[d, t])) { costs[d, t] = cost; previous[d, t] = p; }
 				}
 			}
@@ -273,11 +278,51 @@ public class MontagePlanner
 	private bool RegionFeasible(MontageSongPlanningInput song, KillDemand previousDemand, KillDemand currentDemand, MontageSongPlanningEvent previousTarget, MontageSongPlanningEvent currentTarget, double cursor, double interval)
 	{
 		if (song.Mode == MontageSongPlanningMode.LegacyBeatGrid || song.Regions == null || song.Regions.Count == 0) return true;
-		MontageSongPlanningRegion region = song.Regions.FirstOrDefault((MontageSongPlanningRegion item) => item.Id == currentTarget.ContainingRegionId && item.Type != Core.Domain.Audio.SongAnalysis.MusicRegionType.Unused);
-		if (region == null || cursor < region.StartSeconds - 0.002) return false;
+		MontageSongPlanningRegion region = RegionOf(song, currentTarget);
+		if (region == null) return false;
+		/* Only a clip boundary may move the playhead forward into a later region; kills inside one
+		   clip share one continuous media event and therefore one region. */
+		if (cursor < region.StartSeconds - 0.002 && !currentDemand.FirstInClip) return false;
 		if (!currentDemand.FirstInClip && previousTarget?.ContainingRegionId != currentTarget.ContainingRegionId) return false;
 		if (currentDemand.LastInClip && CursorAfter(currentDemand, currentTarget.EffectiveTimeSeconds, interval) > region.EndSeconds + 0.002) return false;
 		return true;
+	}
+
+	private static MontageSongPlanningRegion RegionOf(MontageSongPlanningInput song, MontageSongPlanningEvent target)
+	{
+		if (song.Mode == MontageSongPlanningMode.LegacyBeatGrid || song.Regions == null || song.Regions.Count == 0) return null;
+		return song.Regions.FirstOrDefault((MontageSongPlanningRegion item) => item.Id == target.ContainingRegionId && item.Type != Core.Domain.Audio.SongAnalysis.MusicRegionType.Unused);
+	}
+
+	/* A clip must fit inside the region owning its anchors (EDIT-SYNC-003), but the montage playhead
+	   advances clip by clip and lands wherever the previous clip ended. Without this skip no clip could
+	   ever enter a later region: the previous clip would have to end within 2 ms of the boundary. The
+	   skipped span is covered by extending the previous clip's post-roll tail in BuildPlacements. */
+	private static double EffectiveCursor(MontageSongPlanningInput song, KillDemand demand, MontageSongPlanningEvent target, double cursor)
+	{
+		if (!demand.FirstInClip) return cursor;
+		MontageSongPlanningRegion region = RegionOf(song, target);
+		return region == null ? cursor : Math.Max(cursor, region.StartSeconds);
+	}
+
+	private double RegionAdvanceCost(MontageSongPlanningInput song, KillDemand previousDemand, MontageSongPlanningEvent previousTarget, double advance, double interval)
+	{
+		if (advance <= 0.002) return 0.0;
+		double covered = Math.Min(advance, TailCoverageSeconds(song, previousDemand, previousTarget, interval));
+		return 10.0 + 1000.0 * (advance - covered);
+	}
+
+	/* Timeline seconds the previous clip can still cover after its post-roll by playing unused source
+	   footage at cruise speed, bounded by its own region end so the extension never leaves the region. */
+	private double TailCoverageSeconds(MontageSongPlanningInput song, KillDemand demand, MontageSongPlanningEvent target, double interval)
+	{
+		double available = demand.Clip.DurationSeconds - demand.SourceEnd;
+		if (available <= 0.000001) return 0.0;
+		double tail = demand.SourceEnd - demand.Kill.SourceConfirmationTimeSeconds;
+		double capacity = PostKillTargetDuration(tail + available, interval, demand.Kill.SourceConfirmationTimeSeconds) - PostKillTargetDuration(tail, interval, demand.Kill.SourceConfirmationTimeSeconds);
+		MontageSongPlanningRegion region = RegionOf(song, target);
+		if (region != null) capacity = Math.Min(capacity, region.EndSeconds - CursorAfter(demand, target.EffectiveTimeSeconds, interval));
+		return Math.Max(0.0, capacity);
 	}
 
 	private double CursorAfter(KillDemand demand, double targetTime, double interval)
@@ -313,14 +358,19 @@ public class MontagePlanner
 		return belowPreferredCruisePenalty + Math.Abs(Math.Log(Math.Max(1E-09, sourceDistance / Math.Max(1E-09, duration))));
 	}
 
-	private void BuildPlacements(List<Core.Domain.Clip.Clip> clips, List<KillDemand> demands, List<MontageSongPlanningEvent> targets, int[] selected, double songEnd, double interval, double montageStart, MontagePlanningResult result)
+	private void BuildPlacements(List<Core.Domain.Clip.Clip> clips, List<KillDemand> demands, List<MontageSongPlanningEvent> targets, int[] selected, MontageSongPlanningInput song, double interval, double montageStart, MontagePlanningResult result)
 	{
 		int demandIndex = 0;
 		double timelineStart = montageStart;
+		double songEnd = song.SongDurationSeconds;
+		ClipPlacement previousPlacement = null;
+		List<KillDemand> previousDemands = null;
+		MontageSongPlanningRegion previousRegion = null;
 		foreach (Core.Domain.Clip.Clip clip in clips)
 		{
 			List<KillDemand> clipDemands = demands.Where((KillDemand item) => item.Clip == clip).ToList();
 			List<double> assigned = new List<double>();
+			MontageSongPlanningRegion region = RegionOf(song, targets[selected[demandIndex]]);
 			foreach (KillDemand demand in clipDemands)
 			{
 				MontageSongPlanningEvent target = targets[selected[demandIndex]];
@@ -328,20 +378,80 @@ public class MontagePlanner
 				result.Assignments.Add(new MontageSyncAssignment { ClipPath = clip.FilePath, KillIndex = demand.KillIndex, SourceConfirmationTimeSeconds = demand.Kill.SourceConfirmationTimeSeconds, MusicEventId = target.Id, TimelineTimeSeconds = target.EffectiveTimeSeconds });
 				demandIndex++;
 			}
-			double sourceStart = clipDemands[0].SourceStart;
-			double sourceEnd = clipDemands[0].SourceEnd;
-			List<SpeedProfilePoint> points = new List<SpeedProfilePoint>();
-			AddSegment(points, sourceStart, clipDemands[0].Kill.SourceConfirmationTimeSeconds, assigned[0] - timelineStart, false);
-			for (int index = 1; index < clipDemands.Count; index++) AddSegment(points, clipDemands[index - 1].Kill.SourceConfirmationTimeSeconds, clipDemands[index].Kill.SourceConfirmationTimeSeconds, assigned[index] - assigned[index - 1], true);
-			double tailSource = sourceEnd - clipDemands[clipDemands.Count - 1].Kill.SourceConfirmationTimeSeconds;
-			AddSegment(points, clipDemands[clipDemands.Count - 1].Kill.SourceConfirmationTimeSeconds, sourceEnd, PostKillTargetDuration(tailSource, interval, clipDemands[clipDemands.Count - 1].Kill.SourceConfirmationTimeSeconds), true);
-			SpeedProfile profile = new SpeedProfile(Coalesce(points));
-			ClipPlacement placement = new ClipPlacement { Clip = clip, TimelineStartSeconds = timelineStart, SourceOffsetSeconds = sourceStart, LengthSeconds = profile.TimelineDurationSeconds, SpeedProfile = profile, AssignedBeatTimesSeconds = assigned };
+			/* The allocator skipped the playhead to this region's start; cover the skipped span with the
+			   previous clip's unused footage so the montage stays gapless wherever footage allows. */
+			double clipStart = region == null ? timelineStart : Math.Max(timelineStart, region.StartSeconds);
+			if (clipStart > timelineStart + 0.000001 && previousPlacement != null)
+			{
+				previousPlacement = ExtendTail(previousPlacement, previousDemands, Math.Min(clipStart, previousRegion?.EndSeconds ?? clipStart), interval);
+				result.Placements[result.Placements.Count - 1] = previousPlacement;
+				Verify(previousPlacement, previousDemands.Select((KillDemand item) => item.Kill).ToList());
+				timelineStart = previousPlacement.TimelineEndSeconds;
+				clipStart = Math.Max(timelineStart, region.StartSeconds);
+			}
+			if (clipStart > timelineStart + 0.002)
+			{
+				result.TimelineGaps.Add(new MontageTimelineGap { StartSeconds = timelineStart, EndSeconds = clipStart, PrecedingRegionId = previousRegion?.Id, FollowingRegionId = region?.Id });
+				result.Diagnostics.Add(new MontageSongPlanningDiagnostic
+				{
+					Code = "montage-region-gap",
+					Severity = MontageSongPlanningDiagnosticSeverity.Warning,
+					Message = (clipStart - timelineStart).ToString("0.###") + " montage seconds from " + timelineStart.ToString("0.###") + "s carry no gameplay: the preceding clip has no footage left to reach the next reviewed region. The span is an editorial slot for a cinematic, title, or b-roll clip.",
+					RegionId = region?.Id
+				});
+			}
+			ClipPlacement placement = BuildPlacement(clip, clipDemands, assigned, clipStart, interval, 0.0);
 			if (placement.TimelineEndSeconds > songEnd + 0.002) throw new InvalidOperationException("Complete reviewed kill sequence does not fit in the song: " + clip.FilePath);
 			Verify(placement, clipDemands.Select((KillDemand item) => item.Kill).ToList());
 			result.Placements.Add(placement);
 			timelineStart = placement.TimelineEndSeconds;
+			previousPlacement = placement;
+			previousDemands = clipDemands;
+			previousRegion = region;
 		}
+	}
+
+	private ClipPlacement BuildPlacement(Core.Domain.Clip.Clip clip, List<KillDemand> clipDemands, List<double> assigned, double timelineStart, double interval, double extraTailSourceSeconds)
+	{
+		double sourceStart = clipDemands[0].SourceStart;
+		double sourceEnd = clipDemands[0].SourceEnd + extraTailSourceSeconds;
+		double lastKill = clipDemands[clipDemands.Count - 1].Kill.SourceConfirmationTimeSeconds;
+		List<SpeedProfilePoint> points = new List<SpeedProfilePoint>();
+		AddSegment(points, sourceStart, clipDemands[0].Kill.SourceConfirmationTimeSeconds, assigned[0] - timelineStart, false);
+		for (int index = 1; index < clipDemands.Count; index++) AddSegment(points, clipDemands[index - 1].Kill.SourceConfirmationTimeSeconds, clipDemands[index].Kill.SourceConfirmationTimeSeconds, assigned[index] - assigned[index - 1], true);
+		AddSegment(points, lastKill, sourceEnd, PostKillTargetDuration(sourceEnd - lastKill, interval, lastKill), true);
+		SpeedProfile profile = new SpeedProfile(Coalesce(points));
+		return new ClipPlacement { Clip = clip, TimelineStartSeconds = timelineStart, SourceOffsetSeconds = sourceStart, LengthSeconds = profile.TimelineDurationSeconds, SpeedProfile = profile, AssignedBeatTimesSeconds = assigned };
+	}
+
+	/* Plays unused source footage after the post-roll so the placement reaches requestedEnd. Only the
+	   trailing segment grows, so no reviewed kill moves; the extension stops when the clip runs out of
+	   footage, which leaves the remaining span uncovered and is reported as a planning diagnostic. */
+	private ClipPlacement ExtendTail(ClipPlacement placement, List<KillDemand> clipDemands, double requestedEnd, double interval)
+	{
+		double needed = requestedEnd - placement.TimelineEndSeconds;
+		KillDemand last = clipDemands[clipDemands.Count - 1];
+		double available = last.Clip.DurationSeconds - last.SourceEnd;
+		if (needed <= 0.000001 || available <= 0.000001) return placement;
+		double tail = last.SourceEnd - last.Kill.SourceConfirmationTimeSeconds;
+		double requestedTailDuration = PostKillTargetDuration(tail, interval, last.Kill.SourceConfirmationTimeSeconds) + needed;
+		double low = 0.0;
+		double high = available;
+		if (PostKillTargetDuration(tail + available, interval, last.Kill.SourceConfirmationTimeSeconds) <= requestedTailDuration)
+		{
+			low = available;
+		}
+		else
+		{
+			for (int iteration = 0; iteration < 80; iteration++)
+			{
+				double middle = (low + high) / 2.0;
+				if (PostKillTargetDuration(tail + middle, interval, last.Kill.SourceConfirmationTimeSeconds) > requestedTailDuration) high = middle;
+				else low = middle;
+			}
+		}
+		ClipPlacement extended = BuildPlacement(placement.Clip, clipDemands, placement.AssignedBeatTimesSeconds, placement.TimelineStartSeconds, interval, low);
+		return extended.TimelineEndSeconds <= requestedEnd + 0.002 ? extended : placement;
 	}
 
 	private static double EstimateInterval(IEnumerable<MontageSongPlanningEvent> events)

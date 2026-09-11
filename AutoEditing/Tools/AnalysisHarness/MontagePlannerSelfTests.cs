@@ -49,6 +49,8 @@ namespace AnalysisHarness
 			TestUnassignedMapUsesSuggestedAnchors();
 			TestLockedAndRegionBehavior();
 			TestClipOrderUsesRolesAndTimingInsteadOfSequence();
+			TestMontageCrossesContiguousRegionBoundaries();
+			TestMontageReportsUncoveredRegionGap();
 			Console.WriteLine("Montage-planner velocity self-tests passed.");
 		}
 
@@ -138,6 +140,92 @@ namespace AnalysisHarness
 			Assert(explicitMap.Events.Single((MontageSongPlanningEvent item) => item.Id == "drop").IsSuggestedGameplayAnchor, "Automatic suggestions did not supplement a partial explicit gameplay map.");
 			MontagePlanningResult explicitResult = new MontagePlanner().PlanMontage(new List<Clip> { CreateClip("explicit.mp4", 2.0) }, explicitMap);
 			Assert(explicitResult.IsFeasible && explicitResult.Assignments.Single().MusicEventId == "beat", "An automatic suggestion displaced a feasible explicit gameplay anchor.");
+		}
+
+		private static void TestMontageCrossesContiguousRegionBoundaries()
+		{
+			/* Eight clips need roughly 16.5 montage seconds, so neither region can hold them alone. */
+			MontageSongPlanningInput input = CreateMultiRegionInput(24.0,
+				new MontageSongPlanningRegion { Id = "first", StartSeconds = 0.0, EndSeconds = 12.0, Type = MusicRegionType.Action },
+				new MontageSongPlanningRegion { Id = "second", StartSeconds = 12.0, EndSeconds = 24.0, Type = MusicRegionType.Climax });
+			List<Clip> clips = new List<Clip>();
+			for (int index = 0; index < 8; index++) clips.Add(CreateClip("cross-" + index + ".mp4", 3.0));
+			MontagePlanningResult result = new MontagePlanner().PlanMontage(clips, input);
+			Assert(result.IsFeasible, "A montage longer than one region could not cross a contiguous region boundary: "
+				+ string.Join(" ", result.Diagnostics.Where((MontageSongPlanningDiagnostic item) => item.Severity == MontageSongPlanningDiagnosticSeverity.Error).Select((MontageSongPlanningDiagnostic item) => item.Message)));
+			Assert(result.Assignments.Count == clips.Count, "Not every reviewed kill received an anchor across the region boundary.");
+			Assert(result.Placements.Any((ClipPlacement item) => item.TimelineEndSeconds <= 12.002) && result.Assignments.Any((MontageSyncAssignment item) => item.TimelineTimeSeconds >= 12.0),
+				"The montage did not actually cross the region boundary.");
+			Assert(!result.Diagnostics.Any((MontageSongPlanningDiagnostic item) => item.Code == "montage-region-gap"),
+				"Crossing a contiguous boundary left a hole instead of extending the previous clip's tail.");
+			Assert(result.TimelineGaps.Count == 0, "Crossing a contiguous boundary reported an editorial slot that is not there.");
+			for (int index = 1; index < result.Placements.Count; index++)
+			{
+				Assert(Math.Abs(result.Placements[index].TimelineStartSeconds - result.Placements[index - 1].TimelineEndSeconds) <= 0.002,
+					"The montage is no longer gapless at clip " + index + ".");
+			}
+			AssertPlacementsStayInsideAnchorRegions(input, result);
+			foreach (MontageSyncAssignment assignment in result.Assignments)
+			{
+				ClipPlacement placement = result.Placements.Single((ClipPlacement item) => item.Clip.FilePath == assignment.ClipPath);
+				Assert(placement.TimelineKillTimesSeconds.Any((double time) => Math.Abs(time - assignment.TimelineTimeSeconds) <= 0.002),
+					"Tail extension moved a reviewed kill off its anchor: " + assignment.ClipPath);
+			}
+		}
+
+		private static void TestMontageReportsUncoveredRegionGap()
+		{
+			MontageSongPlanningInput input = CreateMultiRegionInput(32.0,
+				new MontageSongPlanningRegion { Id = "first", StartSeconds = 0.0, EndSeconds = 12.0, Type = MusicRegionType.Action },
+				new MontageSongPlanningRegion { Id = "skipped", StartSeconds = 12.0, EndSeconds = 20.0, Type = MusicRegionType.Unused },
+				new MontageSongPlanningRegion { Id = "second", StartSeconds = 20.0, EndSeconds = 32.0, Type = MusicRegionType.Climax });
+			List<Clip> clips = new List<Clip>();
+			for (int index = 0; index < 8; index++) clips.Add(CreateClip("gap-" + index + ".mp4", 3.0));
+			MontagePlanningResult result = new MontagePlanner().PlanMontage(clips, input);
+			Assert(result.IsFeasible, "A montage spanning an unused region could not be planned.");
+			Assert(!result.Assignments.Any((MontageSyncAssignment item) => item.TimelineTimeSeconds > 12.0 && item.TimelineTimeSeconds < 20.0), "An unused region received gameplay.");
+			Assert(result.Diagnostics.Any((MontageSongPlanningDiagnostic item) => item.Code == "montage-region-gap"), "The uncovered span across an unused region was not reported.");
+			Assert(result.TimelineGaps.Count >= 1, "The uncovered span was not offered as an editorial slot.");
+			MontageTimelineGap slot = result.TimelineGaps.Single();
+			Assert(slot.StartSeconds >= 11.0 && Math.Abs(slot.EndSeconds - 20.0) <= 0.002 && slot.DurationSeconds > 0.0, "The editorial slot does not describe the skipped span: " + slot.StartSeconds + " to " + slot.EndSeconds + ".");
+			Assert(slot.PrecedingRegionId == "first" && slot.FollowingRegionId == "second", "The editorial slot does not name the regions it sits between.");
+			Assert(result.Placements.All((ClipPlacement item) => item.TimelineEndSeconds <= 12.002 || item.TimelineStartSeconds >= 19.998), "A placed clip runs through the unused region.");
+			AssertPlacementsStayInsideAnchorRegions(input, result);
+		}
+
+		private static void AssertPlacementsStayInsideAnchorRegions(MontageSongPlanningInput input, MontagePlanningResult result)
+		{
+			foreach (ClipPlacement placement in result.Placements)
+			{
+				List<string> regionIds = result.Assignments
+					.Where((MontageSyncAssignment item) => item.ClipPath == placement.Clip.FilePath)
+					.Select((MontageSyncAssignment item) => input.Events.Single((MontageSongPlanningEvent candidate) => candidate.Id == item.MusicEventId).ContainingRegionId)
+					.Distinct()
+					.ToList();
+				Assert(regionIds.Count == 1, "A clip consumed anchors from more than one region: " + placement.Clip.FilePath);
+				MontageSongPlanningRegion region = input.Regions.Single((MontageSongPlanningRegion item) => item.Id == regionIds[0]);
+				Assert(placement.TimelineStartSeconds >= region.StartSeconds - 0.002 && placement.TimelineEndSeconds <= region.EndSeconds + 0.002,
+					"A placed clip does not fit inside the region containing its anchors: " + placement.Clip.FilePath);
+			}
+		}
+
+		private static MontageSongPlanningInput CreateMultiRegionInput(double songDurationSeconds, params MontageSongPlanningRegion[] regions)
+		{
+			MontageSongPlanningInput input = new MontageSongPlanningInput
+			{
+				Mode = MontageSongPlanningMode.ReviewedSongMap,
+				SongFingerprint = "multi-region-song",
+				SongDurationSeconds = songDurationSeconds,
+				Regions = regions.ToList()
+			};
+			int ordinal = 0;
+			for (double time = 0.49; time < songDurationSeconds; time += 0.5)
+			{
+				MontageSongPlanningRegion region = regions.FirstOrDefault((MontageSongPlanningRegion item) => time >= item.StartSeconds && time <= item.EndSeconds);
+				if (region == null) continue;
+				input.Events.Add(Event("anchor-" + ordinal++, time, MontageSongEventClassification.GameplayAnchor, region.Id));
+			}
+			return input;
 		}
 
 		private static MontageSongPlanningInput CreateReviewedInput()
