@@ -125,10 +125,22 @@ namespace AnalysisHarness
 				Events = new List<MusicEvent>
 				{
 					new MusicEvent { Id = "beat", TimeSeconds = 1.2, Type = MusicEventType.Beat, ReviewState = MusicAnalysisReviewState.Reviewed },
-					new MusicEvent { Id = "drop", TimeSeconds = 1.1, Type = MusicEventType.Drop, ReviewState = MusicAnalysisReviewState.Proposed }
+					new MusicEvent { Id = "drop", TimeSeconds = 1.1, Type = MusicEventType.Drop, ReviewState = MusicAnalysisReviewState.Proposed },
+					new MusicEvent { Id = "rejected-transient", TimeSeconds = 1.234567, Type = MusicEventType.Transient, Strength = 0.876543, Confidence = 0.765432, ReviewState = MusicAnalysisReviewState.Rejected }
 				}
 			};
 			MontageSongPlanningInput suggested = new SongAnalysisPlanningInputAdapter().Create(analysis);
+			Assert(suggested.EventTimeline.Count == analysis.Events.Count,
+				"The compact musical timeline did not retain every detected event.");
+			List<object> rejectedRow = suggested.EventTimeline.Single(row =>
+				string.Equals(row[1] as string, MusicEventType.Transient.ToString(), StringComparison.Ordinal));
+			Assert(Convert.ToDouble(rejectedRow[0]) == 1.2346 &&
+				Convert.ToDouble(rejectedRow[2]) == 0.8765 &&
+				Convert.ToDouble(rejectedRow[3]) == 0.7654 &&
+				string.Equals(rejectedRow[4] as string, MusicAnalysisReviewState.Rejected.ToString(), StringComparison.Ordinal),
+				"The compact musical timeline lost its rounded observation data or review state.");
+			Assert(suggested.Events.All(item => item.Id != "rejected-transient"),
+				"A rejected observation became an assignable synchronization anchor.");
 			Assert(suggested.Events.All((MontageSongPlanningEvent item) => item.IsSuggestedGameplayAnchor), "A completely unassigned map did not expose automatic gameplay suggestions.");
 			Assert(!suggested.Events.Single((MontageSongPlanningEvent item) => item.Id == "drop").IsReviewed, "A proposed automatic suggestion was incorrectly marked as reviewed.");
 			Assert(suggested.Diagnostics.Any((MontageSongPlanningDiagnostic item) => item.Code == "suggested-gameplay-anchors"), "Automatic suggestions were not explained by a planning diagnostic.");

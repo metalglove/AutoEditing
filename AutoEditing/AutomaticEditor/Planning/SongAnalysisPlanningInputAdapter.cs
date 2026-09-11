@@ -18,7 +18,15 @@ public sealed class SongAnalysisPlanningInputAdapter
 		{
 			Mode = mode,
 			SongFingerprint = analysis.Song.ContentFingerprint,
-			SongDurationSeconds = analysis.Song.DurationSeconds
+			SongDurationSeconds = analysis.Song.DurationSeconds,
+			EventTimelineColumns = new List<string>
+			{
+				"timeSeconds",
+				"type",
+				"strength",
+				"confidence",
+				"reviewState"
+			}
 		};
 
 		foreach (MusicRegion region in (analysis.Regions ?? new List<MusicRegion>())
@@ -51,6 +59,21 @@ public sealed class SongAnalysisPlanningInputAdapter
 		}
 
 		foreach (MusicEvent musicEvent in (analysis.Events ?? new List<MusicEvent>())
+			.Where((MusicEvent item) => item != null)
+			.OrderBy((MusicEvent item) => item.TimeSeconds)
+			.ThenBy((MusicEvent item) => item.Id, StringComparer.Ordinal))
+		{
+			input.EventTimeline.Add(new List<object>
+			{
+				Round(musicEvent.TimeSeconds),
+				musicEvent.Type.ToString(),
+				RoundNullable(musicEvent.Strength),
+				RoundNullable(musicEvent.Confidence),
+				musicEvent.ReviewState.ToString()
+			});
+		}
+
+		foreach (MusicEvent musicEvent in (analysis.Events ?? new List<MusicEvent>())
 			.Where((MusicEvent item) => item != null && item.ReviewState != MusicAnalysisReviewState.Rejected)
 			.OrderBy((MusicEvent item) => item.TimeSeconds)
 			.ThenBy((MusicEvent item) => item.Id, StringComparer.Ordinal))
@@ -61,6 +84,12 @@ public sealed class SongAnalysisPlanningInputAdapter
 
 		return input;
 	}
+
+	private static double Round(double value) =>
+		Math.Round(value, 4, MidpointRounding.AwayFromZero);
+
+	private static object RoundNullable(double? value) =>
+		value.HasValue ? (object)Round(value.Value) : null;
 
 	private static void PromoteSuggestedGameplayAnchors(MontageSongPlanningInput input)
 	{
@@ -170,11 +199,25 @@ public sealed class SongAnalysisPlanningInputAdapter
 		MontageSongEventClassification result = MontageSongEventClassification.None;
 		foreach (EditorialUse use in uses)
 		{
-			if (use == EditorialUse.GameplayAnchor) result |= MontageSongEventClassification.GameplayAnchor;
-			else if (use == EditorialUse.Flash || use == EditorialUse.ScreenPump || use == EditorialUse.Shake || use == EditorialUse.SpeedChange) result |= MontageSongEventClassification.Effect;
-			else if (use == EditorialUse.IntentionallyUnused) result |= MontageSongEventClassification.IntentionallyUnused;
-			else if (use != EditorialUse.None) result |= MontageSongEventClassification.Structural;
-		}
+            switch (use)
+            {
+                case EditorialUse.GameplayAnchor:
+                    result |= MontageSongEventClassification.GameplayAnchor;
+                    break;
+                case EditorialUse.Flash:
+                case EditorialUse.ScreenPump:
+                case EditorialUse.Shake:
+                case EditorialUse.SpeedChange:
+                    result |= MontageSongEventClassification.Effect;
+                    break;
+                case EditorialUse.IntentionallyUnused:
+                    result |= MontageSongEventClassification.IntentionallyUnused;
+                    break;
+                default:
+                    if (use != EditorialUse.None) result |= MontageSongEventClassification.Structural;
+                    break;
+            }
+        }
 		return result;
 	}
 

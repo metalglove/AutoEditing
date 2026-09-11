@@ -15,6 +15,8 @@ public sealed class EditPlanningRequest
 
 	public string SongPath { get; set; }
 
+	public MontageSongPlanningInput SongAnalysis { get; set; }
+
 	public EffectSelectionOptions EffectOptions { get; set; } = new EffectSelectionOptions();
 
 	public string CreativeBrief { get; set; }

@@ -27,6 +27,10 @@ public sealed class MontageSongPlanningInput
 
 	public List<MontageSongPlanningEvent> Events { get; set; } = new List<MontageSongPlanningEvent>();
 
+	public List<string> EventTimelineColumns { get; set; }
+
+	public List<List<object>> EventTimeline { get; set; } = new List<List<object>>();
+
 	public List<MontageSongPlanningDiagnostic> Diagnostics { get; set; } = new List<MontageSongPlanningDiagnostic>();
 
 	public bool HasErrors => Diagnostics.Any((MontageSongPlanningDiagnostic item) => item.Severity == MontageSongPlanningDiagnosticSeverity.Error);
