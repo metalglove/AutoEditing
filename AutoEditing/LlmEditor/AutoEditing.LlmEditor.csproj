@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>AutoEditing.LlmEditor</AssemblyName>
+    <RootNamespace>AutoEditing.LlmEditor</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\AutoEditing.Domain.csproj" />
+    <ProjectReference Include="..\Iteration.Contracts\AutoEditing.Iteration.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Fixtures\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Prompts\*.md"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <Target Name="DeployLlmEditorCompanion"
+          AfterTargets="Build"
+          Condition="'$(Configuration)' == 'Deploy'">
+    <ItemGroup>
+      <LlmEditorDeployFiles Include="$(TargetDir)*.*" />
+      <LlmEditorFixtureFiles Include="$(TargetDir)Fixtures\**\*.*" />
+      <LlmEditorPromptFiles Include="$(TargetDir)Prompts\**\*.*" />
+    </ItemGroup>
+    <MakeDir Directories="$(LocalAppData)\AutoEditing\bin\LlmEditor" />
+    <Copy SourceFiles="@(LlmEditorDeployFiles)"
+          DestinationFolder="$(LocalAppData)\AutoEditing\bin\LlmEditor"
+          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(LlmEditorFixtureFiles)"
+          DestinationFiles="@(LlmEditorFixtureFiles->'$(LocalAppData)\AutoEditing\bin\LlmEditor\Fixtures\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(LlmEditorPromptFiles)"
+          DestinationFiles="@(LlmEditorPromptFiles->'$(LocalAppData)\AutoEditing\bin\LlmEditor\Prompts\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\..\..\.env"
+          DestinationFolder="$(LocalAppData)\AutoEditing\bin\LlmEditor"
+          SkipUnchangedFiles="true"
+          Condition="Exists('$(MSBuildProjectDirectory)\..\..\.env')" />
+  </Target>
+
+</Project>

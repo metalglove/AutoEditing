@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "requestId": "skeleton-example",
+  "clips": [
+    {
+      "filePath": "fixtures/clip-001.mp4",
+      "durationSeconds": 4.0,
+      "shotEvents": []
+    }
+  ],
+  "songPath": "fixtures/song.wav",
+  "effectOptions": {
+    "schemaVersion": 1,
+    "presetId": "autoediting.none",
+    "intensity": 1.0,
+    "density": 1.0,
+    "includeManualTreatments": true,
+    "enableScreenPumps": false,
+    "enableFlashes": false,
+    "enableShake": false,
+    "enableTransitions": false,
+    "enableTitles": false,
+    "enableSpeedChanges": false
+  },
+  "creativeBrief": "Contract-only deterministic skeleton.",
+  "styleProfileIds": [
+    "editor-1"
+  ]
+}

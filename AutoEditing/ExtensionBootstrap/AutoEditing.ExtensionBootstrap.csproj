@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <AssemblyName>AutoEditing.Extension</AssemblyName>
+    <RootNamespace>AutoEditing.ExtensionBootstrap</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ScriptPortal.Vegas">
+      <HintPath>$(ProgramFiles)\VEGAS\VEGAS Pro 20.0\ScriptPortal.Vegas.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

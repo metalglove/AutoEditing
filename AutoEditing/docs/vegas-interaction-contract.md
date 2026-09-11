@@ -38,10 +38,11 @@ The verified implementation now:
 - preserves the nested error produced by a failed script command;
 - treats UI review rows as draft state and commits them together.
 
-## Directory structure
+## Assembly and directory structure
 
 ```text
-Core/Scripts/VegasInteraction/
+Vegas/AutoEditing.Vegas.csproj
+  owns Interaction/
 ├── Contracts/
 ├── Infrastructure/
 ├── Adapters/
@@ -195,10 +196,11 @@ Handler
 → finish without leaking COM objects
 ```
 
-Code under `Core/Domain` must not import `ScriptPortal.Vegas`. Pure preparation
-belongs there, such as `MontagePreparationService` and `PreparedMontage`.
+Code compiled by `AutoEditing.Domain` or `AutoEditing.AutomaticEditor` must not
+import `ScriptPortal.Vegas`. Pure preparation belongs in those assemblies, such
+as `MontagePreparationService` and `PreparedMontage`.
 
-VEGAS implementations belong under `VegasInteraction/Adapters`, such as timeline
+VEGAS implementations belong under `Vegas/Interaction/Adapters`, such as timeline
 construction, effects application, media inspection, and review layout.
 
 ## Atomic review commit

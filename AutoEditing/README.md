@@ -3,17 +3,15 @@
 AutoEditing is a work-in-progress VEGAS Pro 20 extension for building Call of
 Duty sniper montages from reviewed gameplay sync points.
 
-The project currently combines local audio analysis, a docked shot-review
-workflow, reusable clip metadata, beat-aware montage planning, and native VEGAS
-timeline generation. Its longer-term direction is a guided semantic montage
-assistant: the editor verifies meaningful gameplay events, aligns them with
-music events, and lets the tool perform the repetitive timeline and retiming
-work.
+The solution separates local analysis and planning from its docked shot-review
+host and native VEGAS timeline renderer. The editor verifies meaningful
+gameplay and music events, then can use either the deterministic planner or the
+LLM workbench for the repetitive assembly work.
 
-> Status: active prototype. The analysis and planning layers can be exercised
-> outside VEGAS. Timeline and velocity behavior still require continued smoke
-> testing in VEGAS Pro 20 before the extension should be considered production
-> ready.
+> Status: active prototype. Analysis, planning, recovery, and automation
+> contracts have deterministic test harnesses. Native timeline, rendering,
+> effects, audio, promotion, and rollback behavior still require continued
+> smoke testing in VEGAS Pro 20 before the extension is production-ready.
 
 ## Current workflow
 
@@ -114,33 +112,44 @@ contract remains [docs/editing-rules.md](docs/editing-rules.md).
   quantization, and undo behavior need more real VEGAS Pro 20 testing.
 - Shot detection can still produce false positives and depends on good per-gun
   SFX templates plus human review.
-- The reviewed song-analysis foundation exists, but richer detection and its
-  VEGAS marker/region review workflow are not yet implemented; current montage
-  generation still consumes the legacy uniform beat grid.
+- Song analysis and the VEGAS marker/region review workflow are implemented,
+  but detection quality and editor-authored region/event corrections need
+  broader real-song testing.
 - Shake, name tags, color correction, and transitions remain logging/placeholding
   methods; they do not yet create the advertised visual treatments.
 - Persisted reviewed shot events are more specialized than the planned general
   `GameplayEvent`/`MusicEvent` semantic model.
-- Regenerating and removing an individual provenance-owned treatment is part of
-  the planned MVP, not the current implementation.
-- Optical flow, automatic narrative construction, learned clip ranking, sound
-  enhancement, advanced transitions, grading, and render automation are
-  deferred.
+- The AI polish pass currently renders native screen pumps plus the implemented
+  song and calibrated gun/hit SFX treatment. Individual arbitrary-effect
+  regeneration, shake, grading, titles, and transitions remain deferred.
+- Optical flow, learned visual-similarity ranking, sound enhancement, advanced
+  transitions, and grading remain deferred.
 
-## Repository layout
+## Architecture and repository layout
 
 ```text
 AutoEditing.sln
-Core/
-  Domain/
-    Audio/       audio loading, beat detection, SFX templates, shot review
-    Clip/        parsing, validation, reusable sync library
-    Editing/     planning, speed mapping, timeline generation, effects adapter
-    Logging/     application logging
-  Scripts/       VEGAS extension entry point, dock host, WPF view and view model
-  appsettings.json
+Domain/                   shared netstandard2.0 models, analysis, and contracts
+  Audio/                  audio decoding and deterministic analysis
+  Clip/                   clip models, parsing, and persistence
+  Configuration/          settings and user preferences
+  Editing/                portable edit-plan models and speed profiles
+  Planning/               planner exchange and structural validation
+AutomaticEditor/          deterministic netstandard2.0 planning policies
+  Planning/
+Vegas/                    shared net48 VEGAS integration and rendering
+  Interaction/            commands, queries, adapters, and host infrastructure
+Core/                     thin net48 VEGAS extension
+  Host/                   entry point and custom-command module
+  Presentation/           WPF review UI, models, and UI infrastructure
+LlmEditor/                net8.0 progressive planner and workflow coordinator
+InferenceMonitor/         live request/response and token-usage inspector
+Iteration.Contracts/      versioned process-boundary and workflow DTOs
+Iteration.Contracts.Tests/ cross-target deterministic contract tests
+AutomationBroker.Tests/   typed VEGAS spool/broker contract tests
+Core.Tests/               workbench projection and action-policy tests
 Tools/
-  AnalysisHarness/  VEGAS-free console runner and detector diagnostics
+  AnalysisHarness/        VEGAS-free diagnostics and deterministic checks
 docs/
   ROADMAP.md
   song-analysis-model.md
@@ -155,11 +164,21 @@ docs/
 - .NET Framework 4.8 developer tooling
 - Visual Studio 2019/2022, or the .NET/MSBuild tooling needed to build `net48`
 
-`Core.csproj` references:
+The host and shared libraries reference:
 
 - `ScriptPortal.Vegas.dll` from the VEGAS Pro 20 installation;
 - NAudio Core and Wasapi 2.2.1;
 - Newtonsoft.Json 13.0.3.
+
+Only `AutoEditing.ExtensionBootstrap`, the Core host, and `AutoEditing.Vegas` reference
+`ScriptPortal.Vegas`. Domain, deterministic planning, and LLM planning remain
+host-independent.
+
+`AutoEditing.ExtensionBootstrap` is the public VEGAS application-extension
+module. It has no project-library dependencies, registers a sibling-assembly
+resolver, and delegates to the internal command module in `Core.dll`. This is
+required because VEGAS inspects extension types before probing adjacent
+dependency DLLs.
 
 Audio analysis is Windows-only because it uses Windows Media Foundation through
 NAudio.
@@ -169,16 +188,66 @@ NAudio.
 Run commands from this directory (`AutoEditing/`):
 
 ```powershell
-dotnet build Core/Core.csproj --configuration Debug
-dotnet build Tools/AnalysisHarness/AnalysisHarness.csproj --configuration Debug
+.\build.ps1 -Configuration Debug
+.\verify.ps1 -Configuration Debug
 ```
 
-Building `Core` invokes `.vscode/deploy-extension.ps1`, which copies the extension
+The build entry point intentionally limits MSBuild to one worker. With the
+currently installed .NET 10 SDK, parallel solution builds can fail silently
+while evaluating the shared SDK-style project references. Individual projects
+are safe to build directly when only one component is needed.
+
+`verify.ps1` builds the solution without deploying and runs the .NET 8 and
+.NET Framework contract suites, LLM editor/inference/automation self-tests,
+automation broker tests, VEGAS workbench projection tests, and the
+song-analysis/montage-planner harness tests.
+
+Pass `-Deploy` when the successful solution build should also install the VEGAS
+extension:
+
+```powershell
+.\build.ps1 -Configuration Debug -Deploy
+```
+
+In Visual Studio, select `Deploy` from the solution configuration dropdown and
+build the solution. This uses separate `bin\Deploy` outputs and installs the
+extension after Core compiles. Debug and Release builds only compile.
+
+For build, deploy, and launch:
+
+1. right-click `Core` in Solution Explorer and choose **Set as Startup Project**;
+2. select `VEGAS Pro 20 (Deploy)` in the launch-profile dropdown;
+3. select the `Deploy` solution configuration; and
+4. choose **Debug → Start Without Debugging** or press **Ctrl+F5**.
+
+The launch profile is defined in `Core/Properties/launchSettings.json` and
+launches the installed VEGAS Pro 20 host with its installation directory as the
+working directory. Visual Studio stores the startup-project and selected-profile
+choices in per-user solution state, so they may need to be selected once after
+cloning or reopening the solution.
+
+Do not use **Start Debugging** (`F5`) for this host configuration. Visual
+Studio's managed-debugger attachment causes VEGAS Pro 20 to terminate during
+startup on the current development machine. `Ctrl+F5` still performs the Deploy
+build and launches the newly installed extension. Debugger attachment should be
+treated as a separate compatibility investigation rather than part of the
+normal deployment workflow.
+
+Deployment invokes `.vscode/deploy-extension.ps1`, which copies the extension
 and runtime dependencies to:
 
 ```text
-Documents\Vegas Application Extensions
+%PROGRAMDATA%\Vegas Pro\Application Extensions
 ```
+
+The deployment script migrates an existing `appsettings.local.json` from the
+former Documents-based deployment on first use and never overwrites the
+destination's machine-local override. It then removes the AutoEditing
+assemblies and `appsettings.json` left in the former
+`Documents\Vegas Application Extensions` folder so VEGAS cannot load a stale
+copy; that folder's other contents, including other extensions, are kept. The
+current Windows user needs Modify permission on this directory for
+non-administrator Visual Studio deployment.
 
 Close VEGAS before building so its loaded assemblies do not block deployment.
 Restart VEGAS after deployment, then open:
@@ -296,6 +365,13 @@ VEGAS timeline behavior.
   synchronization, velocity, audio, effects, and safety behavior.
 - [Editing pipeline](docs/editing-pipeline.md) - end-to-end ownership and data
   flow from analysis through planning, validation, and VEGAS rendering.
+- [LLM–VEGAS automation architecture](docs/llm-vegas-automation-architecture.md) -
+  durable iterative sessions, isolated VEGAS experiments, rendered evidence,
+  steering, and explicit production promotion.
+- [Local multimodal model recommendations](docs/local-multimodal-models.md) -
+  quality-first local model candidates, serving design, and evaluation gates.
+- [Inference monitor](docs/inference-monitor.md) - live, replayable planner and
+  reviewer conversations, prompts, responses, errors, and token diagnostics.
 - [Effect preset architecture](docs/effect-preset-architecture.md) - versioned
   presets, inheritance, deterministic variation, capabilities, and fallbacks.
 - [Sniper montage effects research](docs/sniper-montage-effects-research.md) -

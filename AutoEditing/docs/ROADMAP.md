@@ -12,8 +12,8 @@ Pipeline (working, verified via harness against real clips):
 
 - Test data: `C:\Users\mario\Videos\edit` — 10 real MWIII clips + song
   `Traveller - Never Cared (2002).mp3` (detected 94.6 BPM, first beat 0.488s).
-- `Core/Domain/Audio/` (AudioLoader, BeatDetector, ShotDetector) and
-  `Core/Domain/Editing/MontagePlanner.cs` are deliberately **VEGAS-free** and are
+- `Domain/Audio/` (AudioLoader, BeatDetector, ShotDetector) and
+  `AutomaticEditor/Planning/MontagePlanner.cs` are deliberately **VEGAS-free** and are
   compiled directly into `Tools/AnalysisHarness` (net48 console) for testing
   without VEGAS. Harness also has `--debug-tempo <song>` and
   `--debug-shots <clip>` tuning commands.

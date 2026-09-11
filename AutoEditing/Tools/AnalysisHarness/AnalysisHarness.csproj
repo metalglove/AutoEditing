@@ -5,14 +5,13 @@
     <TargetFramework>net48</TargetFramework>
     <RootNamespace>AnalysisHarness</RootNamespace>
     <LangVersion>latest</LangVersion>
+    <BuildInParallel>false</BuildInParallel>
+    <RestoreBuildInParallel>false</RestoreBuildInParallel>
   </PropertyGroup>
 
-  <!-- Compiles the VEGAS-free domain sources directly so the analysis pipeline
-       (parsing, beat/shot detection, SFX templates, planning) can be exercised
-       without VEGAS Pro installed. Everything under Core\Domain is included
-       except the files that depend on ScriptPortal.Vegas. -->
   <ItemGroup>
-    <Compile Include="..\..\Core\Domain\**\*.cs" Link="Domain\%(RecursiveDir)%(Filename)%(Extension)" />
+    <ProjectReference Include="..\..\Domain\AutoEditing.Domain.csproj" />
+    <ProjectReference Include="..\..\AutomaticEditor\AutoEditing.AutomaticEditor.csproj" />
   </ItemGroup>
 
   <ItemGroup>
