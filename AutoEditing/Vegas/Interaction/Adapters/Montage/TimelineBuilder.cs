@@ -13,30 +13,54 @@ internal sealed class TimelineBuilder
 {
 	public Dictionary<ClipPlacement, VideoEvent> BuildTimeline(Vegas vegas, List<ClipPlacement> placements)
 	{
+		return BuildTimeline(vegas, placements, MontageBuildContext.Production(applyEffects: false)).VideoEvents;
+	}
+
+	public TimelineBuildArtifacts BuildTimeline(Vegas vegas, List<ClipPlacement> placements, MontageBuildContext context)
+	{
+		if (context == null) throw new ArgumentNullException(nameof(context));
 		Project project = vegas.Project;
-		MatchProjectVideoToSourceClips(project, placements);
+		if (context.MatchProjectVideoProperties) MatchProjectVideoToSourceClips(project, placements);
 		VideoTrack val = project.AddVideoTrack();
-		((Track)val).Name = "AE|Montage Clips";
+		((Track)val).Name = context.VideoTrackName;
 		vegas.UpdateUI();
 		Dictionary<ClipPlacement, VideoEvent> dictionary = new Dictionary<ClipPlacement, VideoEvent>();
-		foreach (ClipPlacement placement in placements)
+		try
 		{
-			try
+			for (int placementIndex = 0;
+				placementIndex < placements.Count;
+				placementIndex++)
 			{
-				VideoEvent val3 = PlaceClip(vegas, project, val, placement);
-				if (val3 != (VideoEvent)null)
+				ClipPlacement placement = placements[placementIndex];
+				try
 				{
-					dictionary[placement] = val3;
+					VideoEvent val3 = PlaceClip(
+						vegas,
+						project,
+						val,
+						placement,
+						context,
+						placementIndex + 1);
+					if (val3 != (VideoEvent)null)
+					{
+						dictionary[placement] = val3;
+					}
+				}
+				catch (Exception ex)
+				{
+					Logger.LogError("Error placing clip " + placement.Clip.FilePath, ex);
+					throw;
 				}
 			}
-			catch (Exception ex)
-			{
-				Logger.LogError("Error placing clip " + placement.Clip.FilePath, ex);
-				throw;
-			}
+		}
+		catch
+		{
+			if (context.IsCandidate)
+				((BaseList<Track>)(object)project.Tracks).Remove(val);
+			throw;
 		}
 		vegas.UpdateUI();
-		return dictionary;
+		return new TimelineBuildArtifacts(val, dictionary);
 	}
 
 	private static void MatchProjectVideoToSourceClips(Project project, List<ClipPlacement> placements)
@@ -66,7 +90,13 @@ internal sealed class TimelineBuilder
 		Logger.Log($"Project video properties after match: {((VideoProperties)project.Video).Width}x{((VideoProperties)project.Video).Height}, " + $"PAR {((VideoProperties)project.Video).PixelAspectRatio:F4}, {((VideoProperties)project.Video).FrameRate:F3}fps.");
 	}
 
-	private static VideoEvent PlaceClip(Vegas vegas, Project project, VideoTrack videoTrack, ClipPlacement placement)
+	private static VideoEvent PlaceClip(
+		Vegas vegas,
+		Project project,
+		VideoTrack videoTrack,
+		ClipPlacement placement,
+		MontageBuildContext context,
+		int oneBasedPlacementIndex)
 	{
 		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ff: Expected O, but got Unknown
@@ -95,9 +125,24 @@ internal sealed class TimelineBuilder
 		Timecode offset = Timecode.FromSeconds(placement.SourceOffsetSeconds);
 		VideoEvent val4 = new VideoEvent(val2, val3);
 		((BaseList<TrackEvent>)(object)((Track)videoTrack).Events).Add((TrackEvent)(object)val4);
-		Take val5 = new Take((MediaStream)(object)videoStreamByIndex);
-		((BaseList<Take>)(object)((TrackEvent)val4).Takes).Add(val5);
-		val5.Offset = offset;
+		try
+		{
+			Take val5 = new Take((MediaStream)(object)videoStreamByIndex);
+			((BaseList<Take>)(object)((TrackEvent)val4).Takes).Add(val5);
+			val5.Offset = offset;
+			if (context.IsCandidate)
+				((TrackEvent)val4).Name =
+					AutoEditing.Iteration.Contracts.Automation.CandidatePlacementIdentity.Create(
+						context.Workspace,
+						oneBasedPlacementIndex,
+						placement.Clip.FilePath);
+		}
+		catch
+		{
+			((BaseList<TrackEvent>)(object)((Track)videoTrack).Events)
+				.Remove((TrackEvent)(object)val4);
+			throw;
+		}
 		vegas.UpdateUI();
 		return val4;
 	}

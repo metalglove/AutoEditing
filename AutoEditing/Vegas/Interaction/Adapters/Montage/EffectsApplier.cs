@@ -14,33 +14,40 @@ internal sealed class EffectsApplier
 		//IL_0014: Expected O, but got Unknown
 		try
 		{
-			IReadOnlyList<SpeedProfilePoint> points = profile.Points;
+			if (ev == (VideoEvent)null)
+				throw new ArgumentNullException(nameof(ev));
+			VelocityEnvelopeRenderPlan renderPlan =
+				VelocityEnvelopeRenderPlan.Create(profile);
+			IReadOnlyList<VelocityEnvelopeRenderPoint> points =
+				renderPlan.Points;
 			Envelope val = new Envelope((EnvelopeType)202);
 			((BaseList<Envelope>)(object)ev.Envelopes).Add(val);
 			((BaseList<EnvelopePoint>)(object)val.Points).Clear();
 			int num = 0;
 			for (int pointIndex = 0; pointIndex < points.Count; pointIndex++)
 			{
-				SpeedProfilePoint item = points[pointIndex];
-				if (!profile.TryGetTimelineTimeForSourceTime(item.SourceTimeSeconds, out var timelineTimeSeconds))
-				{
-					Logger.LogError($"Speed profile point at source time {item.SourceTimeSeconds:F3}s did not map to a timeline offset; skipping.");
-					continue;
-				}
-				Timecode timelineOffset = Timecode.FromSeconds(timelineTimeSeconds);
-				CurveType curve = CurveType.Linear;
-				if (pointIndex + 1 < points.Count && points[pointIndex + 1].Speed < item.Speed) curve = CurveType.Smooth;
-				else if (pointIndex + 1 < points.Count && points[pointIndex + 1].Speed > item.Speed) curve = CurveType.Fast;
-				if (TryAddVelocityPoint(val, timelineOffset, item.Speed, curve, item.SourceTimeSeconds))
+				VelocityEnvelopeRenderPoint item = points[pointIndex];
+				Timecode timelineOffset =
+					Timecode.FromSeconds(item.TimelineOffsetSeconds);
+				// Linear is required, not a style choice: the reconciliation pass
+				// reconstructs source-time positions from live envelope points by
+				// integrating speed as linear-in-timeline-time between them. Any
+				// other VEGAS curve type would make that reconstruction inexact.
+				if (TryAddVelocityPoint(val, timelineOffset, item.Speed, CurveType.Linear, item.SourceTimeSeconds))
 				{
 					num++;
 				}
 			}
+			if (num != points.Count)
+				throw new InvalidOperationException(
+					"VEGAS accepted only " + num + " of " + points.Count +
+					" synchronization velocity points.");
 			Logger.Log($"Applied velocity envelope with {num}/{points.Count} points to clip starting at {((TrackEvent)ev).Start}");
 		}
 		catch (Exception ex)
 		{
 			Logger.LogError("Error applying velocity envelope", ex);
+			throw;
 		}
 	}
 

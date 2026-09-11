@@ -15,17 +15,47 @@ internal sealed class MontageOrchestrator
 {
 	public void BuildPreparedMontage(Vegas vegas, PreparedMontage prepared, string songPath, bool applyEffects)
 	{
+		BuildPreparedMontage(vegas, prepared, songPath, MontageBuildContext.Production(applyEffects));
+	}
+
+	public MontageBuildArtifacts BuildPreparedMontage(Vegas vegas, PreparedMontage prepared, string songPath, MontageBuildContext context)
+	{
+		if (context == null) throw new ArgumentNullException(nameof(context));
 		TimelineBuilder timelineBuilder = new TimelineBuilder();
-		Dictionary<ClipPlacement, VideoEvent> videoEvents = timelineBuilder.BuildTimeline(vegas, prepared.Placements);
+		TimelineBuildArtifacts timeline = timelineBuilder.BuildTimeline(vegas, prepared.Placements, context);
+		Dictionary<ClipPlacement, VideoEvent> videoEvents = timeline.VideoEvents;
 		ShotDetectionConfig shotDetection = ConfigurationManager.GetShotDetection();
 		SfxTemplateCatalog sfxCatalog = SfxTemplateCatalog.Load(shotDetection.SfxRoot);
-		new MontageAudioBuilder().Build(vegas.Project, prepared.Placements, songPath, shotDetection.SfxRoot, sfxCatalog);
-		if (applyEffects)
+		AudioBuildArtifacts audio = null;
+		try
 		{
-			ApplyEffects(videoEvents, prepared);
+			ApplySynchronizationVelocity(videoEvents);
+			audio = new MontageAudioBuilder().Build(vegas.Project, prepared.Placements, songPath, shotDetection.SfxRoot, sfxCatalog, context);
+			if (context.ApplyEffects)
+			{
+				ApplyCreativeEffects(videoEvents, prepared);
+			}
 		}
-		timelineBuilder.AddMontageMarkers(vegas, prepared);
+		catch
+		{
+			if (context.IsCandidate)
+			{
+				if (audio != null)
+				{
+					for (int index = audio.Tracks.Count - 1; index >= 0; index--)
+						((BaseList<Track>)(object)vegas.Project.Tracks).Remove(audio.Tracks[index]);
+				}
+				((BaseList<Track>)(object)vegas.Project.Tracks).Remove(timeline.VideoTrack);
+			}
+			throw;
+		}
+		if (context.AddMarkers) timelineBuilder.AddMontageMarkers(vegas, prepared);
 		Logger.Log("Montage created from reviewed markers; placed " + prepared.Placements.Count + " clips.");
+		List<Track> tracks = new List<Track> { timeline.VideoTrack };
+		tracks.AddRange(audio.Tracks.Cast<Track>());
+		List<TrackEvent> events = videoEvents.Values.Cast<TrackEvent>().ToList();
+		events.AddRange(audio.Events.Cast<TrackEvent>());
+		return new MontageBuildArtifacts(context, videoEvents, tracks, events);
 	}
 
 	private static List<Core.Domain.Clip.Clip> LoadReviewedClips(string clipsFolder)
@@ -67,13 +97,20 @@ internal sealed class MontageOrchestrator
 		return list2;
 	}
 
-	private static void ApplyEffects(Dictionary<ClipPlacement, VideoEvent> videoEvents, PreparedMontage prepared)
+	private static void ApplySynchronizationVelocity(
+		Dictionary<ClipPlacement, VideoEvent> videoEvents)
 	{
 		EffectsApplier effectsApplier = new EffectsApplier();
 		foreach (KeyValuePair<ClipPlacement, VideoEvent> videoEvent in videoEvents)
 		{
 			effectsApplier.ApplyVelocityEnvelope(videoEvent.Value, videoEvent.Key.SpeedProfile);
 		}
+	}
+
+	private static void ApplyCreativeEffects(
+		Dictionary<ClipPlacement, VideoEvent> videoEvents,
+		PreparedMontage prepared)
+	{
 		VegasEditorialEffectRenderer renderer = new VegasEditorialEffectRenderer();
 		List<EffectTreatmentAction> treatments = prepared.EffectTreatments?.Actions ?? new List<EffectTreatmentAction>();
 		int rendered = 0;

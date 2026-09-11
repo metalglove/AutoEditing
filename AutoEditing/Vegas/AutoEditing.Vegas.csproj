@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\AutoEditing.Domain.csproj" />
+    <ProjectReference Include="..\Iteration.Contracts\AutoEditing.Iteration.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>

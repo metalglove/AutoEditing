@@ -16,25 +16,48 @@ internal sealed class MontageAudioBuilder
 
 	public void Build(Project project, List<ClipPlacement> placements, string songPath, string sfxRoot, SfxTemplateCatalog catalog)
 	{
-		AddSong(project, songPath);
-		AddHitSounds(project, placements, sfxRoot, catalog);
+		Build(project, placements, songPath, sfxRoot, catalog, MontageBuildContext.Production(applyEffects: false));
 	}
 
-	private static void AddSong(Project project, string songPath)
+	public AudioBuildArtifacts Build(Project project, List<ClipPlacement> placements, string songPath, string sfxRoot, SfxTemplateCatalog catalog, MontageBuildContext context)
+	{
+		if (context == null) throw new ArgumentNullException(nameof(context));
+		List<AudioTrack> tracks = new List<AudioTrack>();
+		List<AudioEvent> events = new List<AudioEvent>();
+		try
+		{
+			if (context.IncludeSong) AddSong(project, songPath, context, tracks, events);
+			if (context.IncludeSfx) AddHitSounds(project, placements, sfxRoot, catalog, context, tracks, events);
+			return new AudioBuildArtifacts(tracks, events);
+		}
+		catch
+		{
+			if (context.IsCandidate)
+			{
+				for (int index = tracks.Count - 1; index >= 0; index--)
+					((BaseList<Track>)(object)project.Tracks).Remove(tracks[index]);
+			}
+			throw;
+		}
+	}
+
+	private static void AddSong(Project project, string songPath, MontageBuildContext context, ICollection<AudioTrack> createdTracks, ICollection<AudioEvent> createdEvents)
 	{
 		Media media = project.MediaPool.AddMedia(songPath);
 		if (media == (Media)null) throw new InvalidOperationException("Could not import song file.");
 		AudioStream stream = media.GetAudioStreamByIndex(0);
 		if (stream == (AudioStream)null) throw new InvalidOperationException("Song has no audio stream.");
 		AudioTrack track = project.AddAudioTrack();
-		((Track)track).Name = "AE|Montage Song";
+		((Track)track).Name = context.SongTrackName;
 		track.Volume = DefaultSongVolume;
 		AudioEvent audioEvent = new AudioEvent(Timecode.FromSeconds(0.0), media.Length);
 		((BaseList<TrackEvent>)(object)((Track)track).Events).Add((TrackEvent)(object)audioEvent);
 		((BaseList<Take>)(object)((TrackEvent)audioEvent).Takes).Add(new Take((MediaStream)(object)stream));
+		createdTracks.Add(track);
+		createdEvents.Add(audioEvent);
 	}
 
-	private static void AddHitSounds(Project project, IEnumerable<ClipPlacement> placements, string sfxRoot, SfxTemplateCatalog catalog)
+	private static void AddHitSounds(Project project, IEnumerable<ClipPlacement> placements, string sfxRoot, SfxTemplateCatalog catalog, MontageBuildContext context, ICollection<AudioTrack> createdTracks, ICollection<AudioEvent> createdEvents)
 	{
 		List<AudioTrack> tracks = new List<AudioTrack>();
 		List<double> trackEndTimes = new List<double>();
@@ -50,7 +73,7 @@ internal sealed class MontageAudioBuilder
 					Logger.Log("No hit SFX template for " + (shot.SourceEvent.Gun ?? placement.Clip.Gun) + " at " + shot.TimelineTimeSeconds.ToString("F2") + "s.");
 					continue;
 				}
-				AddTemplate(project, tracks, trackEndTimes, template, sfxRoot, shot.TimelineTimeSeconds, killIndex, kills.Count);
+				AddTemplate(project, tracks, trackEndTimes, template, sfxRoot, shot.TimelineTimeSeconds, killIndex, kills.Count, context, createdTracks, createdEvents);
 			}
 		}
 	}
@@ -67,7 +90,7 @@ internal sealed class MontageAudioBuilder
 			?? templates.FirstOrDefault();
 	}
 
-	private static void AddTemplate(Project project, List<AudioTrack> tracks, List<double> trackEndTimes, SfxTemplate template, string sfxRoot, double confirmationTimelineSeconds, int killIndex, int killCount)
+	private static void AddTemplate(Project project, List<AudioTrack> tracks, List<double> trackEndTimes, SfxTemplate template, string sfxRoot, double confirmationTimelineSeconds, int killIndex, int killCount, MontageBuildContext context, ICollection<AudioTrack> createdTracks, ICollection<AudioEvent> createdEvents)
 	{
 		Media media = project.MediaPool.AddMedia(template.FullPath(sfxRoot));
 		if (media == (Media)null) throw new InvalidOperationException("Could not import hit SFX: " + template.RelativePath);
@@ -89,8 +112,9 @@ internal sealed class MontageAudioBuilder
 			tracks.Add(newTrack);
 			trackEndTimes.Add(0.0);
 			trackIndex = tracks.Count - 1;
-			((Track)newTrack).Name = "AE|Montage Gun SFX " + (trackIndex + 1);
+			((Track)newTrack).Name = context.SfxTrackName(trackIndex + 1);
 			newTrack.Volume = DefaultGunSfxVolume;
+			createdTracks.Add(newTrack);
 		}
 		AudioTrack track = tracks[trackIndex];
 		AudioEvent audioEvent = new AudioEvent(Timecode.FromSeconds(eventStartSeconds), Timecode.FromSeconds(eventLengthSeconds));
@@ -101,6 +125,7 @@ internal sealed class MontageAudioBuilder
 		audioEvent.FadeOut.Length = Timecode.FromSeconds(Math.Min(fadeSeconds, eventLengthSeconds));
 		audioEvent.FadeOut.Curve = curve;
 		trackEndTimes[trackIndex] = eventStartSeconds + eventLengthSeconds;
+		createdEvents.Add(audioEvent);
 	}
 
 	private static void GetFadeTreatment(int killIndex, int killCount, out double tailSeconds, out double fadeSeconds, out CurveType curve)
