@@ -52,6 +52,7 @@ namespace AnalysisHarness
 			TestClipOrderUsesRolesAndTimingInsteadOfSequence();
 			TestMontageCrossesContiguousRegionBoundaries();
 			TestMontageReportsUncoveredRegionGap();
+			TestAnchorPriorityDoesNotOpenAvoidableGap();
 			Console.WriteLine("Montage-planner velocity self-tests passed.");
 		}
 
@@ -203,6 +204,30 @@ namespace AnalysisHarness
 			Assert(slot.StartSeconds >= 11.0 && Math.Abs(slot.EndSeconds - 20.0) <= 0.002 && slot.DurationSeconds > 0.0, "The editorial slot does not describe the skipped span: " + slot.StartSeconds + " to " + slot.EndSeconds + ".");
 			Assert(slot.PrecedingRegionId == "first" && slot.FollowingRegionId == "second", "The editorial slot does not name the regions it sits between.");
 			Assert(result.Placements.All((ClipPlacement item) => item.TimelineEndSeconds <= 12.002 || item.TimelineStartSeconds >= 19.998), "A placed clip runs through the unused region.");
+			AssertPlacementsStayInsideAnchorRegions(input, result);
+		}
+
+		private static void TestAnchorPriorityDoesNotOpenAvoidableGap()
+		{
+			/* Eight clips need roughly 16.5 montage seconds. The late region is too short to hold them and
+			   carries every high-priority anchor, so a planner that trades coverage for anchor priority
+			   plays a few clips from 0 s and then jumps ahead, leaving the rest of the early region empty. */
+			MontageSongPlanningInput input = CreateMultiRegionInput(30.0,
+				new MontageSongPlanningRegion { Id = "early", StartSeconds = 0.0, EndSeconds = 20.0, Type = MusicRegionType.Action },
+				new MontageSongPlanningRegion { Id = "late", StartSeconds = 20.0, EndSeconds = 30.0, Type = MusicRegionType.Action });
+			foreach (MontageSongPlanningEvent anchor in input.Events.Where((MontageSongPlanningEvent item) => item.ContainingRegionId == "late"))
+				anchor.Priority = 80;
+			List<Clip> clips = new List<Clip>();
+			for (int index = 0; index < 8; index++) clips.Add(CreateClip("priority-" + index + ".mp4", 3.0));
+			MontagePlanningResult result = new MontagePlanner().PlanMontage(clips, input);
+			Assert(result.IsFeasible, "The priority-skew map could not be planned.");
+			Assert(result.TimelineGaps.Count == 0 && !result.Diagnostics.Any((MontageSongPlanningDiagnostic item) => item.Code == "montage-region-gap"),
+				"Anchor priority opened an avoidable gap: " + string.Join(", ", result.TimelineGaps.Select((MontageTimelineGap gap) => gap.StartSeconds.ToString("0.00") + "-" + gap.EndSeconds.ToString("0.00") + "s")));
+			for (int index = 1; index < result.Placements.Count; index++)
+			{
+				Assert(Math.Abs(result.Placements[index].TimelineStartSeconds - result.Placements[index - 1].TimelineEndSeconds) <= 0.002,
+					"The priority-skew montage is not gapless at clip " + index + ".");
+			}
 			AssertPlacementsStayInsideAnchorRegions(input, result);
 		}
 

@@ -28,6 +28,12 @@ public class MontagePlanner
 
 	private const double SegmentBoundaryEpsilonSeconds = 0.000001;
 
+	/* Uncovered montage time must outweigh every anchor preference: one kill moved from a beat to a
+	   drop is worth 70,000, so a cheaper gap let the planner skip whole song sections to reach
+	   higher-priority anchors. Coverage is decided first; anchor priority only ranks plans that cover
+	   the same time. Gaps forced by an Unused region cost every plan equally. */
+	private const double UncoveredSecondCost = 10000000.0;
+
 	private readonly double _preRoll;
 
 	private readonly double _postRoll;
@@ -164,7 +170,7 @@ public class MontagePlanner
 	private static double PlanQuality(MontagePlanningResult result, MontageSongPlanningInput song)
 	{
 		Dictionary<string, MontageSongPlanningEvent> events = (song?.Events ?? new List<MontageSongPlanningEvent>()).Where((MontageSongPlanningEvent item) => item != null && item.Id != null).GroupBy((MontageSongPlanningEvent item) => item.Id).ToDictionary((IGrouping<string, MontageSongPlanningEvent> group) => group.Key, (IGrouping<string, MontageSongPlanningEvent> group) => group.First(), StringComparer.Ordinal);
-		double score = 0.0;
+		double score = UncoveredSecondCost * result.TimelineGaps.Sum((MontageTimelineGap gap) => gap.DurationSeconds);
 		foreach (MontageSyncAssignment assignment in result.Assignments)
 		{
 			if (!events.TryGetValue(assignment.MusicEventId, out MontageSongPlanningEvent target)) continue;
@@ -309,7 +315,7 @@ public class MontagePlanner
 	{
 		if (advance <= 0.002) return 0.0;
 		double covered = Math.Min(advance, TailCoverageSeconds(song, previousDemand, previousTarget, interval));
-		return 10.0 + 1000.0 * (advance - covered);
+		return 10.0 + UncoveredSecondCost * (advance - covered);
 	}
 
 	/* Timeline seconds the previous clip can still cover after its post-roll by playing unused source
