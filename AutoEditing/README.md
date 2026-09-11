@@ -242,8 +242,12 @@ and runtime dependencies to:
 
 The deployment script migrates an existing `appsettings.local.json` from the
 former Documents-based deployment on first use and never overwrites the
-destination's machine-local override. The current Windows user needs Modify
-permission on this directory for non-administrator Visual Studio deployment.
+destination's machine-local override. It then removes the AutoEditing
+assemblies and `appsettings.json` left in the former
+`Documents\Vegas Application Extensions` folder so VEGAS cannot load a stale
+copy; that folder's other contents, including other extensions, are kept. The
+current Windows user needs Modify permission on this directory for
+non-administrator Visual Studio deployment.
 
 Close VEGAS before building so its loaded assemblies do not block deployment.
 Restart VEGAS after deployment, then open:

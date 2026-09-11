@@ -71,6 +71,41 @@ foreach ($artifact in $required) {
     }
 }
 
+# Remove what the former Documents deployment left behind so VEGAS can never load
+# a stale copy next to this one. Only files this project put there are removed;
+# the folder, shared libraries, other extensions and appsettings.local.json stay.
+# Core.dll is a generic name, so it counts as ours only when it carries this
+# project's assembly GUID (Core\Properties\AssemblyInfo.cs).
+function Remove-LegacyDeployment([string]$folder, [string]$assemblyGuid) {
+    if (-not (Test-Path -LiteralPath $folder)) { return }
+    $stale = @(Get-ChildItem -LiteralPath $folder -Filter "AutoEditing.*.dll" -File |
+        Where-Object { $_.Extension -eq ".dll" })
+    $core = Join-Path $folder "Core.dll"
+    if ((Test-Path -LiteralPath $core) -and
+        [System.Text.Encoding]::ASCII.GetString([System.IO.File]::ReadAllBytes($core)).Contains($assemblyGuid)) {
+        $stale += Get-Item -LiteralPath $core
+    }
+    if ($stale.Count -gt 0) {
+        foreach ($name in "appsettings.json", "AutoEditing.vegas-command.json") {
+            $path = Join-Path $folder $name
+            if (Test-Path -LiteralPath $path) { $stale += Get-Item -LiteralPath $path }
+        }
+    }
+    foreach ($item in $stale) {
+        Remove-Item -LiteralPath $item.FullName -Force -ErrorAction Stop
+        $item.Name
+    }
+}
+
+try {
+    foreach ($name in (Remove-LegacyDeployment $legacyDestination "977e058f-bb49-4cc1-b930-c7ee41d82638")) {
+        Write-Host "[OK] Removed legacy $name from $legacyDestination" -ForegroundColor Green
+    }
+} catch {
+    Write-Host "[ERROR] Could not remove the former deployment from $legacyDestination. Close VEGAS and deploy again: $($_.Exception.Message)" -ForegroundColor Red
+    exit 2
+}
+
 # Remove the command envelope used by the retired nested-script transport.
 $obsoleteCommandEnvelope = Join-Path $destination "AutoEditing.vegas-command.json"
 if (Test-Path $obsoleteCommandEnvelope) {
