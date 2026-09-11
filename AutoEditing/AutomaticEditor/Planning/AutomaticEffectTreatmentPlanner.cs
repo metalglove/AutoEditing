@@ -163,9 +163,9 @@ public sealed class AutomaticEffectTreatmentPlanner
 
 	private static double Duration(AutomaticEffectTreatmentPreset preset, EditorialUse use, string recipe, double variation)
 	{
-		if (recipe == "native.pump.subtle") return 0.16 + 0.04 * variation;
-		if (recipe == "native.pump.medium") return 0.18 + 0.06 * variation;
-		if (recipe == "native.pump.impact") return 0.20 + 0.10 * variation;
+		if (recipe == "native.pump.subtle") return 0.28 + 0.06 * variation;
+		if (recipe == "native.pump.medium") return 0.32 + 0.08 * variation;
+		if (recipe == "native.pump.impact") return 0.38 + 0.10 * variation;
 		return preset.Duration(use, variation);
 	}
 

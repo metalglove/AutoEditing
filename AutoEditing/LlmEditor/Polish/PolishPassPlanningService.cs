@@ -81,7 +81,7 @@ internal sealed class PolishPassPlanningService
 					StringComparison.OrdinalIgnoreCase)))
 				continue;
 			AddPump(result, acceptedRoughCut, assignment.MusicEventId,
-				assignment.TimelineTimeSeconds, 0.82, 0.24,
+				assignment.TimelineTimeSeconds, 0.82, 0.42,
 				"native.pump.impact",
 				$"Supported impact pump for reviewed kill {assignment.KillIndex + 1}.");
 		}
@@ -198,7 +198,7 @@ internal sealed class PolishPassPlanningService
 			TimelineTimeSeconds = time,
 			LocalTimeSeconds = local,
 			Intensity = Math.Max(0, Math.Min(1, intensity)),
-			DurationSeconds = duration > 0 ? duration : 0.24,
+			DurationSeconds = duration > 0 ? duration : 0.42,
 			RecipeId = recipe,
 			Reason = reason
 		});

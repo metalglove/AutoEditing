@@ -84,7 +84,7 @@ public sealed class AutomaticEffectTreatmentPreset
 		switch (use)
 		{
 			case EditorialUse.Flash: return 0.07 + (0.03 * variation);
-			case EditorialUse.ScreenPump: return 0.20 + (0.10 * variation);
+			case EditorialUse.ScreenPump: return 0.38 + (0.10 * variation);
 			case EditorialUse.Shake: return 0.18 + (0.12 * variation);
 			case EditorialUse.SpeedChange: return 0.35 + (0.20 * variation);
 			case EditorialUse.CutOrTransition: return 0.30 + (0.20 * variation);

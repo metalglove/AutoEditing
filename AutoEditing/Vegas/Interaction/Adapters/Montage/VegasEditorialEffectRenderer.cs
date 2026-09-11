@@ -61,29 +61,31 @@ internal sealed class VegasEditorialEffectRenderer
 			return EditorialEffectRenderResult.Unsupported("The generated event has no baseline pan/crop keyframe.");
 
 		VideoMotionKeyframe original = keyframes[0];
-		double safeEnd = Math.Max(0, eventLength - 0.001);
-		// Keep the event's zero-time keyframe as the immutable neutral baseline.
-		// A pump assigned to the cut starts one millisecond into the incoming clip.
-		double peakSeconds = Math.Max(0.001, Math.Min(action.EventTimeSeconds, safeEnd));
-		double halfDuration = Math.Max(0.025, Math.Min(action.DurationSeconds * 0.5, 0.12));
-		double beforeSeconds = Math.Max(0, peakSeconds - halfDuration);
-		double afterSeconds = Math.Min(safeEnd, peakSeconds + halfDuration);
-		if (afterSeconds - beforeSeconds < 0.010)
+		ScreenPumpShape shape = ScreenPumpShape.Create(
+			action.EventTimeSeconds,
+			action.DurationSeconds,
+			eventLength,
+			action.NextPumpStartSeconds);
+		if (shape.AfterSeconds - shape.BeforeSeconds < 0.010)
 			return EditorialEffectRenderResult.Unsupported("The event has insufficient room for a pump.");
 
+		// A keyframe's interpolation shapes the segment that leaves it: Fast punches in and
+		// settles onto the peak, Smooth eases the release back to the baseline, and the
+		// closing baseline keyframe only holds until the next pump.
 		VideoMotionBounds baseline = CloneBounds(original.Bounds);
-		if (peakSeconds - beforeSeconds >= 0.001)
-			AddOrUpdateKeyframe(keyframes, beforeSeconds, baseline, VideoKeyframeType.Fast);
+		if (shape.HasAttack)
+			AddOrUpdateKeyframe(keyframes, shape.BeforeSeconds, baseline, VideoKeyframeType.Fast);
 
 		// Pan/crop zooms in by shrinking the source rectangle around its center.
 		double zoom = 1.025 + (0.075 * action.Intensity);
 		VideoMotionBounds peak = ScaleBoundsAroundCenter(baseline, 1.0 / zoom);
-		AddOrUpdateKeyframe(keyframes, peakSeconds, peak, VideoKeyframeType.Fast);
-		if (afterSeconds - peakSeconds >= 0.001)
-			AddOrUpdateKeyframe(keyframes, afterSeconds, baseline, VideoKeyframeType.Smooth);
+		AddOrUpdateKeyframe(keyframes, shape.PeakSeconds, peak, VideoKeyframeType.Smooth);
+		if (shape.HasRelease)
+			AddOrUpdateKeyframe(keyframes, shape.AfterSeconds, baseline, VideoKeyframeType.Linear);
 
 		return EditorialEffectRenderResult.Success(
-			$"Screen pump rendered at {peakSeconds:F3}s ({zoom:F3}x zoom).");
+			$"Screen pump rendered at {shape.PeakSeconds:F3}s ({zoom:F3}x zoom, " +
+			$"{shape.PeakSeconds - shape.BeforeSeconds:F3}s in, {shape.AfterSeconds - shape.PeakSeconds:F3}s out).");
 	}
 
 	private static void AddOrUpdateKeyframe(

@@ -10,5 +10,6 @@ public static class WorkbenchProjectionTestRunner
 	{
 		WorkbenchSessionProjectionSelfTests.Run();
 		SynchronizationVelocityRenderingSelfTests.Run();
+		ScreenPumpShapeSelfTests.Run();
 	}
 }

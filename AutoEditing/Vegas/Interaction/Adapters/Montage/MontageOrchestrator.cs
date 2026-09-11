@@ -133,7 +133,8 @@ internal sealed class MontageOrchestrator
 				continue;
 			}
 			double localSeconds = Math.Max(0, treatment.TimeSeconds - target.Value.Key.TimelineStartSeconds);
-			EditorialEffectRenderResult renderResult = renderer.Render(target.Value.Value, new EditorialEffectRenderAction(kind.Value, localSeconds, treatment.Intensity, treatment.DurationSeconds));
+			double? nextPumpStart = NextPumpStartSeconds(videoEvents, treatments, treatment, target.Value);
+			EditorialEffectRenderResult renderResult = renderer.Render(target.Value.Value, new EditorialEffectRenderAction(kind.Value, localSeconds, treatment.Intensity, treatment.DurationSeconds, nextPumpStart));
 			if (renderResult.Rendered) rendered++;
 			else unsupportedOrRejected++;
 			Logger.Log((renderResult.Rendered ? "Rendered " : "Skipped ") + treatment.Type + " at " + treatment.TimeSeconds.ToString("0.000") + "s: " + renderResult.Reason);
@@ -172,6 +173,24 @@ internal sealed class MontageOrchestrator
 				return last;
 		}
 		return null;
+	}
+
+	/* A pump's release must end before the next pump on the same event punches in, or the next
+	   pump's baseline keyframe would cut the release off mid-curve. */
+	private static double? NextPumpStartSeconds(
+		Dictionary<ClipPlacement, VideoEvent> videoEvents,
+		List<EffectTreatmentAction> treatments,
+		EffectTreatmentAction current,
+		KeyValuePair<ClipPlacement, VideoEvent> target)
+	{
+		if (current.Type != Core.Domain.Audio.SongAnalysis.EditorialUse.ScreenPump) return null;
+		EffectTreatmentAction next = treatments
+			.Where(item => item.Type == Core.Domain.Audio.SongAnalysis.EditorialUse.ScreenPump && item.TimeSeconds > current.TimeSeconds + 0.0005)
+			.Where(item => FindEffectTarget(videoEvents, item.TimeSeconds)?.Value == target.Value)
+			.OrderBy(item => item.TimeSeconds)
+			.FirstOrDefault();
+		if (next == null) return null;
+		return next.TimeSeconds - target.Key.TimelineStartSeconds - ScreenPumpShape.AttackSeconds(next.DurationSeconds);
 	}
 
 	private static EditorialEffectRenderKind? RenderKind(Core.Domain.Audio.SongAnalysis.EditorialUse use)
