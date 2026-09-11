@@ -40,13 +40,24 @@ internal sealed class ApplyCandidateEffectsCommandHandler : IVegasCommandHandler
 				throw new InvalidOperationException(
 					"Effects pass cannot find its exact candidate video placement: " +
 					action.PlacementPath);
+			EffectsPassAction nextOnEvent = request.Effects.Actions
+				.Where(item => item.LocalTimeSeconds > action.LocalTimeSeconds + 0.0005 &&
+					string.Equals(Path.GetFullPath(item.PlacementPath),
+						Path.GetFullPath(action.PlacementPath),
+						StringComparison.OrdinalIgnoreCase))
+				.OrderBy(item => item.LocalTimeSeconds)
+				.FirstOrDefault();
 			EditorialEffectRenderResult rendered = renderer.Render(
 				video,
 				new EditorialEffectRenderAction(
 					EditorialEffectRenderKind.ScreenPump,
 					action.LocalTimeSeconds,
 					action.Intensity,
-					action.DurationSeconds));
+					action.DurationSeconds,
+					nextOnEvent == null
+						? (double?)null
+						: nextOnEvent.LocalTimeSeconds -
+							ScreenPumpShape.AttackSeconds(nextOnEvent.DurationSeconds)));
 			results.Add(new PolishActionResult
 			{
 				ActionId = action.ActionId,

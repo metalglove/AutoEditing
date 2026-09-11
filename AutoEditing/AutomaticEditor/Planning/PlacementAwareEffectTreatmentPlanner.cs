@@ -55,7 +55,7 @@ public sealed class PlacementAwareEffectTreatmentPlanner
 				Type = EditorialUse.ScreenPump,
 				RecipeId = "native.pump.impact",
 				Intensity = Clamp(0.82 * options.Intensity),
-				DurationSeconds = 0.24,
+				DurationSeconds = 0.42,
 				Origin = EffectTreatmentOrigin.Automatic,
 				Reason = "Placement-aware mandatory pump on reviewed kill " + (kill.KillIndex + 1) + "."
 			});
@@ -101,7 +101,7 @@ public sealed class PlacementAwareEffectTreatmentPlanner
 					Type = EditorialUse.ScreenPump,
 					RecipeId = "native.pump.subtle",
 					Intensity = Clamp((0.32 + 0.18 * (musicEvent.Strength ?? 0.5)) * options.Intensity),
-					DurationSeconds = 0.18,
+					DurationSeconds = 0.30,
 					Origin = EffectTreatmentOrigin.Automatic,
 					Reason = "Conservative placement-aware pump between consecutive reviewed kills."
 				});

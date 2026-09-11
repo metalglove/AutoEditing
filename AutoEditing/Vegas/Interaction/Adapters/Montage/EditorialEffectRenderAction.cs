@@ -12,7 +12,8 @@ internal sealed class EditorialEffectRenderAction
 		EditorialEffectRenderKind kind,
 		double eventTimeSeconds,
 		double intensity,
-		double durationSeconds)
+		double durationSeconds,
+		double? nextPumpStartSeconds = null)
 	{
 		if (eventTimeSeconds < 0) throw new ArgumentOutOfRangeException(nameof(eventTimeSeconds));
 		if (intensity < 0 || intensity > 1) throw new ArgumentOutOfRangeException(nameof(intensity));
@@ -22,12 +23,16 @@ internal sealed class EditorialEffectRenderAction
 		EventTimeSeconds = eventTimeSeconds;
 		Intensity = intensity;
 		DurationSeconds = durationSeconds;
+		NextPumpStartSeconds = nextPumpStartSeconds;
 	}
 
 	public EditorialEffectRenderKind Kind { get; }
 	public double EventTimeSeconds { get; }
 	public double Intensity { get; }
 	public double DurationSeconds { get; }
+
+	/// <summary>Event-local time where the next pump on the same event starts punching in.</summary>
+	public double? NextPumpStartSeconds { get; }
 }
 
 internal enum EditorialEffectRenderKind

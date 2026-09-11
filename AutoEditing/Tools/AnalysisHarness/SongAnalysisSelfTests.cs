@@ -385,10 +385,10 @@ namespace AnalysisHarness
 				inference.Events.Add(TreatmentEvent("accent-" + index, 14.0 + index * 1.5, MusicEventType.Accent));
 			EffectTreatmentPlan inferred = planner.Plan(inference);
 			Assert(inferred.Actions.Any(item => item.EventId == "drop" && item.Type == EditorialUse.ScreenPump), "A drop did not infer a screen pump.");
-			Assert(inferred.Actions.Any(item => item.EventId == "drop" && item.RecipeId == "native.pump.impact" && item.Intensity >= 0.75 && item.DurationSeconds >= 0.20 && item.DurationSeconds <= 0.30), "A drop did not select the impact pump recipe/intensity/duration tier.");
+			Assert(inferred.Actions.Any(item => item.EventId == "drop" && item.RecipeId == "native.pump.impact" && item.Intensity >= 0.75 && item.DurationSeconds >= 0.38 && item.DurationSeconds <= 0.48), "A drop did not select the impact pump recipe/intensity/duration tier.");
 			Assert(inferred.Actions.Any(item => item.EventId == "drop" && item.Type == EditorialUse.SpeedChange), "A drop did not infer a speed treatment.");
 			Assert(inferred.Actions.Any(item => item.EventId == "build" && item.Type == EditorialUse.ScreenPump), "A build hit did not infer a screen pump.");
-			Assert(inferred.Actions.Any(item => item.EventId == "build" && item.RecipeId == "native.pump.medium" && item.Intensity >= 0.45 && item.Intensity < 0.75 && item.DurationSeconds >= 0.18 && item.DurationSeconds <= 0.24), "A build hit did not select the medium pump recipe/intensity/duration tier.");
+			Assert(inferred.Actions.Any(item => item.EventId == "build" && item.RecipeId == "native.pump.medium" && item.Intensity >= 0.45 && item.Intensity < 0.75 && item.DurationSeconds >= 0.32 && item.DurationSeconds <= 0.40), "A build hit did not select the medium pump recipe/intensity/duration tier.");
 			int accentEffects = inferred.Actions.Count(item => item.EventId != null && item.EventId.StartsWith("accent-", StringComparison.Ordinal));
 			Assert(accentEffects > 0 && accentEffects < 16, "Accent inference was not selectively restrained.");
 			Assert(inferred.Actions.Where(item => item.Origin == EffectTreatmentOrigin.Automatic && (item.Type == EditorialUse.Flash || item.Type == EditorialUse.ScreenPump || item.Type == EditorialUse.Shake))

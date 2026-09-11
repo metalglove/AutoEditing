@@ -206,11 +206,14 @@ Flash, shake, speed-change, transition, title/name-tag, cinematic-transition,
 and color-correction treatments are currently unsupported and must report that
 status with a reason; they must never be falsely logged as applied.
 
-A screen pump is centered on the treatment time. Its peak zoom ranges from
-2.5% to 10% according to intensity. The baseline-to-peak-to-baseline keyframes
-fit inside the event, using at most 0.12 s on either side. The renderer operates
-only on newly generated montage events and composes multiple planned pumps on
-their shared baseline pan/crop state.
+A screen pump peaks on the treatment time. Its peak zoom ranges from 2.5% to
+10% according to intensity. It punches in over a fifth of its duration (0.05–
+0.09 s) with a Fast curve and eases back to the baseline over the rest with a
+Smooth curve; the whole pump is bounded to 0.80 s and fits inside the event. A
+release ends just before the next pump on the same event punches in, so
+neighbouring pumps never cut each other off. The renderer operates only on
+newly generated montage events and composes multiple planned pumps on their
+shared baseline pan/crop state.
 
 Screen-pump plans use stable semantic recipe IDs. `native.pump.subtle` maps to
 roughly 2.5–4.5% zoom, `native.pump.medium` to 4.5–7.5%, and
@@ -280,7 +283,7 @@ value. Default duration ranges are:
 | Treatment | Duration |
 |---|---:|
 | Flash | 0.07–0.10 s |
-| Screen pump | 0.16–0.30 s, depending on subtle/medium/impact recipe |
+| Screen pump | 0.28–0.48 s, depending on subtle/medium/impact recipe; 0.42 s on a kill, 0.30 s between kills |
 | Shake | 0.18–0.30 s |
 | Speed change | 0.35–0.55 s |
 | Cut / transition | 0.30–0.50 s |

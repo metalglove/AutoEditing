@@ -3210,7 +3210,7 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		SongAnalysis analysis = _songAnalysisDraft ?? await Task.Run(() => store.Load(sidecarPath), token);
 		if (analysis == null) throw new InvalidOperationException("Analyze the song before committing its review.");
 		SongReviewSnapshot snapshot = await _vegasQueries.QueryAsync(new GetSongReviewSnapshotQuery());
-		ApplySongReviewSnapshot(analysis, snapshot);
+		ApplySongReviewSnapshot(analysis, snapshot, _projectedSongEventIds);
 		foreach (SongEventRow row in _allSongEventRows) row.Apply();
 		foreach (SongRegionRow row in SongRegions) row.Apply();
 		await Task.Run(delegate
@@ -3226,7 +3226,7 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 		Logger.Log("Song review committed atomically: " + snapshot.Events.Count + " events and " + snapshot.Regions.Count + " regions.");
 	}
 
-	private static void ApplySongReviewSnapshot(SongAnalysis analysis, SongReviewSnapshot snapshot)
+	private static void ApplySongReviewSnapshot(SongAnalysis analysis, SongReviewSnapshot snapshot, ICollection<string> projectedEventIds)
 	{
 		Dictionary<string, SongReviewEventSnapshot> events = snapshot.Events.ToDictionary((SongReviewEventSnapshot item) => item.Id, StringComparer.Ordinal);
 		foreach (MusicEvent musicEvent in analysis.Events)
@@ -3238,7 +3238,10 @@ public sealed class ShotReviewViewModel : INotifyPropertyChanged, IDisposable
 				musicEvent.Type = reviewed.Type;
 				musicEvent.ReviewState = MusicAnalysisReviewState.Reviewed;
 			}
-			else if (SongReviewWorkflow.IsUsefulTimelineEvent(musicEvent)) musicEvent.ReviewState = MusicAnalysisReviewState.Rejected;
+			/* Only events projected as markers can have been deleted in VEGAS. The grid projects just the
+			   current view (by default the selected region), so an absent marker for any other event means
+			   it was never shown, not that the user removed it. */
+			else if (projectedEventIds.Contains(musicEvent.Id) && SongReviewWorkflow.IsUsefulTimelineEvent(musicEvent)) musicEvent.ReviewState = MusicAnalysisReviewState.Rejected;
 		}
 		Dictionary<string, SongReviewRegionSnapshot> regions = snapshot.Regions.ToDictionary((SongReviewRegionSnapshot item) => item.Id, StringComparer.Ordinal);
 		foreach (MusicRegion region in analysis.Regions)
