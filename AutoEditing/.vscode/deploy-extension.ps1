@@ -43,6 +43,7 @@ $required = @(
     @{ Name = "AutoEditing.Extension.dll"; Source = (Join-Path $ProjectDir "ExtensionBootstrap\bin\$Configuration\AutoEditing.Extension.dll") },
     @{ Name = "Core.dll"; Source = (Join-Path $sourceDir "Core.dll") },
     @{ Name = "AutoEditing.Domain.dll"; Source = (Join-Path $sourceDir "AutoEditing.Domain.dll") },
+    @{ Name = "AutoEditing.Iteration.Contracts.dll"; Source = (Join-Path $sourceDir "AutoEditing.Iteration.Contracts.dll") },
     @{ Name = "AutoEditing.AutomaticEditor.dll"; Source = (Join-Path $sourceDir "AutoEditing.AutomaticEditor.dll") },
     @{ Name = "AutoEditing.Vegas.dll"; Source = (Join-Path $sourceDir "AutoEditing.Vegas.dll") },
     @{ Name = "NAudio.Core.dll"; Source = (Join-Path $sourceDir "NAudio.Core.dll") },

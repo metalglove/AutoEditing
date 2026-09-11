@@ -5,7 +5,9 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
+using AutoEditing.Iteration.Contracts.Automation;
 using Core.Domain;
+using Core.Host.Automation;
 using ScriptPortal.Vegas;
 
 namespace Core.Scripts;
@@ -65,6 +67,9 @@ internal sealed class AutoEditingCommandModule : ICustomCommandModule
 	private readonly CustomCommand _hostCommand = new CustomCommand((CommandCategory)2, "AutoEditingShotReviewHostAction");
 
 	private readonly Queue<Action> _hostActions = new Queue<Action>();
+	private Timer _automationTimer;
+	private VegasAutomationSessionPump _automationPump;
+	private bool _automationPumpActive;
 
 	public AutoEditingCommandModule()
 	{
@@ -102,7 +107,8 @@ internal sealed class AutoEditingCommandModule : ICustomCommandModule
 		_hostCommand.CanAddToKeybindings = false;
 		_hostCommand.CanAddToToolbar = false;
 		_hostCommand.Invoked += HandleHostAction;
-		ExtensionLoadDiagnostics.Write("GetCustomCommands returned View and host commands.");
+		StartAutomationPump();
+		ExtensionLoadDiagnostics.Write("GetCustomCommands returned review and host commands.");
 		return new CustomCommand[2] { _viewCommand, _hostCommand };
 	}
 
@@ -159,5 +165,48 @@ internal sealed class AutoEditingCommandModule : ICustomCommandModule
 	private void HandleMenuPopup(object sender, EventArgs args)
 	{
 		_viewCommand.Checked = _vegas.FindDockView("AutoEditingShotReviewDock");
+	}
+
+	private void StartAutomationPump()
+	{
+		if (_automationTimer != null) return;
+		string sessionsRoot = System.IO.Path.Combine(
+			Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+			"AutoEditing", "automation", "sessions");
+		VegasCommandClient client = new VegasCommandClient(_vegas, QueueHostAction);
+		VegasAutomationRequestHandler requestHandler =
+			new VegasAutomationRequestHandler(
+				client,
+				() => Core.Host.Automation.VegasProjectIdentity.Create(
+					Environment.MachineName,
+					System.Diagnostics.Process.GetCurrentProcess().Id,
+					typeof(Vegas).Assembly.GetName().Version?.ToString() ?? "",
+					_vegas.Project == null ? "" : _vegas.Project.FilePath));
+		_automationPump = new VegasAutomationSessionPump(
+			sessionsRoot,
+			TimeSpan.FromMinutes(10),
+			requestHandler.HandleAsync);
+		_automationTimer = new Timer { Interval = 500 };
+		_automationTimer.Tick += HandleAutomationPumpTick;
+		_automationTimer.Start();
+		ExtensionLoadDiagnostics.Write("VEGAS automation spool pump started at " + sessionsRoot);
+	}
+
+	private async void HandleAutomationPumpTick(object sender, EventArgs args)
+	{
+		if (_automationPumpActive || _automationPump == null) return;
+		_automationPumpActive = true;
+		try
+		{
+			await _automationPump.PumpOnceAsync(System.Threading.CancellationToken.None);
+		}
+		catch (Exception exception)
+		{
+			ExtensionLoadDiagnostics.Write("VEGAS automation pump failed: " + exception);
+		}
+		finally
+		{
+			_automationPumpActive = false;
+		}
 	}
 }

@@ -37,6 +37,7 @@
     <ProjectReference Include="..\Domain\AutoEditing.Domain.csproj" />
     <ProjectReference Include="..\AutomaticEditor\AutoEditing.AutomaticEditor.csproj" />
     <ProjectReference Include="..\Vegas\AutoEditing.Vegas.csproj" />
+    <ProjectReference Include="..\Iteration.Contracts\AutoEditing.Iteration.Contracts.csproj" />
   </ItemGroup>
 
   <!-- VEGAS host assembly is provided by VEGAS at runtime; do not copy it locally. -->
