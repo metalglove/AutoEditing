@@ -1,101 +1,120 @@
-# LLM editor skeleton
+# LLM editing companion
 
-`AutoEditing.LlmEditor` is the out-of-process planning and revision boundary for
-an LLM-driven editor. It targets .NET 8 and has no reference to VEGAS or the WPF
-host. Its local provider adapter uses the OpenAI-compatible HTTP protocol rather
-than a model-vendor SDK.
+`AutoEditing.LlmEditor` is the out-of-process planning and workflow coordinator
+for the AI montage workbench. It targets .NET 8, does not reference VEGAS or
+WPF, and talks to the extension only through versioned contracts and a durable
+typed job spool.
 
-The `fake` command proves the versioned planning-file exchange:
-
-```powershell
-dotnet run --project LlmEditor/AutoEditing.LlmEditor.csproj -- `
-  plan `
-  --request LlmEditor/Fixtures/skeleton-request.json `
-  --output skeleton-plan.json `
-  --planner fake
-```
-
-The `fake` planner deterministically creates one normal-speed placement from the
-first fixture clip. Its output is labeled `skeleton.fake`; it is not an
-LLM-authored edit and there is intentionally no VEGAS import command.
-
-A local OpenAI-compatible server, such as vLLM, can exercise a single candidate
-generation:
+The workbench supports `llama-server` from llama.cpp, the OpenAI API, or the
+DeepSeek API through their chat-completions endpoints. Select the provider from **AI
+Montage > Settings** in the VEGAS extension. Text and image evidence are
+supported; model output is always treated as untrusted data and must pass the
+same strict schema and deterministic editing validators regardless of provider.
 
 ```powershell
-$env:AUTOEDITING_LLM_ENDPOINT = "http://127.0.0.1:8000/v1/"
+$env:AUTOEDITING_LLM_ENDPOINT = "http://127.0.0.1:8080/v1/"
 $env:AUTOEDITING_LLM_MODEL = "the-served-model-name"
-dotnet run --project LlmEditor/AutoEditing.LlmEditor.csproj -- `
-  plan `
-  --request LlmEditor/Fixtures/skeleton-request.json `
-  --output candidate-plan.json `
-  --planner local
+dotnet run --project LlmEditor/AutoEditing.LlmEditor.csproj -- --self-test
 ```
 
-`AUTOEDITING_LLM_API_KEY` is optional. The output still passes the shared plan
-validator, must preserve the request ID, may reference only requested clips, and
-cannot overwrite an existing file.
+For OpenAI, enter the API key into the masked settings field. The key is stored
+as a generic credential in Windows Credential Manager under
+`AutoEditing/Inference/OpenAI`; it is not written to `inference.json`, session
+artifacts, logs, prompts, or companion-process arguments. The field is cleared
+after saving and the UI exposes only whether a credential exists.
 
-## Iterative editing
+DeepSeek uses a separate masked credential stored under
+`AutoEditing/Inference/DeepSeek`. The configurator exposes only the current
+documented V4 models: `deepseek-v4-pro` and `deepseek-v4-flash`. Both support
+non-thinking mode or thinking mode at `high`/`max` effort. DeepSeek reasoning
+chunks are observed for the workbench activity heartbeat but never mixed into
+the final JSON plan. Its documented chat-completions API is text-only, so a
+phase that requires image evidence fails explicitly instead of silently
+discarding that evidence. See the [DeepSeek model table](https://api-docs.deepseek.com/quick_start/pricing/)
+and [thinking-mode contract](https://api-docs.deepseek.com/guides/thinking_mode/).
 
-One-shot generation is a diagnostic primitive, not the intended editing
-workflow. `EditIterationOrchestrator` models the main loop:
+Provider settings are stored at
+`%LOCALAPPDATA%\AutoEditing\settings\inference.json`. Existing local
+installations can continue using `.env`. `AUTOEDITING_LLM_PROVIDER` accepts
+`llamacpp` or `openai`; when it is explicitly set, the generic endpoint, model,
+and API-key variables override the saved provider configuration. An OpenAI
+selection made in the UI deliberately ignores legacy local endpoint/model
+values from `.env`, preventing accidental routing to the wrong server.
 
-1. generate and validate a candidate plan;
-2. ask an `IEditPlanReviewer` to materialize it in isolated working state, run
-   deterministic checks, render previews, and analyze those previews;
-3. accept the candidate or send critique and visual evidence to the planner;
-4. generate a complete replacement plan and validate it again;
-5. stop on acceptance or a configured iteration limit.
+The shared client also keeps provider-specific sampling fields separate.
+llama.cpp receives AutoEditing's configured temperature and deterministic seed.
+OpenAI requests omit those local-only overrides and send the reasoning effort
+selected in AI settings (`minimal`, `low`, `medium`, `high`, or `xhigh`). New
+installations default to `gpt-5.6-luna` at `high`; the schema migration changes
+only the previous `gpt-5.6-sol` default and preserves other explicitly selected
+models.
 
-The current implementation includes the orchestration contract and deterministic
-tests. A VEGAS-backed reviewer and preview analyzer are not implemented yet.
-Those components belong outside this project and will communicate using files
-and DTOs. The local inference adapter supports text plus image data URLs, which
-allows contact sheets or sampled render frames to accompany revision feedback.
-Raw video ingestion remains provider-specific; the portable baseline will use
-timestamped frames/contact sheets and objective render metrics.
+## Editor-like workflow
 
-## Edit workbench
+The normal workbench is progressive rather than a one-shot plan:
 
-The iteration coordinator publishes `EditIterationSnapshot` values through an
-`IEditIterationObserver`. This is the boundary for a separate workbench window.
-The window can show:
+1. persist the reviewed footage and committed song-analysis request;
+2. ask the model for a semantic assembly sketch;
+3. request and validate one `ClipStepDecision`;
+4. materialize the growing candidate in a session-owned VEGAS workspace;
+5. let the editor compare, preview, adjust, accept, reset, or revise that clip;
+6. reconcile supported live timeline changes into canonical evidence;
+7. continue until every selected clip is synchronized;
+8. render and audit the complete rough cut;
+9. review separate effects and audio/SFX passes;
+10. explicitly promote the validated candidate and retain a rollback bundle.
 
-- the current candidate as a visual timeline;
-- differences from the preceding candidate;
-- preview frames and render locations;
-- validation and critic findings;
-- concise decision records with category, confidence, and evidence IDs; and
-- whether an iteration was accepted or sent back for revision.
+The editor remains authoritative. Move, trim, duration, and constant-speed
+changes are adopted only after reconciliation. Missing, extra, ambiguous,
+foreign, out-of-bounds, or variable-velocity events enter an explicit conflict
+workflow; they are never silently restored or accepted.
 
-Reviewer feedback can also carry explicit steering instructions into the next
-revision, such as locking an opener, prohibiting an effect, preserving a sync
-point, or asking for a calmer section. These instructions are visible inputs,
-not invisible prompt state.
+## Evidence and steering
 
-Decision records are short, structured explanations backed by inspectable
-evidence. The system must not depend on or attempt to expose a model's private
-chain-of-thought. Durable trace persistence and the actual workbench UI remain
-to be implemented.
+Checkpoint previews and full-rough-cut evidence are rendered in bounded chunks.
+All numbered checkpoint attempts remain available for A/B playback, and
+finishing a semantic song section automatically creates a hash-verified
+complete-section render.
+The multimodal reviewer sees hash-verified timeline metadata and sampled VEGAS
+images. Its observations may recommend a revision, but cannot mutate or accept
+the timeline. The workbench exposes the proposal, rationale, confidence,
+evidence, live comparison, conflicts, recovery state, polish plans, rendered
+previews, token usage, final report, and rollback availability.
 
-Run the contract and determinism checks with:
+Steering is durable input to the next scoped planning request. The system stores
+complete request/response conversations and usage records for the separate
+Inference Monitor. It records concise evidence-backed decisions, not private
+model chain-of-thought.
+
+## Recovery and safety
+
+- Session state, action claims, action execution, plans, renders, decisions,
+  promotion intent, reports, and archives are durable artifacts.
+- One runtime lease owns a session; exact state-revision actions prevent stale
+  or duplicate button clicks from racing.
+- VEGAS mutations use typed allow-listed operations, project fingerprints,
+  candidate-workspace ownership, payload hashes, and operation-scoped
+  idempotency keys.
+- Model output cannot dispatch C#, script text, COM objects, or arbitrary VEGAS
+  commands.
+- Rough-cut acceptance persists a complete plan/workspace/snapshot-bound
+  timeline baseline. Polish and finalization re-read live VEGAS and fail closed
+  on track, audio automation, fade, grouping, effect, or placement divergence.
+- Final review explicitly chooses whether to render and verify one more
+  complete preview before promotion; the choice is durable across restart.
+- Promotion renames only verified candidate-owned tracks. Rollback verifies the
+  promoted evidence before restoring the candidate labels.
+
+The older `plan --planner fake` and `plan --planner local` commands remain
+useful as one-shot transport/schema diagnostics. Workbench launches use
+`--planner configured`; `local` remains an accepted compatibility alias.
+
+Run all companion self-tests with:
 
 ```powershell
 dotnet run --project LlmEditor/AutoEditing.LlmEditor.csproj -- --self-test
 ```
 
-## Safety boundary
-
-- Planning requests and plans contain DTO data only.
-- Structural validation is VEGAS-independent.
-- File, audio, SFX, and host checks still run inside the VEGAS-side resource
-  preflight before any project cleanup or mutation.
-- The CLI refuses to overwrite an existing output file.
-- No arbitrary C#, script text, prompt, or model response can be dispatched to
-  VEGAS.
-
-Semantic media summaries, editor-style retrieval, preview rendering, approval,
-and production critic implementations are later milestones.
-The quality-first local model candidates and benchmark are documented in
-[Local multimodal model recommendations](../docs/local-multimodal-models.md).
+See [the clip-by-clip workflow plan](../docs/llm-clip-by-clip-workflow-plan.md),
+[the automation architecture](../docs/llm-vegas-automation-architecture.md), and
+the normative [editing rulebook](../docs/editing-rules.md).

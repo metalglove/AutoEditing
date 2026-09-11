@@ -4,15 +4,14 @@ AutoEditing is a work-in-progress VEGAS Pro 20 extension for building Call of
 Duty sniper montages from reviewed gameplay sync points.
 
 The solution separates local analysis and planning from its docked shot-review
-host and native VEGAS timeline renderer. Its longer-term direction is a guided
-semantic montage assistant: the editor verifies meaningful gameplay events,
-aligns them with music events, and lets either the deterministic planner or a
-future LLM planner perform the repetitive editorial planning.
+host and native VEGAS timeline renderer. The editor verifies meaningful
+gameplay and music events, then can use either the deterministic planner or the
+LLM workbench for the repetitive assembly work.
 
-> Status: active prototype. The analysis and planning layers can be exercised
-> outside VEGAS. Timeline and velocity behavior still require continued smoke
-> testing in VEGAS Pro 20 before the extension should be considered production
-> ready.
+> Status: active prototype. Analysis, planning, recovery, and automation
+> contracts have deterministic test harnesses. Native timeline, rendering,
+> effects, audio, promotion, and rollback behavior still require continued
+> smoke testing in VEGAS Pro 20 before the extension is production-ready.
 
 ## Current workflow
 
@@ -113,18 +112,18 @@ contract remains [docs/editing-rules.md](docs/editing-rules.md).
   quantization, and undo behavior need more real VEGAS Pro 20 testing.
 - Shot detection can still produce false positives and depends on good per-gun
   SFX templates plus human review.
-- The reviewed song-analysis foundation exists, but richer detection and its
-  VEGAS marker/region review workflow are not yet implemented; current montage
-  generation still consumes the legacy uniform beat grid.
+- Song analysis and the VEGAS marker/region review workflow are implemented,
+  but detection quality and editor-authored region/event corrections need
+  broader real-song testing.
 - Shake, name tags, color correction, and transitions remain logging/placeholding
   methods; they do not yet create the advertised visual treatments.
 - Persisted reviewed shot events are more specialized than the planned general
   `GameplayEvent`/`MusicEvent` semantic model.
-- Regenerating and removing an individual provenance-owned treatment is part of
-  the planned MVP, not the current implementation.
-- Optical flow, automatic narrative construction, learned clip ranking, sound
-  enhancement, advanced transitions, grading, and render automation are
-  deferred.
+- The AI polish pass currently renders native screen pumps plus the implemented
+  song and calibrated gun/hit SFX treatment. Individual arbitrary-effect
+  regeneration, shake, grading, titles, and transitions remain deferred.
+- Optical flow, learned visual-similarity ranking, sound enhancement, advanced
+  transitions, and grading remain deferred.
 
 ## Architecture and repository layout
 
@@ -143,7 +142,12 @@ Vegas/                    shared net48 VEGAS integration and rendering
 Core/                     thin net48 VEGAS extension
   Host/                   entry point and custom-command module
   Presentation/           WPF review UI, models, and UI infrastructure
-LlmEditor/                provider-neutral net8.0 planner skeleton
+LlmEditor/                net8.0 progressive planner and workflow coordinator
+InferenceMonitor/         live request/response and token-usage inspector
+Iteration.Contracts/      versioned process-boundary and workflow DTOs
+Iteration.Contracts.Tests/ cross-target deterministic contract tests
+AutomationBroker.Tests/   typed VEGAS spool/broker contract tests
+Core.Tests/               workbench projection and action-policy tests
 Tools/
   AnalysisHarness/        VEGAS-free diagnostics and deterministic checks
 docs/
@@ -185,13 +189,18 @@ Run commands from this directory (`AutoEditing/`):
 
 ```powershell
 .\build.ps1 -Configuration Debug
-dotnet run --project LlmEditor/AutoEditing.LlmEditor.csproj -- --self-test
+.\verify.ps1 -Configuration Debug
 ```
 
 The build entry point intentionally limits MSBuild to one worker. With the
 currently installed .NET 10 SDK, parallel solution builds can fail silently
 while evaluating the shared SDK-style project references. Individual projects
 are safe to build directly when only one component is needed.
+
+`verify.ps1` builds the solution without deploying and runs the .NET 8 and
+.NET Framework contract suites, LLM editor/inference/automation self-tests,
+automation broker tests, VEGAS workbench projection tests, and the
+song-analysis/montage-planner harness tests.
 
 Pass `-Deploy` when the successful solution build should also install the VEGAS
 extension:
@@ -352,8 +361,13 @@ VEGAS timeline behavior.
   synchronization, velocity, audio, effects, and safety behavior.
 - [Editing pipeline](docs/editing-pipeline.md) - end-to-end ownership and data
   flow from analysis through planning, validation, and VEGAS rendering.
+- [LLM–VEGAS automation architecture](docs/llm-vegas-automation-architecture.md) -
+  durable iterative sessions, isolated VEGAS experiments, rendered evidence,
+  steering, and explicit production promotion.
 - [Local multimodal model recommendations](docs/local-multimodal-models.md) -
   quality-first local model candidates, serving design, and evaluation gates.
+- [Inference monitor](docs/inference-monitor.md) - live, replayable planner and
+  reviewer conversations, prompts, responses, errors, and token diagnostics.
 - [Effect preset architecture](docs/effect-preset-architecture.md) - versioned
   presets, inheritance, deterministic variation, capabilities, and fallbacks.
 - [Sniper montage effects research](docs/sniper-montage-effects-research.md) -

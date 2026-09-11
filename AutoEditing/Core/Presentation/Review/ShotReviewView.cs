@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Reflection;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
 
@@ -25,17 +26,47 @@ public static class ShotReviewView
 		}
 		userControl.DataContext = viewModel;
 		TextBox logBox = userControl.FindName("LogBox") as TextBox;
+		PasswordBox apiKeyBox =
+			userControl.FindName("OpenAiApiKeyBox") as PasswordBox;
+		PasswordBox deepSeekApiKeyBox =
+			userControl.FindName("DeepSeekApiKeyBox") as PasswordBox;
+		RoutedEventHandler passwordHandler = delegate
+		{
+			if (apiKeyBox != null)
+				viewModel.SetPendingOpenAiApiKey(apiKeyBox.Password);
+		};
+		if (apiKeyBox != null)
+			apiKeyBox.PasswordChanged += passwordHandler;
+		RoutedEventHandler deepSeekPasswordHandler = delegate
+		{
+			if (deepSeekApiKeyBox != null)
+				viewModel.SetPendingDeepSeekApiKey(deepSeekApiKeyBox.Password);
+		};
+		if (deepSeekApiKeyBox != null)
+			deepSeekApiKeyBox.PasswordChanged += deepSeekPasswordHandler;
 		PropertyChangedEventHandler scrollHandler = delegate(object sender, PropertyChangedEventArgs args)
 		{
 			if (args.PropertyName == "LogText" && logBox != null)
 			{
 				logBox.Dispatcher.BeginInvoke(new Action(logBox.ScrollToEnd));
 			}
+			if (args.PropertyName == "AiApiKeyClearRequestVersion" &&
+				apiKeyBox != null)
+				apiKeyBox.Dispatcher.BeginInvoke(
+					new Action(apiKeyBox.Clear));
+			if (args.PropertyName == "AiApiKeyClearRequestVersion" &&
+				deepSeekApiKeyBox != null)
+				deepSeekApiKeyBox.Dispatcher.BeginInvoke(
+					new Action(deepSeekApiKeyBox.Clear));
 		};
 		viewModel.PropertyChanged += scrollHandler;
 		userControl.Unloaded += delegate
 		{
 			viewModel.PropertyChanged -= scrollHandler;
+			if (apiKeyBox != null)
+				apiKeyBox.PasswordChanged -= passwordHandler;
+			if (deepSeekApiKeyBox != null)
+				deepSeekApiKeyBox.PasswordChanged -= deepSeekPasswordHandler;
 		};
 		return userControl;
 	}

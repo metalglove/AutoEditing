@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>AutoEditing.InferenceMonitor</AssemblyName>
+    <RootNamespace>AutoEditing.InferenceMonitor</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon />
+  </PropertyGroup>
+
+  <Target Name="DeployInferenceMonitor"
+          AfterTargets="Build"
+          Condition="'$(Configuration)' == 'Deploy'">
+    <ItemGroup>
+      <MonitorDeployFiles Include="$(TargetDir)*.*" />
+    </ItemGroup>
+    <MakeDir Directories="$(LocalAppData)\AutoEditing\bin\InferenceMonitor" />
+    <Copy SourceFiles="@(MonitorDeployFiles)"
+          DestinationFolder="$(LocalAppData)\AutoEditing\bin\InferenceMonitor"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>
